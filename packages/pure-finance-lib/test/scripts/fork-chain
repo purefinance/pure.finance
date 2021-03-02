@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+# shellcheck disable=SC1091
+[ -f .env ] && . .env
+
+./test/scripts/kill-ganache-cli
+npx ganache-cli --fork "$BASE_NODE_URL" --host 0.0.0.0 --mnemonic "$MNEMONIC" --unlock "$SPC_TOKENS_HOLDER" &

@@ -1,0 +1,60 @@
+{
+  "name": "pure-finance",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Gabriel Montes",
+  "scripts": {
+    "postinstall": "lerna bootstrap"
+  },
+  "devDependencies": {
+    "eslint": "^7.21.0",
+    "eslint-plugin-react": "^7.22.0",
+    "lerna": "^4.0.0",
+    "prettier": "^2.2.1"
+  },
+  "eslintConfig": {
+    "env": {
+      "es2020": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "*.spec.js"
+        ],
+        "env": {
+          "mocha": true
+        }
+      },
+      {
+        "files": [
+          "site/**/*.js"
+        ],
+        "env": {
+          "browser": true
+        },
+        "extends": [
+          "eslint:recommended",
+          "plugin:react/recommended"
+        ],
+        "parserOptions": {
+          "ecmaFeatures": {
+            "jsx": true
+          },
+          "sourceType": "module"
+        },
+        "rules": {
+          "react/prop-types": "off"
+        }
+      }
+    ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2
+  }
+}

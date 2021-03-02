@@ -1,0 +1,26 @@
+{
+  "name": "pure-finance-lib",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Gabriel Montes <gabriel@bloq.com>",
+  "files": [
+    "src"
+  ],
+  "main": "src/index.js",
+  "scripts": {
+    "fork:start": "test/scripts/fork-chain",
+    "fork:stop": "test/scripts/kill-ganache-cli",
+    "test:e2e": "npm run fork:start && sleep 5 && mocha --exit test/e2e.spec.js"
+  },
+  "dependencies": {
+    "debug": "^4.3.1"
+  },
+  "devDependencies": {
+    "@truffle/hdwallet-provider": "^1.2.0",
+    "chai": "^4.2.0",
+    "dotenv": "^8.2.0",
+    "ganache-cli": "^6.12.1",
+    "mocha": "^8.2.1",
+    "web3": "^1.3.0"
+  }
+}
