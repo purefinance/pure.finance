@@ -1,3 +1,5 @@
 'use strict'
 
-module.exports = 'Pure Finance'
+const merkleBox = require('./merkle-box')
+
+module.exports = { merkleBox }
