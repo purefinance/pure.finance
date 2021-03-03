@@ -1,5 +1,5 @@
 {
-  "name": "pure-finance-lib",
+  "name": "erc-20-lib",
   "version": "1.0.0",
   "license": "MIT",
   "author": "Gabriel Montes <gabriel@bloq.com>",
@@ -9,8 +9,6 @@
   "main": "src/index.js",
   "scripts": {},
   "dependencies": {
-    "erc-20-lib": "^1.0.0",
-    "merkle-box-lib": "^1.0.0",
-    "node-fetch": "^2.6.1"
+    "erc-20-abi": "^1.0.0"
   }
 }

@@ -1,8 +1,8 @@
 'use strict'
 
-const abi = require('./abis/merkle-box.json')
+const abi = require('./abi.json')
 
-const getMerkleBox = function (web3, address, options) {
+const createMerkleBox = function (web3, address, options) {
   const { from, gasFactor } = options
 
   const merkleBox = new web3.eth.Contract(abi, address)
@@ -34,8 +34,8 @@ const getMerkleBox = function (web3, address, options) {
   return {
     getHolding,
     isClaimable,
-    claim,
+    claim
   }
 }
 
-module.exports = getMerkleBox
+module.exports = createMerkleBox

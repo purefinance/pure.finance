@@ -1,5 +1,9 @@
 'use strict'
 
-const merkleBox = require('./merkle-box')
+const merkle = require('./merkle-claims')
+const sablier = require('./sablier-claims')
 
-module.exports = { merkleBox }
+module.exports = {
+  merkle,
+  sablier
+}
