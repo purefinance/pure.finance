@@ -8,9 +8,9 @@
   ],
   "main": "src/index.js",
   "scripts": {
-    "fork:start": "test/scripts/fork-chain",
-    "fork:stop": "test/scripts/kill-ganache-cli",
-    "test:e2e": "npm run fork:start && sleep 5 && mocha --exit test/e2e.spec.js"
+    "fork:start": "npm run fork:stop ; npx ganache-cli --fork $NODE_BASE_URL --host 0.0.0.0 --mnemonic $DEPLOYMENT_ACCOUNT_KEY &",
+    "fork:stop": "kill -TERM $(lsof -i :8545 -s TCP:LISTEN -t)",
+    "test:e2e": "mocha --exit test/e2e.spec.js"
   },
   "dependencies": {
     "debug": "^4.3.1"
