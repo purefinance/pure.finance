@@ -19,9 +19,9 @@ const createMerkleBox = function (web3, address, options) {
     return merkleBox.methods.holdings(claimGroupId).call()
   }
 
-  const isClaimable = function (claimGroupId, amount, proof) {
+  const isClaimable = function (claimGroupId, account, amount, proof) {
     return merkleBox.methods
-      .isClaimable(claimGroupId, from, amount, proof)
+      .isClaimable(claimGroupId, account, amount, proof)
       .call()
   }
 
@@ -33,9 +33,9 @@ const createMerkleBox = function (web3, address, options) {
     )
   }
 
-  const claim = function (claimGroupId, amount, proof, txOps) {
+  const claim = function (claimGroupId, account, amount, proof, txOps) {
     return estimateGasAndSend(
-      merkleBox.methods.claim(claimGroupId, from, amount, proof),
+      merkleBox.methods.claim(claimGroupId, account, amount, proof),
       { from, ...txOps }
     )
   }

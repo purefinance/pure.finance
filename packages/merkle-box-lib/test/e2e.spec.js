@@ -10,10 +10,22 @@ const Web3 = require('web3')
 
 const createMerkleBox = require('..')
 
-describe('End-to-end', function () {
-  before(function () {
-    this.timeout(0)
+const checkTxSuccess = function (receipt) {
+  receipt.should.have.property('status').that.is.true
+  return receipt
+}
 
+describe('End-to-end', function () {
+  const tokenAddress = createErc20.util.tokenAddress('WETH')
+
+  let from
+  let acc1, acc2
+  let web3
+  let merkleBox
+  let claimGroupId
+  let dataset
+
+  before(function () {
     if (!process.env.E2E) {
       this.skip()
       return
@@ -23,34 +35,33 @@ describe('End-to-end', function () {
     const provider = new HDWalletProvider({
       addressIndex: 0,
       mnemonic: process.env.MNEMONIC,
-      numberOfAddresses: 2,
+      numberOfAddresses: 3,
       providerOrUrl: process.env.NODE_URL
     })
-    const acc0 = Web3.utils.toChecksumAddress(provider.getAddress(0))
-    const acc1 = Web3.utils.toChecksumAddress(provider.getAddress(1))
-    const web3 = new Web3(provider)
+    from = Web3.utils.toChecksumAddress(provider.getAddress(0))
+    acc1 = Web3.utils.toChecksumAddress(provider.getAddress(1))
+    acc2 = Web3.utils.toChecksumAddress(provider.getAddress(2))
+    web3 = new Web3(provider)
+  })
+
+  it('should create a claim group', function () {
+    this.timeout(0)
 
     // Create a WETH helper
-    const tokenAddress = createErc20.util.tokenAddress('WETH')
-    const params = { from: acc0, gasFactor: 2, token: tokenAddress, web3 }
+    const params = { from, gasFactor: 2, token: tokenAddress, web3 }
     const erc20 = createErc20(params)
 
     // Create a MerkleBox helper
     const merkleBoxAddress = createMerkleBox.addresses.mainnet
-    const merkleBox = createMerkleBox(web3, merkleBoxAddress, { from: acc0 })
-
-    const checkTxSuccess = function (receipt) {
-      receipt.status.should.be.true
-      return receipt
-    }
+    merkleBox = createMerkleBox(web3, merkleBoxAddress, { from })
 
     const wrapEther = function () {
-      const amount = '200000000000000000' // 0.2 ETH
+      const amount = '500000000000000000' // 0.5 ETH
       return erc20.wrapEther(amount)
     }
 
     const approveWeth = function () {
-      const amount = '200000000000000000' // 0.2 ETH
+      const amount = '500000000000000000' // 0.5 ETH
       return erc20.approve(merkleBoxAddress, amount)
     }
 
@@ -58,33 +69,50 @@ describe('End-to-end', function () {
     const bufferToHex = (buffer) => `0x${buffer.toString('hex')}`
 
     const hashRecipient = ({ account, amount }) =>
-      web3.utils.soliditySha3(
+      Web3.utils.soliditySha3(
         { t: 'address', v: account },
         { t: 'uint256', v: amount }
       )
 
-    const getRoot = function () {
-      const amount = '100000000000000000' // 0.1 WETH
-      const recipients = [
-        { account: acc0, amount },
-        { account: acc1, amount }
-      ]
+    const keccak256 = (buffer) =>
+      hexToBuffer(Web3.utils.keccak256(bufferToHex(buffer)))
+
+    const getMerkleTree = function (recipients) {
       const leaves = recipients.map(hashRecipient).map(hexToBuffer)
-      const keccak256 = (str) => hexToBuffer(web3.utils.keccak256(str))
-      return bufferToHex(new MerkleTree(leaves, keccak256).getRoot())
+      return new MerkleTree(leaves, keccak256)
     }
 
+    const addMerkleProofs = (tree) =>
+      function (recipient) {
+        const proof = tree
+          .getProof(hashRecipient(recipient))
+          .map(({ data }) => bufferToHex(data))
+        return { ...recipient, proof }
+      }
+
     const createClaimGroup = function () {
-      const amount = '200000000000000000' // 0.2 WETH
+      const amount = '1500000000000000' // 0.0015 WETH
+      const recipients = [
+        { account: acc1, amount },
+        { account: acc2, amount }
+      ]
+      const total = recipients
+        .reduce((sum, recipient) => sum + BigInt(recipient.amount), BigInt(0))
+        .toString()
+      const merkleTree = getMerkleTree(recipients)
+      const root = bufferToHex(merkleTree.getRoot())
+      dataset = recipients.map(addMerkleProofs(merkleTree))
       const unlock = Math.floor(Date.now() / 1000) + 2678400 // now + 31d
       // TODO Add memo param
       // const memo = 'datasetUri=http://localhost:3001/merkle-claims/groups/test.json'
-      return merkleBox.newClaimsGroup(tokenAddress, amount, getRoot(), unlock)
+      return merkleBox.newClaimsGroup(tokenAddress, total, root, unlock)
     }
 
-    const getClaimGroupId = function (receipt) {
-      const { claimGroupId } = receipt.events.NewMerkle.returnValues
-      claimGroupId.should.be.a('string').that.match(/^[0-9]+$/)
+    const checkClaimGroupId = function (receipt) {
+      receipt.should.have.nested
+        .property('events.NewMerkle.returnValues.claimGroupId')
+        .that.matches(/^[0-9]+$/)
+      claimGroupId = receipt.events.NewMerkle.returnValues.claimGroupId
     }
 
     return wrapEther()
@@ -93,12 +121,49 @@ describe('End-to-end', function () {
       .then(checkTxSuccess)
       .then(createClaimGroup)
       .then(checkTxSuccess)
-      .then(getClaimGroupId)
+      .then(checkClaimGroupId)
   })
 
-  it('should get info about a claim group')
+  it('should get info about a claim group', function () {
+    // Ensure the create claim group test was executed
+    claimGroupId.should.exist
 
-  it('should check if a grant is claimable')
+    return merkleBox.getHolding(claimGroupId).then(function (info) {
+      info.should.have.property('erc20')
+      Web3.utils.checkAddressChecksum(info.erc20).should.be.true
+    })
+  })
 
-  it('should claim a grant')
+  it('should check if a grant is claimable', function () {
+    // Ensure the create claim group test was executed
+    claimGroupId.should.exist
+
+    const { account, amount, proof } = dataset[0]
+    return merkleBox
+      .isClaimable(claimGroupId, account, amount, proof)
+      .then(function (claimable) {
+        claimable.should.be.true
+      })
+  })
+
+  it('should claim a grant', function () {
+    // Ensure the create claim group test was executed
+    claimGroupId.should.exist
+
+    const { account, amount, proof } = dataset[1]
+    return merkleBox
+      .claim(claimGroupId, account, amount, proof)
+      .then(checkTxSuccess)
+      .then(function (receipt) {
+        receipt.should.have.nested
+          .property('events.MerkleClaim.returnValues.account')
+          .that.equals(account)
+        receipt.should.have.nested
+          .property('events.MerkleClaim.returnValues.erc20')
+          .that.equals(tokenAddress)
+        receipt.should.have.nested
+          .property('events.MerkleClaim.returnValues.amount')
+          .that.equals(amount)
+      })
+  })
 })

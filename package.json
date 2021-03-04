@@ -4,7 +4,7 @@
   "license": "MIT",
   "author": "Gabriel Montes",
   "scripts": {
-    "format": "prettier --write",
+    "format": "prettier --write .",
     "lint": "eslint --cache --fix",
     "postinstall": "lerna bootstrap",
     "test": "lerna run --stream test"
