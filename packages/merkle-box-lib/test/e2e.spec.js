@@ -23,6 +23,7 @@ describe('End-to-end', function () {
   let web3
   let merkleBox
   let claimGroupId
+  let balance
   let dataset
 
   before(function () {
@@ -91,10 +92,9 @@ describe('End-to-end', function () {
       }
 
     const createClaimGroup = function () {
-      const amount = '1500000000000000' // 0.0015 WETH
       const recipients = [
-        { account: acc1, amount },
-        { account: acc2, amount }
+        { account: acc1, amount: '300000000000' }, // 0.0000003 WETH
+        { account: acc2, amount: '500000000000' } //  0.0000005 WETH
       ]
       const total = recipients
         .reduce((sum, recipient) => sum + BigInt(recipient.amount), BigInt(0))
@@ -102,10 +102,10 @@ describe('End-to-end', function () {
       const merkleTree = getMerkleTree(recipients)
       const root = bufferToHex(merkleTree.getRoot())
       dataset = recipients.map(addMerkleProofs(merkleTree))
-      console.log('Testing dataset:', JSON.stringify(dataset))
+      console.log('Test dataset:', JSON.stringify(dataset))
       const unlock = Math.floor(Date.now() / 1000) + 2678400 // now + 31d
       const memo = 'datasetUri=http://localhost:3000/test.json'
-      console.log('Testing dataset URL:', memo)
+      console.log('Test dataset URL:', memo)
       return merkleBox.newClaimsGroup(tokenAddress, total, root, unlock, memo)
     }
 
@@ -114,7 +114,8 @@ describe('End-to-end', function () {
         .property('events.NewMerkle.returnValues.claimGroupId')
         .that.matches(/^[0-9]+$/)
       claimGroupId = receipt.events.NewMerkle.returnValues.claimGroupId
-      console.log('Testing claim group ID:', claimGroupId)
+      balance = receipt.events.NewMerkle.returnValues.amount
+      console.log('Test claim group ID:', claimGroupId)
     }
 
     return wrapEther()
@@ -133,6 +134,8 @@ describe('End-to-end', function () {
     return merkleBox.getHolding(claimGroupId).then(function (info) {
       info.should.have.property('erc20')
       Web3.utils.checkAddressChecksum(info.erc20).should.be.true
+      info.should.have.property('balance')
+      info.balance.should.equal(balance)
     })
   })
 

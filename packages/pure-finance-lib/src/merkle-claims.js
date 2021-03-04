@@ -2,6 +2,7 @@
 
 const createErc20 = require('erc-20-lib')
 const createMerkleBox = require('merkle-box-lib')
+const debug = require('debug')('purefi:merkle-claims')
 const fetch = require('node-fetch')
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -15,24 +16,28 @@ const parseMemoString = function (memo) {
 }
 
 const getClaimData = function (uri, account) {
-  return (
-    uri &&
-    fetch(uri)
-      .then((res) => res.json())
-      .then((res) => res.find((recipient) => recipient.account === account))
-  )
+  debug('Getting claim data from %s', uri)
+  return fetch(uri)
+    .then((res) => res.json())
+    .then((res) => res.find((recipient) => recipient.account === account))
 }
 
 const createMerkleClaims = function (web3, options) {
   const { from } = options
 
+  debug('Creating Merkle Claims for account %s', from || '(none)')
+
   const merkleBoxAddress = createMerkleBox.addresses.mainnet
   const merkleBox = createMerkleBox(web3, merkleBoxAddress, options)
 
   const getHolding = function (claimGroupId) {
+    debug('Getting holding ID %s', claimGroupId)
     return merkleBox
       .getHolding(claimGroupId)
-      .then(function ({ erc20, memo, owner }) {
+      .then(function (holding) {
+        const { balance, erc20, memo, owner, withdrawUnlockTime } = holding
+        debug('Holding has %s', balance)
+        debug('Withdraw time is %s', withdrawUnlockTime)
         if (owner === ZERO_ADDRESS) {
           throw new Error('Invalid claim group ID')
         }
@@ -50,6 +55,7 @@ const createMerkleClaims = function (web3, options) {
           throw new Error('Could not get extra claim data')
         }
         const { amount, proof } = claimData
+        debug('Claim data is (%s, %s, %j)', from, amount, proof)
         return Promise.all([
           token,
           amount,
@@ -58,6 +64,7 @@ const createMerkleClaims = function (web3, options) {
         ])
       })
       .then(function ([token, amount, proof, isClaimable]) {
+        debug('Claim is%s claimable', isClaimable ? '' : ' NOT')
         return {
           token,
           amount,
