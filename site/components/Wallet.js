@@ -1,4 +1,3 @@
-
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 
@@ -15,20 +14,21 @@ function Wallet() {
   const shortenedAccount = shortAccount(account)
 
   return !active && !error ? (
-    <button onClick={activateConnector} className="font-semibold focus:outline-none hover:text-gray-400">Connect Wallet</button>
+    <button
+      onClick={activateConnector}
+      className="font-semibold focus:outline-none hover:text-gray-400"
+    >
+      Connect Wallet
+    </button>
   ) : active ? (
     <div className="text-right font-semibold">
-      <p className="text-xs text-gray-400">
-        Address:
-      </p>
+      <p className="text-xs text-gray-400">Address:</p>
       <div>
-        <div className="font-bold focus:outline-none">
-          {shortenedAccount}
-        </div>
+        <div className="font-bold focus:outline-none">{shortenedAccount}</div>
       </div>
       <div>
         <button
-          className={`text-sm ${!account && hidden}
+          className={`text-sm ${!account && 'hidden'}
           font-semibold focus:outline-none text-gray-400 hover:text-black`}
           onClick={deactivateConnector}
         >

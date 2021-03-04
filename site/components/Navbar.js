@@ -4,13 +4,18 @@ import Wallet from './Wallet'
 
 const Navbar = ({ walletConnection }) => {
   return (
-    <div className={`flex w-full px-6 md:px-32 ${walletConnection ? 'justify-between' : 'justify-center'}`}>
-      <Link href="/">
-        <a>
-          <PureLogo />
-        </a>
-      </Link>
-      { walletConnection && <Wallet /> }
+    <div className="flex w-full px-6 xl:px-0 h-16 items-center">
+      <div className="hidden md:block w-1/3"></div>
+      <div className="w-1/3 flex justify-center">
+        <Link href="/">
+          <a>
+            <PureLogo />
+          </a>
+        </Link>
+      </div>
+      <div className="w-1/3 flex justify-end">
+        {walletConnection && <Wallet />}
+      </div>
     </div>
   )
 }
