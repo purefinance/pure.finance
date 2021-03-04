@@ -8,16 +8,17 @@ const parseMemoString = function (memo) {
   return memo
     .split(';')
     .map((pair) => pair.split('='))
-    .map((key, value) => ({ [key]: value }))
-    .reduce((all, val) => ({ ...all, val }), {})
+    .map(([key, value]) => ({ [key.trim()]: value.trim() }))
+    .reduce((all, val) => ({ ...all, ...val }), {})
 }
 
 const getClaimData = function (uri, account) {
-  return uri
-    ? fetch(uri)
-        .then((res) => res.json())
-        .then((res) => res[account] || {})
-    : Promise.resolve({})
+  return (
+    uri &&
+    fetch(uri)
+      .then((res) => res.json())
+      .then((res) => res.find((recipient) => recipient.account === account))
+  )
 }
 
 const createMerkleClaims = function (web3, options) {
@@ -35,7 +36,7 @@ const createMerkleClaims = function (web3, options) {
           getClaimData(parseMemoString(memo).datasetUri, from)
         ])
       })
-      .then(function ([token, { amount, proof }]) {
+      .then(function ([token, { amount, proof } = {}]) {
         return Promise.all([
           token,
           amount,
