@@ -102,9 +102,11 @@ describe('End-to-end', function () {
       const merkleTree = getMerkleTree(recipients)
       const root = bufferToHex(merkleTree.getRoot())
       dataset = recipients.map(addMerkleProofs(merkleTree))
+      console.log('Testing dataset:', JSON.stringify(dataset))
       const unlock = Math.floor(Date.now() / 1000) + 2678400 // now + 31d
       const memo =
-        'datasetUri=http://localhost:3001/merkle-claims/groups/test.json'
+        'datasetUri=http://localhost:3000/merkle-claims/groups/test.json'
+      console.log('Testing URL:', memo)
       return merkleBox.newClaimsGroup(tokenAddress, total, root, unlock, memo)
     }
 
@@ -113,6 +115,7 @@ describe('End-to-end', function () {
         .property('events.NewMerkle.returnValues.claimGroupId')
         .that.matches(/^[0-9]+$/)
       claimGroupId = receipt.events.NewMerkle.returnValues.claimGroupId
+      console.log('Testing claim group ID:', claimGroupId)
     }
 
     return wrapEther()

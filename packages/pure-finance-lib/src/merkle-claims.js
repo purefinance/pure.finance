@@ -17,7 +17,7 @@ const getClaimData = function (uri, account) {
     ? fetch(uri)
         .then((res) => res.json())
         .then((res) => res[account] || {})
-    : Promise.resolve()
+    : Promise.resolve({})
 }
 
 const createMerkleClaims = function (web3, options) {
