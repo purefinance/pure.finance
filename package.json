@@ -6,7 +6,8 @@
   "scripts": {
     "format": "prettier --write",
     "lint": "eslint --cache --fix",
-    "test": "npx lerna run --stream test"
+    "postinstall": "lerna bootstrap",
+    "test": "lerna run --stream test"
   },
   "devDependencies": {
     "eslint": "^7.21.0",
