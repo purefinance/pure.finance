@@ -1,6 +1,7 @@
 'use strict'
 
 const abi = require('./abi.json')
+const addresses = require('./addresses')
 
 const createMerkleBox = function (web3, address, options) {
   const { from, gasFactor } = options
@@ -24,9 +25,10 @@ const createMerkleBox = function (web3, address, options) {
       .call()
   }
 
-  const newClaimsGroup = function (erc20, amount, root, unlock, memo, txOps) {
+  // TODO Add memo param
+  const newClaimsGroup = function (erc20, amount, root, unlock, txOps) {
     return estimateGasAndSend(
-      merkleBox.methods.newClaimsGroup(erc20, amount, root, unlock, memo),
+      merkleBox.methods.newClaimsGroup(erc20, amount, root, unlock),
       { from, ...txOps }
     )
   }
@@ -45,5 +47,7 @@ const createMerkleBox = function (web3, address, options) {
     claim
   }
 }
+
+createMerkleBox.addresses = addresses
 
 module.exports = createMerkleBox

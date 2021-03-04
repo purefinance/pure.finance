@@ -30,13 +30,28 @@ describe('End-to-end', function () {
     const acc1 = Web3.utils.toChecksumAddress(provider.getAddress(1))
     const web3 = new Web3(provider)
 
-    const token = createErc20.util.tokenAddress('WETH')
+    // Create a WETH helper
+    const tokenAddress = createErc20.util.tokenAddress('WETH')
+    const params = { from: acc0, gasFactor: 2, token: tokenAddress, web3 }
+    const erc20 = createErc20(params)
+
+    // Create a MerkleBox helper
+    const merkleBoxAddress = createMerkleBox.addresses.mainnet
+    const merkleBox = createMerkleBox(web3, merkleBoxAddress, { from: acc0 })
+
+    const checkTxSuccess = function (receipt) {
+      receipt.status.should.be.true
+      return receipt
+    }
 
     const wrapEther = function () {
-      const params = { from: acc0, token, web3 }
-      const erc20 = createErc20(params)
-      const amount = '1000000000000000000' // 1 ETH
+      const amount = '200000000000000000' // 0.2 ETH
       return erc20.wrapEther(amount)
+    }
+
+    const approveWeth = function () {
+      const amount = '200000000000000000' // 0.2 ETH
+      return erc20.approve(merkleBoxAddress, amount)
     }
 
     const hexToBuffer = (hex) => Buffer.from(hex.substr(2), 'hex')
@@ -50,30 +65,35 @@ describe('End-to-end', function () {
 
     const getRoot = function () {
       const amount = '100000000000000000' // 0.1 WETH
-      const recipients = [{ account: acc0, amount }, { account: acc1, amount }]
+      const recipients = [
+        { account: acc0, amount },
+        { account: acc1, amount }
+      ]
       const leaves = recipients.map(hashRecipient).map(hexToBuffer)
       const keccak256 = (str) => hexToBuffer(web3.utils.keccak256(str))
       return bufferToHex(new MerkleTree(leaves, keccak256).getRoot())
     }
 
     const createClaimGroup = function () {
-      const address = '0x469c9fB59eBc19E141927c0308d98F2A9C400D2f'
-      const merkleBox = createMerkleBox(web3, address, { from: acc0 })
-      const amount = '1000000000000000000' // 1 WETH
-      const unlock = Math.floor(Date.now() / 1000)
-      const memo = 'datasetUri=http://localhost/merkle-claims/groups/test.json'
-      return merkleBox.newClaimsGroup(token, amount, getRoot(), unlock, memo)
+      const amount = '200000000000000000' // 0.2 WETH
+      const unlock = Math.floor(Date.now() / 1000) + 2678400 // now + 31d
+      // TODO Add memo param
+      // const memo = 'datasetUri=http://localhost:3001/merkle-claims/groups/test.json'
+      return merkleBox.newClaimsGroup(tokenAddress, amount, getRoot(), unlock)
     }
 
-    const log = function (receipt) {
-      console.log('>>>', JSON.stringify(receipt, null, 2))
+    const getClaimGroupId = function (receipt) {
+      const { claimGroupId } = receipt.events.NewMerkle.returnValues
+      claimGroupId.should.be.a('string').that.match(/^[0-9]+$/)
     }
 
-    const addFunds = function (receipt) {
-      // TODO
-    }
-
-    return wrapEther().then(log).then(createClaimGroup).then(log).then(addFunds)
+    return wrapEther()
+      .then(checkTxSuccess)
+      .then(approveWeth)
+      .then(checkTxSuccess)
+      .then(createClaimGroup)
+      .then(checkTxSuccess)
+      .then(getClaimGroupId)
   })
 
   it('should get info about a claim group')

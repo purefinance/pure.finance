@@ -8,7 +8,7 @@
   ],
   "main": "src/index.js",
   "scripts": {
-    "fork:start": "npm run fork:stop ; npx ganache-cli --fork $NODE_BASE_URL --host 0.0.0.0 --mnemonic $DEPLOYMENT_ACCOUNT_KEY &",
+    "fork:start": "[ -f .env ] && . .env ; npm run fork:stop ; npx ganache-cli --fork \"$NODE_BASE_URL\" --host 0.0.0.0 --mnemonic \"$MNEMONIC\"",
     "fork:stop": "kill -TERM $(lsof -i :8545 -s TCP:LISTEN -t)",
     "test:e2e": "E2E=true mocha --bail --exit test/e2e.spec.js"
   },
