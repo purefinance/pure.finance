@@ -6,15 +6,13 @@
   "scripts": {
     "format": "prettier -w .",
     "lint": "eslint .",
-    "postinstall": "lerna bootstrap",
-    "test": "npx lerna run --stream test",
-    "prepare": "husky install"
+    "test": "npx lerna run --stream test"
   },
   "devDependencies": {
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-react": "^7.22.0",
-    "husky": "^5.1.3",
+    "husky": "^4.3.8",
     "lerna": "^4.0.0",
     "prettier": "^2.2.1"
   },
