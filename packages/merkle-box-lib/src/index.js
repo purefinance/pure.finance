@@ -25,10 +25,9 @@ const createMerkleBox = function (web3, address, options) {
       .call()
   }
 
-  // TODO Add memo param
-  const newClaimsGroup = function (erc20, amount, root, unlock, txOps) {
+  const newClaimsGroup = function (erc20, amount, root, unlock, memo, txOps) {
     return estimateGasAndSend(
-      merkleBox.methods.newClaimsGroup(erc20, amount, root, unlock),
+      merkleBox.methods.newClaimsGroup(erc20, amount, root, unlock, memo),
       { from, ...txOps }
     )
   }

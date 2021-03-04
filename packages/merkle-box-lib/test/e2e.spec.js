@@ -103,9 +103,9 @@ describe('End-to-end', function () {
       const root = bufferToHex(merkleTree.getRoot())
       dataset = recipients.map(addMerkleProofs(merkleTree))
       const unlock = Math.floor(Date.now() / 1000) + 2678400 // now + 31d
-      // TODO Add memo param
-      // const memo = 'datasetUri=http://localhost:3001/merkle-claims/groups/test.json'
-      return merkleBox.newClaimsGroup(tokenAddress, total, root, unlock)
+      const memo =
+        'datasetUri=http://localhost:3001/merkle-claims/groups/test.json'
+      return merkleBox.newClaimsGroup(tokenAddress, total, root, unlock, memo)
     }
 
     const checkClaimGroupId = function (receipt) {
