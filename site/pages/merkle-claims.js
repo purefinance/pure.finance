@@ -7,7 +7,7 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 
 function MerkleClaims() {
-  const { active, account } = useWeb3React()
+  const { active } = useWeb3React()
   const [claimID, setClaimID] = useState('')
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
   const { merkle } = useContext(PureContext)
@@ -17,9 +17,7 @@ function MerkleClaims() {
   }
   const handleClaimIDInputThrottle = throttle(handleClaimIdInput, 100)
   const handleClaimSubmit = () =>
-    merkle
-      .claim(claimID, account, holding.amount, holding.proof)
-      .then(console.log)
+    merkle.claim(claimID, holding.amount, holding.proof).then(console.log)
 
   return (
     <Layout walletConnection>
