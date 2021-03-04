@@ -24,16 +24,24 @@ const createMerkleBox = function (web3, address, options) {
       .call()
   }
 
-  const claim = function (claimGroupId, amount, proof, transactionOptions) {
+  const newClaimsGroup = function (erc20, amount, root, unlock, memo, txOps) {
+    return estimateGasAndSend(
+      merkleBox.methods.newClaimsGroup(erc20, amount, root, unlock, memo),
+      { from, ...txOps }
+    )
+  }
+
+  const claim = function (claimGroupId, amount, proof, txOps) {
     return estimateGasAndSend(
       merkleBox.methods.claim(claimGroupId, from, amount, proof),
-      { from, ...transactionOptions }
+      { from, ...txOps }
     )
   }
 
   return {
     getHolding,
     isClaimable,
+    newClaimsGroup,
     claim
   }
 }

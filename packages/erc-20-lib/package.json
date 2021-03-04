@@ -9,6 +9,7 @@
   "main": "src/index.js",
   "scripts": {},
   "dependencies": {
+    "@uniswap/default-token-list": "^2.0.0",
     "erc-20-abi": "^1.0.0"
   }
 }
