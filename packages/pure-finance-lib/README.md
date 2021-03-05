@@ -11,14 +11,16 @@ Then the `datasetUri` key will contain the URI of the data required to execute t
 The JSON shall contain all the accounts within the group and their related token amount and Merkle proof data as follows:
 
 ```json
-{
-  "0x1234...5678": {
+[
+  {
+    "account": "0x1234...5678",
     "amount": "10000000000000000000",
-    "proof": "0xabcd...ef01"
+    "proof": ["0xabcd...ef01"]
   },
-  "0x2345...6789": {
+  {
+    "account": "0x2345...6789",
     "amount": "15000000000000000000",
-    "proof": "0xbcde...f012"
+    "proof": ["0xbcde...f012"]
   }
-}
+]
 ```

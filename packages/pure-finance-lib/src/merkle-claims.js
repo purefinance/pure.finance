@@ -25,7 +25,7 @@ const getClaimData = function (uri, account) {
 const createMerkleClaims = function (web3, options) {
   const { from } = options
 
-  debug('Creating Merkle Claims for account %s', from || '(none)')
+  debug('Creating Merkle Claims for %s', from || 'read-only')
 
   const merkleBoxAddress = createMerkleBox.addresses.mainnet
   const merkleBox = createMerkleBox(web3, merkleBoxAddress, options)
@@ -43,16 +43,16 @@ const createMerkleClaims = function (web3, options) {
         }
         const uri = parseMemoString(memo).datasetUri
         if (!uri) {
-          throw new Error('Could not get extra claim data location')
+          throw new Error('Could not get balance location')
         }
         return Promise.all([
           createErc20({ web3, token: erc20 }).getInfo(),
-          getClaimData(uri, from)
+          getClaimData(uri, from).catch(() => null)
         ])
       })
       .then(function ([token, claimData]) {
         if (!claimData) {
-          throw new Error('Could not get extra claim data')
+          throw new Error('Could not get balance')
         }
         const { amount, proof } = claimData
         debug('Claim data is (%s, %s, %j)', from, amount, proof)

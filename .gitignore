@@ -2,4 +2,4 @@
 .env
 .eslintcache
 node_modules
-site/public/test.json
+site/public/test*.json

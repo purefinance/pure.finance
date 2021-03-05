@@ -1,10 +1,14 @@
 'use strict'
 
+const debug = require('debug')('merkle-box')
+
 const abi = require('./abi.json')
 const addresses = require('./addresses')
 
 const createMerkleBox = function (web3, address, options) {
   const { from, gasFactor } = options
+
+  debug('Creating a MerkleBox at %s for %s', address, from || 'read-only')
 
   const merkleBox = new web3.eth.Contract(abi, address)
 
