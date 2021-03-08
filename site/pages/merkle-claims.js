@@ -11,6 +11,7 @@ import BalanceField from '../components/BalanceField'
 function MerkleClaims() {
   const { active, account } = useWeb3React()
   const [claimID, setClaimID] = useState('')
+  const [claimInProgress, setClaimInProgress] = useState(false)
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
   const [errorMessage, setErrorMessage] = useState(false)
   const { merkle } = useContext(PureContext)
@@ -36,11 +37,14 @@ function MerkleClaims() {
     }
   }
 
-  const handleClaimSubmit = () =>
-    merkle
+  const handleClaimSubmit = () => {
+    setClaimInProgress(true)
+    return merkle
       .claim(claimID, holding.amount, holding.proof)
-      .then(console.log)
+      .then(() => setClaimID(''))
       .catch((e) => setErrorMessage(e.message))
+      .finally(() => setClaimInProgress(false))
+  }
 
   useEffect(() => setClaimID(''), [active, account])
 
@@ -53,24 +57,29 @@ function MerkleClaims() {
     <Layout walletConnection>
       <div className="text-center max-w-2xl w-full mx-auto">
         <h1 className="text-1.5xl font-bold text-center">Merkle Claims</h1>
-        <div className="flex flex-wrap space-y-1 max-w-lg w-full mx-auto mt-10 justify-center">
-          <Input
-            title="Claim ID:"
-            value={claimID}
-            onChange={handleClaimIdChange}
-            disabled={!active}
-          />
-          <BalanceField
-            title="Balance:"
-            value={
-              holding.amount && fromUnit(holding.amount, holding.token.decimals)
-            }
-            suffix={holding && holding.token && holding.token.symbol}
-          />
+        <div className="flex flex-wrap space-y-3 max-w-lg w-full mx-auto mt-10 justify-center">
+          <div className="w-full">
+            <Input
+              title="Claim ID:"
+              value={claimID}
+              onChange={handleClaimIdChange}
+              disabled={!active || claimInProgress}
+            />
+          </div>
+          <div className="w-full">
+            <BalanceField
+              title="Balance:"
+              value={
+                holding.amount &&
+                fromUnit(holding.amount, holding.token.decimals)
+              }
+              suffix={holding && holding.token && holding.token.symbol}
+            />
+          </div>
         </div>
         <div className="flex justify-center mt-7.5">
           <Button
-            disabled={!active || !holding.isClaimable}
+            disabled={!active || !holding.isClaimable || claimInProgress}
             onClick={handleClaimSubmit}
           >
             CLAIM
