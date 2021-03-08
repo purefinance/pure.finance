@@ -27,14 +27,20 @@ const createSablierClaims = function (web3, options) {
       })
       .then(function ([stream, balance, token]) {
         const { recipient, startTime } = stream
+        // TODO throw errors
+        if (from !== recipient) {
+          throw new Error('User is not the stream recipient')
+        }
+        if (startTime > Date.now() / 1000) {
+          throw new Error('Stream did not start yet')
+        }
+        if (BigInt(balance) <= 0n) {
+          throw new Error('No balance to withdraw')
+        }
         return {
           ...stream,
           balance,
-          token,
-          canWithdraw:
-            from === recipient &&
-            startTime < Date.now() / 1000 &&
-            BigInt(balance) > 0n
+          token
         }
       })
   }
