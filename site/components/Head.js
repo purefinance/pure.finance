@@ -2,7 +2,7 @@ import Head from 'next/head'
 
 const CustomHead = ({ title }) => (
   <Head>
-    <title>PURE Finance {title && ` | ${title}`}</title>
+    <title>Pure Finance {title && ` | ${title}`}</title>
     <link rel="icon" href="/favicon.ico" />
   </Head>
 )

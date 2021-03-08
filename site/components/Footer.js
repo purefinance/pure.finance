@@ -15,12 +15,12 @@ const Footer = () => (
         </a>
       </Link>
     </div>
-    <div className="w-full flex justify-between border-t-2 mt-20 pt-3 text-xs text-gray-500">
+    <div className="w-full flex justify-between border-t-2 mt-20 pt-3 text-xs text-gray-500 space-x-4">
       <div>
         <p>Copyright © 2021 Pure Finance. All Rights Reserved.</p>
       </div>
       <div>
-        <p>Privacy Policy / Terms & Conditions</p>
+        <p className="text-right">Privacy Policy / Terms & Conditions</p>
       </div>
     </div>
   </div>

@@ -2,18 +2,18 @@ import Link from 'next/link'
 import Button from './Button'
 
 const UtilityBox = ({ buttonText, buttonHref }) => (
-  <div>
-    <div className="border-2 rounded-md mx-2 pb-14 px-0.5">
-      <img src="/utilities-box-graphic.png" />
-    </div>
-    <div className="flex justify-center -mt-6">
-      <Link href={buttonHref}>
-        <a className="mx-auto">
+  <Link href={buttonHref}>
+    <a>
+      <div className="border-2 rounded-md mx-2 pb-14 px-0.5 mt-6 md:mt-0">
+        <img src="/utilities-box-graphic.png" />
+      </div>
+      <div className="flex justify-center -mt-6">
+        <div className="mx-auto">
           <Button>{buttonText.toUpperCase()}</Button>
-        </a>
-      </Link>
-    </div>
-  </div>
+        </div>
+      </div>
+    </a>
+  </Link>
 )
 const Utilities = () => (
   <div className="flex flex-wrap w-full justify-center">
