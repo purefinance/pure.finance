@@ -17,7 +17,7 @@ const createMerkleBox = function (web3, address, options) {
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
       transactionOptions.gas || method.estimateGas().then(safeGas)
-    ).then((gas) => method.send({ gas, ...transactionOptions }))
+    ).then((gas) => method.send({ ...transactionOptions, gas }))
 
   const getHolding = function (claimGroupId) {
     return merkleBox.methods.holdings(claimGroupId).call()

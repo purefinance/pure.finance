@@ -11,7 +11,9 @@
     "test:e2e": "DEBUG=sablier* DEBUG_COLORS=true E2E=true FORCE_COLOR=true mocha --bail --exit test/e2e.spec.js"
   },
   "devDependencies": {
+    "@truffle/hdwallet-provider": "^1.2.2",
     "dotenv": "^8.2.0",
+    "erc-20-lib": "^1.0.0",
     "mocha": "^8.2.1",
     "web3": "^1.3.0"
   }

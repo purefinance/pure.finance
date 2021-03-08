@@ -17,7 +17,9 @@ const createSablier = function (web3, options = {}) {
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
       transactionOptions.gas || method.estimateGas().then(safeGas)
-    ).then((gas) => method.send({ gas, ...transactionOptions }))
+    ).then((gas) => method.send({ ...transactionOptions, gas }))
+
+  const getAddress = () => address
 
   const getStream = function (streamId) {
     debug('Getting stream %s properties', streamId)
@@ -29,6 +31,27 @@ const createSablier = function (web3, options = {}) {
     return sablier.methods.balanceOf(streamId, who || from).call()
   }
 
+  const createStream = function (
+    recipient,
+    deposit,
+    tokenAddress,
+    startTime,
+    stopTime,
+    txOps
+  ) {
+    debug('Creating a stream of %s %s for %s', deposit, tokenAddress, recipient)
+    return estimateGasAndSend(
+      sablier.methods.createStream(
+        recipient,
+        deposit,
+        tokenAddress,
+        startTime,
+        stopTime
+      ),
+      { from, ...txOps }
+    )
+  }
+
   const withdrawFromStream = function (streamId, amount, txOps) {
     debug('Initiating withdraw of %s from stream %s', amount, streamId)
     return estimateGasAndSend(
@@ -38,8 +61,10 @@ const createSablier = function (web3, options = {}) {
   }
 
   return {
+    getAddress,
     getStream,
     getBalance,
+    createStream,
     withdrawFromStream
   }
 }

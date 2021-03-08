@@ -1,18 +1,21 @@
 'use strict'
 
 const abi = require('erc-20-abi')
+const debug = require('debug')('erc-20-lib')
 
 const tokenAddress = require('./token-address')
 const uniswap = require('./uniswap')
 const weth = require('./weth')
 
-const defaults = { gasFactor: 1.5 }
+const defaults = { gasFactor: 2 }
 
 const createErc20 = function (params) {
   const { from, gasFactor, gasPrice, token, web3 } = {
     ...defaults,
     ...params
   }
+
+  debug('Creating %s ERC-20 helper library for %s', token, from || '(none)')
 
   const contract = new web3.eth.Contract(abi, token)
 
@@ -21,7 +24,7 @@ const createErc20 = function (params) {
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
       transactionOptions.gas || method.estimateGas().then(safeGas)
-    ).then((gas) => method.send({ gas, ...transactionOptions }))
+    ).then((gas) => method.send({ ...transactionOptions, gas }))
 
   return {
     getInfo: () =>
@@ -42,19 +45,21 @@ const createErc20 = function (params) {
 
     transfer: (to, value) =>
       estimateGasAndSend(contract.methods.transfer(to, value), {
-        from: from,
+        from,
         gasPrice
       }),
 
-    approve: (to, value) =>
-      estimateGasAndSend(contract.methods.approve(to, value), {
-        from: from,
+    approve: function (spender, value) {
+      debug('Approving %s %s to %s', value, token, spender)
+      return estimateGasAndSend(contract.methods.approve(spender, value), {
+        from,
         gasPrice
-      }),
+      })
+    },
 
     wrapEther: (value) =>
       estimateGasAndSend(weth.getContract(web3).methods.deposit(), {
-        from: from,
+        from,
         gasPrice,
         value
       }),
@@ -70,7 +75,7 @@ const createErc20 = function (params) {
             Math.round(Date.now() / 1000) + 60
           ),
         {
-          from: from,
+          from,
           gas: safeGas(100000),
           gasPrice,
           value: value.toString()
