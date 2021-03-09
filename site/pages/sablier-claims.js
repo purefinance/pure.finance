@@ -27,7 +27,10 @@ function SablierClaims() {
     streamID &&
     sablier
       .getStream(streamID)
-      .then((s) => setStream(s))
+      .then((s) => {
+        setStream(s)
+        clearFeedback()
+      })
       .catch((e) => setErrorMessage(e.message))
 
   const delayedStreamID = useCallback(
@@ -57,7 +60,10 @@ function SablierClaims() {
       .finally(() => setClaimInProgress(false))
   }
 
-  useEffect(() => setStreamID(''), [active, account])
+  useEffect(() => {
+    clearFeedback()
+    setStreamID('')
+  }, [active, account])
 
   useEffect(() => setStream({ balance: '' }), [streamID])
 

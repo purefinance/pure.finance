@@ -52,7 +52,7 @@ const createMerkleClaims = function (web3, options) {
       })
       .then(function ([token, claimData]) {
         if (!claimData) {
-          throw new Error('Could not get balance')
+          throw new Error('No balance for this account')
         }
         const { amount, proof } = claimData
         debug('Claim data is (%s, %s, %j)', from, amount, proof)

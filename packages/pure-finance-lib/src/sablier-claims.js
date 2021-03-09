@@ -29,7 +29,7 @@ const createSablierClaims = function (web3, options) {
         const { recipient, startTime } = stream
         // TODO throw errors
         if (from !== recipient) {
-          throw new Error('User is not the stream recipient')
+          throw new Error('Account is not the stream recipient')
         }
         if (startTime > Date.now() / 1000) {
           throw new Error('Stream did not start yet')
@@ -42,6 +42,16 @@ const createSablierClaims = function (web3, options) {
           balance,
           token
         }
+      })
+      .catch(function (err) {
+        const matches = err.message.match(/"reason": "(.*)"/)
+        if (matches) {
+          const reason = matches[1]
+          throw new Error(
+            `${reason.substr(0, 1).toUpperCase()}${reason.substr(1)}`
+          )
+        }
+        throw err
       })
   }
 

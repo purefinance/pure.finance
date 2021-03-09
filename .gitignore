@@ -2,4 +2,6 @@
 .env
 .eslintcache
 node_modules
+packages/**/recipients*.json
+packages/**/dataset*.json
 site/public/test*.json

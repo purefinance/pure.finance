@@ -28,7 +28,11 @@ function MerkleClaims() {
     merkle
       .getHolding(claimID)
       .then((h) => {
-        if (!h.isClaimable) setErrorMessage('Already Claimed')
+        if (h.isClaimable) {
+          clearFeedback()
+        } else {
+          setErrorMessage('Already Claimed')
+        }
         setHolding(h)
       })
       .catch((e) => setErrorMessage(e.message))
@@ -60,7 +64,10 @@ function MerkleClaims() {
       .finally(() => setClaimInProgress(false))
   }
 
-  useEffect(() => setClaimID(''), [active, account])
+  useEffect(() => {
+    clearFeedback()
+    setClaimID('')
+  }, [active, account])
 
   useEffect(() => setHolding({ amount: '', isClaimable: false }), [claimID])
 
