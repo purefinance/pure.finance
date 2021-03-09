@@ -20,7 +20,7 @@ const Footer = () => (
         <p>Copyright © 2021 Pure Finance. All Rights Reserved.</p>
       </div>
       <div>
-        <p className="text-right">Privacy Policy / Terms & Conditions</p>
+        {/* <p className="text-right">Privacy Policy / Terms & Conditions</p> */}
       </div>
     </div>
   </div>

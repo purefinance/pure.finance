@@ -5,7 +5,7 @@ function HomePage() {
   return (
     <Layout>
       <div className="w-full mb-14">
-        <div className="text-center w-full max-w-2xl mx-auto mb-15">
+        {/* <div className="text-center w-full max-w-2xl mx-auto mb-15">
           <h1 className="text-1.5xl font-bold text-center">
             Lorem Ipsum Dolor Sit Amet
           </h1>
@@ -14,7 +14,7 @@ function HomePage() {
             urna eget enim iaculis fringilla id non leo. Pellentesque efficitur
             diam nibh, non tempor nunc dapibus vitae.
           </p>
-        </div>
+        </div> */}
         <Utilities />
       </div>
     </Layout>
