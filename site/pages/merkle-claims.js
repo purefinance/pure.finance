@@ -29,7 +29,7 @@ function MerkleClaims() {
     debounce((cID) => getHolding(cID), 500),
     [merkle]
   )
-  const handleClaimIdChange = function (e) {
+  const handleClaimIDChange = function (e) {
     const re = /^[0-9\b]+$/
     if (e.target.value === '' || re.test(e.target.value)) {
       setClaimID(e.target.value)
@@ -62,7 +62,7 @@ function MerkleClaims() {
             <Input
               title="Claim ID:"
               value={claimID}
-              onChange={handleClaimIdChange}
+              onChange={handleClaimIDChange}
               disabled={!active || claimInProgress}
             />
           </div>
