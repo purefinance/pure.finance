@@ -38,9 +38,8 @@ const toTimestamp = (str) =>
 
 const startTime = toTimestamp(start)
 const stopTime = toTimestamp(stop)
-const deltaTime = stopTime - startTime
 
-const deposit = Math.ceil(amount / deltaTime) * deltaTime
+const deposit = sablier.calcDeposit(startTime, stopTime, amount)
 
 const tokenAddress = createErc20.util.tokenAddress(token)
 

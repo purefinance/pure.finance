@@ -31,6 +31,11 @@ const createSablier = function (web3, options = {}) {
     return sablier.methods.balanceOf(streamId, who || from).call()
   }
 
+  const calcDeposit = function (startTime, stopTime, amount) {
+    const deltaTime = stopTime - startTime
+    return Math.ceil(amount / deltaTime) * deltaTime
+  }
+
   const createStream = function (
     recipient,
     deposit,
@@ -61,10 +66,11 @@ const createSablier = function (web3, options = {}) {
   }
 
   return {
-    getAddress,
-    getStream,
-    getBalance,
+    calcDeposit,
     createStream,
+    getAddress,
+    getBalance,
+    getStream,
     withdrawFromStream
   }
 }
