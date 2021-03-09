@@ -4,6 +4,7 @@ const debug = require('debug')('merkle-box')
 
 const abi = require('./abi.json')
 const addresses = require('./addresses')
+const util = require('./util')
 
 const createMerkleBox = function (web3, address, options) {
   const { from, gasFactor } = options
@@ -52,5 +53,7 @@ const createMerkleBox = function (web3, address, options) {
 }
 
 createMerkleBox.addresses = addresses
+
+createMerkleBox.util = util
 
 module.exports = createMerkleBox
