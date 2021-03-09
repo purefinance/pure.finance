@@ -13,8 +13,15 @@ function MerkleClaims() {
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
-  const [errorMessage, setErrorMessage] = useState(false)
+  const [feedback, setFeedback] = useState({ color: 'black', message: '' })
   const { merkle } = useContext(PureContext)
+
+  const clearFeedback = () => setFeedback({ color: 'black', message: '' })
+  const setErrorMessage = (message) =>
+    setFeedback({ color: 'red-600', message })
+  const setInfoMessage = (message) => setFeedback({ color: 'black', message })
+  const setSuccessMessage = (message) =>
+    setFeedback({ color: 'green-600', message })
 
   const getHolding = (claimID) =>
     claimID &&
@@ -25,13 +32,16 @@ function MerkleClaims() {
         setHolding(h)
       })
       .catch((e) => setErrorMessage(e.message))
+
   const delayedClaimID = useCallback(
     debounce((cID) => getHolding(cID), 500),
     [merkle]
   )
+
   const handleClaimIDChange = function (e) {
     const re = /^[0-9\b]+$/
     if (e.target.value === '' || re.test(e.target.value)) {
+      clearFeedback()
       setClaimID(e.target.value)
       delayedClaimID(e.target.value)
     }
@@ -39,19 +49,20 @@ function MerkleClaims() {
 
   const handleClaimSubmit = () => {
     setClaimInProgress(true)
+    setInfoMessage('Claim in Progress')
     return merkle
       .claim(claimID, holding.amount, holding.proof)
-      .then(() => setClaimID(''))
+      .then(function () {
+        setSuccessMessage('Claim Succeeded')
+        setClaimID('')
+      })
       .catch((e) => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
   }
 
   useEffect(() => setClaimID(''), [active, account])
 
-  useEffect(() => {
-    setErrorMessage('')
-    setHolding({ amount: '', isClaimable: false })
-  }, [claimID])
+  useEffect(() => setHolding({ amount: '', isClaimable: false }), [claimID])
 
   return (
     <Layout walletConnection>
@@ -85,7 +96,9 @@ function MerkleClaims() {
             CLAIM
           </Button>
         </div>
-        <p className="text-center text-sm text-red-600 mt-6">{errorMessage}</p>
+        <p className={`text-center text-sm mt-6 text-${feedback.color}`}>
+          {feedback.message}
+        </p>
       </div>
     </Layout>
   )

@@ -13,8 +13,15 @@ function SablierClaims() {
   const [streamID, setStreamID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [stream, setStream] = useState({ balance: '' })
-  const [errorMessage, setErrorMessage] = useState(false)
+  const [feedback, setFeedback] = useState({ color: 'black', message: '' })
   const { sablier } = useContext(PureContext)
+
+  const clearFeedback = () => setFeedback({ color: 'black', message: '' })
+  const setErrorMessage = (message) =>
+    setFeedback({ color: 'red-600', message })
+  const setInfoMessage = (message) => setFeedback({ color: 'black', message })
+  const setSuccessMessage = (message) =>
+    setFeedback({ color: 'green-600', message })
 
   const getStream = (streamID) =>
     streamID &&
@@ -27,9 +34,11 @@ function SablierClaims() {
     debounce((sID) => getStream(sID), 500),
     [sablier]
   )
+
   const handleStreamIDChange = function (e) {
     const re = /^[0-9\b]+$/
     if (e.target.value === '' || re.test(e.target.value)) {
+      clearFeedback()
       setStreamID(e.target.value)
       delayedStreamID(e.target.value)
     }
@@ -37,19 +46,20 @@ function SablierClaims() {
 
   const handleClaimSubmit = () => {
     setClaimInProgress(true)
+    setInfoMessage('Claim in Progress')
     return sablier
       .withdrawFromStream(streamID)
-      .then(() => setStreamID(''))
+      .then(function () {
+        setSuccessMessage('Claim Succeeded')
+        setStreamID('')
+      })
       .catch((e) => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
   }
 
   useEffect(() => setStreamID(''), [active, account])
 
-  useEffect(() => {
-    setErrorMessage('')
-    setStream({ balance: '' })
-  }, [streamID])
+  useEffect(() => setStream({ balance: '' }), [streamID])
 
   return (
     <Layout walletConnection>
@@ -83,7 +93,9 @@ function SablierClaims() {
             CLAIM
           </Button>
         </div>
-        <p className="text-center text-sm text-red-600 mt-6">{errorMessage}</p>
+        <p className={`text-center text-sm mt-6 text-${feedback.color}`}>
+          {feedback.message}
+        </p>
       </div>
     </Layout>
   )
