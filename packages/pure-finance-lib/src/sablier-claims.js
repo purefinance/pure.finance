@@ -4,6 +4,8 @@ const createErc20 = require('erc-20-lib')
 const createSablier = require('sablier-lib')
 const debug = require('debug')('purefi:sablier-claims')
 
+const tryParseEvmError = require('../lib/parse-evm-error')
+
 const createSablierClaims = function (web3, options) {
   const { from } = options
 
@@ -26,10 +28,10 @@ const createSablierClaims = function (web3, options) {
         ])
       })
       .then(function ([stream, balance, token]) {
-        const { recipient, startTime } = stream
-        // TODO throw errors
-        if (from !== recipient) {
-          throw new Error('Account is not the stream recipient')
+        const { recipient, sender, startTime } = stream
+        const allowedCallers = [recipient, sender].map((a) => a.toLowerCase())
+        if (!allowedCallers.includes(from.toLowerCase())) {
+          throw new Error('Account is not the sender or recipient')
         }
         if (startTime > Date.now() / 1000) {
           throw new Error('Stream did not start yet')
@@ -43,25 +45,16 @@ const createSablierClaims = function (web3, options) {
           token
         }
       })
-      .catch(function (err) {
-        const matches = err.message.match(/"reason": "(.*)"/)
-        if (matches) {
-          const reason = matches[1]
-          throw new Error(
-            `${reason.substr(0, 1).toUpperCase()}${reason.substr(1)}`
-          )
-        }
-        throw err
-      })
+      .catch(tryParseEvmError)
   }
 
   const withdrawFromStream = function (streamId, amount) {
     debug('Starting to claim from stream %s', streamId)
-    return Promise.resolve(amount || sablier.getBalance(streamId)).then(
-      function (amountToWithdraw) {
+    return Promise.resolve(amount || sablier.getBalance(streamId))
+      .then(function (amountToWithdraw) {
         return sablier.withdrawFromStream(streamId, amountToWithdraw)
-      }
-    )
+      })
+      .catch(tryParseEvmError)
   }
 
   return {

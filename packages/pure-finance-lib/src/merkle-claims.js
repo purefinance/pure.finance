@@ -5,15 +5,10 @@ const createMerkleBox = require('merkle-box-lib')
 const debug = require('debug')('purefi:merkle-claims')
 const fetch = require('node-fetch')
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const parseCookieString = require('../lib/parse-cookie')
+const tryParseEvmError = require('../lib/parse-evm-error')
 
-const parseMemoString = function (memo) {
-  return memo
-    .split(';')
-    .map((pair) => pair.split('='))
-    .map(([key, value]) => ({ [key.trim()]: value.trim() }))
-    .reduce((all, val) => ({ ...all, ...val }), {})
-}
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const getClaimData = function (uri, account) {
   debug('Getting claim data from %s', uri)
@@ -41,7 +36,7 @@ const createMerkleClaims = function (web3, options) {
         if (owner === ZERO_ADDRESS) {
           throw new Error('Invalid claim group ID')
         }
-        const uri = parseMemoString(memo).datasetUri
+        const uri = parseCookieString(memo).datasetUri
         if (!uri) {
           throw new Error('Could not get balance location')
         }
@@ -72,6 +67,7 @@ const createMerkleClaims = function (web3, options) {
           isClaimable
         }
       })
+      .catch(tryParseEvmError)
   }
 
   const claim = function (claimGroupId, amount, proof) {
@@ -89,6 +85,7 @@ const createMerkleClaims = function (web3, options) {
         }
         return merkleBox.claim(claimGroupId, from, amount, proof)
       })
+      .catch(tryParseEvmError)
   }
 
   return {
