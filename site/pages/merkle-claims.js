@@ -13,15 +13,16 @@ function MerkleClaims() {
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
-  const [feedback, setFeedback] = useState({ color: 'black', message: '' })
+  const [feedback, setFeedback] = useState({ color: 'text-black', message: '' })
   const { merkle } = useContext(PureContext)
 
-  const clearFeedback = () => setFeedback({ color: 'black', message: '' })
+  const clearFeedback = () => setFeedback({ color: 'text-black', message: '' })
   const setErrorMessage = (message) =>
-    setFeedback({ color: 'red-600', message })
-  const setInfoMessage = (message) => setFeedback({ color: 'black', message })
+    setFeedback({ color: 'text-red-600', message })
+  const setInfoMessage = (message) =>
+    setFeedback({ color: 'text-black', message })
   const setSuccessMessage = (message) =>
-    setFeedback({ color: 'green-600', message })
+    setFeedback({ color: 'text-green-600', message })
 
   const getHolding = (claimID) =>
     claimID &&
@@ -103,7 +104,7 @@ function MerkleClaims() {
             CLAIM
           </Button>
         </div>
-        <p className={`text-center text-sm mt-6 text-${feedback.color}`}>
+        <p className={`text-center text-sm mt-6 ${feedback.color}`}>
           {feedback.message}
         </p>
       </div>

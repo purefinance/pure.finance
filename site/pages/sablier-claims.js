@@ -13,15 +13,16 @@ function SablierClaims() {
   const [streamID, setStreamID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [stream, setStream] = useState({ balance: '' })
-  const [feedback, setFeedback] = useState({ color: 'black', message: '' })
+  const [feedback, setFeedback] = useState({ color: 'text-black', message: '' })
   const { sablier } = useContext(PureContext)
 
-  const clearFeedback = () => setFeedback({ color: 'black', message: '' })
+  const clearFeedback = () => setFeedback({ color: 'text-black', message: '' })
   const setErrorMessage = (message) =>
-    setFeedback({ color: 'red-600', message })
-  const setInfoMessage = (message) => setFeedback({ color: 'black', message })
+    setFeedback({ color: 'text-red-600', message })
+  const setInfoMessage = (message) =>
+    setFeedback({ color: 'text-black', message })
   const setSuccessMessage = (message) =>
-    setFeedback({ color: 'green-600', message })
+    setFeedback({ color: 'text-green-600', message })
 
   const getStream = (streamID) =>
     streamID &&
@@ -99,7 +100,7 @@ function SablierClaims() {
             CLAIM
           </Button>
         </div>
-        <p className={`text-center text-sm mt-6 text-${feedback.color}`}>
+        <p className={`text-center text-sm mt-6 ${feedback.color}`}>
           {feedback.message}
         </p>
       </div>
