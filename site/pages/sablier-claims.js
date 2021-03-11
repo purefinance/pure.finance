@@ -68,6 +68,24 @@ function SablierClaims() {
 
   useEffect(() => setStream({ balance: '' }), [streamID])
 
+  useEffect(
+    function () {
+      if (!stream.balance) {
+        return
+      }
+      const incBalance = BigInt(stream.balance) + BigInt(stream.ratePerSecond)
+      const maxBalance = BigInt(stream.remainingBalance)
+      const newBalance = incBalance > maxBalance ? maxBalance : incBalance
+      const timer = setTimeout(function () {
+        setStream({ ...stream, balance: newBalance.toString() })
+      }, 1000)
+      return function () {
+        clearTimeout(timer)
+      }
+    },
+    [stream.balance]
+  )
+
   return (
     <Layout walletConnection>
       <div className="text-center max-w-2xl w-full mx-auto">
