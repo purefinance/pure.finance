@@ -6,8 +6,8 @@ const abi = require('./abi.json')
 const addresses = require('./addresses')
 const util = require('./util')
 
-const createMerkleBox = function (web3, address, options) {
-  const { from, gasFactor } = options
+const createMerkleBox = function (web3, address, options = {}) {
+  const { from, gasFactor = 2 } = options
 
   debug('Creating a MerkleBox at %s for %s', address, from || 'read-only')
 
@@ -17,7 +17,8 @@ const createMerkleBox = function (web3, address, options) {
 
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
-      transactionOptions.gas || method.estimateGas().then(safeGas)
+      transactionOptions.gas ||
+        method.estimateGas(transactionOptions).then(safeGas)
     ).then((gas) => method.send({ ...transactionOptions, gas }))
 
   const getHolding = function (claimGroupId) {

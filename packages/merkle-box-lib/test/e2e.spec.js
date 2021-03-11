@@ -49,8 +49,8 @@ describe('End-to-end', function () {
     this.timeout(0)
 
     // Create a WETH helper
-    const params = { from, gasFactor: 2, token: tokenAddress, web3 }
-    const erc20 = createErc20(params)
+    const params = { from, gasFactor: 2 }
+    const erc20 = createErc20(web3, tokenAddress, params)
 
     // Create a MerkleBox helper
     const merkleBoxAddress = createMerkleBox.addresses.mainnet

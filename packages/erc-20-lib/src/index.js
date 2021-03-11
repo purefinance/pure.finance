@@ -7,13 +7,8 @@ const tokenAddress = require('./token-address')
 const uniswap = require('./uniswap')
 const weth = require('./weth')
 
-const defaults = { gasFactor: 2 }
-
-const createErc20 = function (params) {
-  const { from, gasFactor, gasPrice, token, web3 } = {
-    ...defaults,
-    ...params
-  }
+const createErc20 = function (web3, token, options = {}) {
+  const { from, gasFactor = 2, gasPrice } = options
 
   debug('Creating %s ERC-20 helper library for %s', token, from || '(none)')
 
@@ -23,7 +18,8 @@ const createErc20 = function (params) {
 
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
-      transactionOptions.gas || method.estimateGas().then(safeGas)
+      transactionOptions.gas ||
+        method.estimateGas(transactionOptions).then(safeGas)
     ).then((gas) => method.send({ ...transactionOptions, gas }))
 
   return {

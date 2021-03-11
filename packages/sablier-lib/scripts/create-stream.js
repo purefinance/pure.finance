@@ -45,7 +45,7 @@ const tokenAddress = token.startsWith('0x')
   ? token
   : createErc20.util.tokenAddress(token)
 
-return createErc20({ web3, token: tokenAddress, from })
+return createErc20(web3, tokenAddress, { from })
   .approve(sablier.getAddress(), deposit)
   .then(() =>
     sablier.createStream(recipient, deposit, tokenAddress, startTime, stopTime)

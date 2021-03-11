@@ -52,10 +52,7 @@ return fetch(datasetUrl)
     return Promise.all([
       total,
       root,
-      createErc20({ web3, token: tokenAddress, from }).approve(
-        merkleBoxAddress,
-        total
-      )
+      createErc20(web3, tokenAddress, { from }).approve(merkleBoxAddress, total)
     ])
   })
   .then(([total, root]) =>

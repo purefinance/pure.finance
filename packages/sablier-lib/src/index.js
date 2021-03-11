@@ -16,7 +16,8 @@ const createSablier = function (web3, options = {}) {
 
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
-      transactionOptions.gas || method.estimateGas().then(safeGas)
+      transactionOptions.gas ||
+        method.estimateGas(transactionOptions).then(safeGas)
     ).then((gas) => method.send({ ...transactionOptions, gas }))
 
   const getAddress = () => address
@@ -61,7 +62,7 @@ const createSablier = function (web3, options = {}) {
     debug('Initiating withdraw of %s from stream %s', amount, streamId)
     return estimateGasAndSend(
       sablier.methods.withdrawFromStream(streamId, amount),
-      { from, ...txOps }
+      { from, ...txOps, gas: 200000 }
     )
   }
 

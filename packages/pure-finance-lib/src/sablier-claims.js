@@ -24,7 +24,7 @@ const createSablierClaims = function (web3, options) {
         return Promise.all([
           stream,
           balance,
-          createErc20({ web3, token: tokenAddress }).getInfo()
+          createErc20(web3, tokenAddress).getInfo()
         ])
       })
       .then(function ([stream, balance, token]) {

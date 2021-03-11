@@ -41,7 +41,7 @@ const createMerkleClaims = function (web3, options) {
           throw new Error('Could not get balance location')
         }
         return Promise.all([
-          createErc20({ web3, token: erc20 }).getInfo(),
+          createErc20(web3, erc20).getInfo(),
           getClaimData(uri, from).catch(() => null)
         ])
       })
