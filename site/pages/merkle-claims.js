@@ -5,7 +5,7 @@ import PureContext from '../components/context/Pure'
 import Layout from '../components/Layout'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import { fromUnit } from '../utils'
+import { fromUnit, toFixed } from '../utils'
 import BalanceField from '../components/BalanceField'
 
 function MerkleClaims() {
@@ -85,12 +85,12 @@ function MerkleClaims() {
               disabled={!active || claimInProgress}
             />
           </div>
-          <div className="w-full">
+          <div className="w-full tabular-nums">
             <BalanceField
               title="Balance:"
               value={
                 holding.amount &&
-                fromUnit(holding.amount, holding.token.decimals)
+                toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
               }
               suffix={holding && holding.token && holding.token.symbol}
             />

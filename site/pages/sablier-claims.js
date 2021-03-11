@@ -5,7 +5,7 @@ import PureContext from '../components/context/Pure'
 import Layout from '../components/Layout'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import { fromUnit } from '../utils'
+import { fromUnit, toFixed } from '../utils'
 import BalanceField from '../components/BalanceField'
 
 function SablierClaims() {
@@ -99,12 +99,12 @@ function SablierClaims() {
               disabled={!active || claimInProgress}
             />
           </div>
-          <div className="w-full">
+          <div className="w-full tabular-nums">
             <BalanceField
               title="Balance:"
               value={
                 stream.balance &&
-                fromUnit(stream.balance, stream.token.decimals)
+                toFixed(fromUnit(stream.balance, stream.token.decimals), 6)
               }
               suffix={stream && stream.token && stream.token.symbol}
             />
