@@ -6,7 +6,7 @@ const abi = require('./abi.json')
 const address = '0xA4fc358455Febe425536fd1878bE67FfDBDEC59a'
 
 const createSablier = function (web3, options = {}) {
-  const { from, gasFactor } = options
+  const { from, gasFactor = 2 } = options
 
   debug('Creating Sablier for %s', from || 'read-only')
 

@@ -41,7 +41,9 @@ const stopTime = toTimestamp(stop)
 
 const deposit = sablier.calcDeposit(startTime, stopTime, amount)
 
-const tokenAddress = createErc20.util.tokenAddress(token)
+const tokenAddress = token.startsWith('0x')
+  ? token
+  : createErc20.util.tokenAddress(token)
 
 return createErc20({ web3, token: tokenAddress, from })
   .approve(sablier.getAddress(), deposit)
