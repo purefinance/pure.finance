@@ -49,12 +49,12 @@ function Wallet() {
     </button>
   ) : active ? (
     <div className="text-center md:text-right font-semibold">
-      <WalletStatistic label="Address:" value={shortenedAccount} />
       <WalletStatistic label="Balance:" value={`${balance} ETH`} />
+      <WalletStatistic label="Gas Price:" value={`${gasPrice} gwei`} />
       <WalletStatistic
-        label="Gas Price:"
         className="inline-block"
-        value={`${gasPrice} gwei`}
+        label="Address:"
+        value={shortenedAccount}
       />
       <div>
         <button
