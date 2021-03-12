@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 
@@ -5,13 +6,39 @@ function shortAccount(account) {
   return account ? `${account.substr(0, 6)}...${account.substr(38, 4)}` : null
 }
 
+function WalletStatistic({ label, value, className }) {
+  return (
+    <div className={className || 'inline-block pr-4'}>
+      <p className="text-xs text-gray-400">{label}</p>
+      <div>
+        <div className="font-bold focus:outline-none">{value}</div>
+      </div>
+    </div>
+  )
+}
+
 function Wallet() {
-  const { account, active, activate, deactivate, error } = useWeb3React()
+  const web3 = useWeb3React()
+  const [balance, setBalance] = useState(0)
+  const [gasPrice, setGasPrice] = useState(0)
+  const { account, library, active, activate, deactivate, error } = web3
 
   const injected = new InjectedConnector({ supportedChainIds: [1, 1337] })
   const activateConnector = () => activate(injected)
   const deactivateConnector = () => deactivate()
   const shortenedAccount = shortAccount(account)
+
+  useEffect(() => {
+    if (library) {
+      Promise.all([
+        library.eth.getBalance(account, 'latest'),
+        library.eth.getGasPrice()
+      ]).then(([bal, gp]) => {
+        setBalance(library.utils.fromWei(bal))
+        setGasPrice(library.utils.fromWei(gp, 'gwei'))
+      })
+    }
+  }, [account, library])
 
   return !active && !error ? (
     <button
@@ -22,10 +49,13 @@ function Wallet() {
     </button>
   ) : active ? (
     <div className="text-center md:text-right font-semibold">
-      <p className="text-xs text-gray-400">Address:</p>
-      <div>
-        <div className="font-bold focus:outline-none">{shortenedAccount}</div>
-      </div>
+      <WalletStatistic label="Address:" value={shortenedAccount} />
+      <WalletStatistic label="Balance:" value={`${balance} ETH`} />
+      <WalletStatistic
+        label="Gas Price:"
+        className="inline-block"
+        value={`${gasPrice} gwei`}
+      />
       <div>
         <button
           className={`text-sm ${!account && 'hidden'}
