@@ -31,7 +31,9 @@ const web3 = new Web3(provider)
 const merkleBoxAddress = createMerkleBox.addresses.mainnet
 const merkleBox = createMerkleBox(web3, merkleBoxAddress, { from })
 
-const tokenAddress = createErc20.util.tokenAddress(token)
+const tokenAddress = token.startsWith('0x')
+  ? token
+  : createErc20.util.tokenAddress(token)
 
 const memo = `datasetUri=${datasetUrl}`
 
