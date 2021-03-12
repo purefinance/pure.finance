@@ -5,11 +5,11 @@ import PureContext from '../components/context/Pure'
 import Layout from '../components/Layout'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import { fromUnit, toFixed } from '../utils'
+import { fromUnit, toFixed, watchAsset } from '../utils'
 import BalanceField from '../components/BalanceField'
 
 function SablierClaims() {
-  const { active, account } = useWeb3React()
+  const { active, account, chainId } = useWeb3React()
   const [streamID, setStreamID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [stream, setStream] = useState({ balance: '' })
@@ -59,6 +59,7 @@ function SablierClaims() {
       })
       .catch((e) => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
+      .then(() => watchAsset({ account, chainId, token: stream.token }))
   }
 
   useEffect(() => {

@@ -5,11 +5,11 @@ import PureContext from '../components/context/Pure'
 import Layout from '../components/Layout'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import { fromUnit, toFixed } from '../utils'
+import { fromUnit, toFixed, watchAsset } from '../utils'
 import BalanceField from '../components/BalanceField'
 
 function MerkleClaims() {
-  const { active, account } = useWeb3React()
+  const { active, account, chainId } = useWeb3React()
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
@@ -63,6 +63,7 @@ function MerkleClaims() {
       })
       .catch((e) => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
+      .then(() => watchAsset({ account, chainId, token: holding.token }))
   }
 
   useEffect(() => {
