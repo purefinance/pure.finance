@@ -87,7 +87,7 @@ function SablierClaims() {
   )
 
   return (
-    <Layout walletConnection>
+    <Layout title="Sablier Claims" walletConnection>
       <div className="text-center max-w-2xl w-full mx-auto">
         <h1 className="text-1.5xl font-bold text-center">Sablier Claims</h1>
         <div className="flex flex-wrap space-y-3 max-w-lg w-full mx-auto mt-10 justify-center">

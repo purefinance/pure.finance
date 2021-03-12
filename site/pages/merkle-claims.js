@@ -73,7 +73,7 @@ function MerkleClaims() {
   useEffect(() => setHolding({ amount: '', isClaimable: false }), [claimID])
 
   return (
-    <Layout walletConnection>
+    <Layout title="Merkle Claims" walletConnection>
       <div className="text-center max-w-2xl w-full mx-auto">
         <h1 className="text-1.5xl font-bold text-center">Merkle Claims</h1>
         <div className="flex flex-wrap space-y-3 max-w-lg w-full mx-auto mt-10 justify-center">
