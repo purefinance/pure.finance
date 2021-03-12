@@ -21,7 +21,7 @@ const addMerkleProofs = (tree) =>
 
 const calcMerkleTree = function (recipients) {
   const leaves = recipients.map(hashRecipient).map(hexToBuffer)
-  return new MerkleTree(leaves, keccak256)
+  return new MerkleTree(leaves, keccak256, { sort: true })
 }
 
 const calcDataset = (recipients) =>
