@@ -5,7 +5,9 @@
   "author": "Gabriel Montes",
   "scripts": {
     "format": "prettier --write .",
-    "lint": "eslint --cache --fix .",
+    "format:check": "prettier --check .",
+    "lint": "eslint --cache .",
+    "lint:fix": "eslint --cache --fix .",
     "postinstall": "lerna bootstrap",
     "test": "lerna run --stream test"
   },
@@ -28,7 +30,7 @@
       "prettier"
     ],
     "ignorePatterns": [
-      "site/out/_next"
+      "site/out"
     ],
     "overrides": [
       {
@@ -76,7 +78,7 @@
     }
   },
   "lint-staged": {
-    "*.js": "npm run lint",
+    "*.js": "npm run lint:fix",
     "*.{css,js,json,md}": "npm run format"
   },
   "prettier": {
