@@ -6,7 +6,6 @@ import Layout from '../components/Layout'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import { fromUnit, toFixed, watchAsset } from '../utils'
-import BalanceField from '../components/BalanceField'
 
 function SablierClaims() {
   const { active, account, chainId } = useWeb3React()
@@ -69,6 +68,7 @@ function SablierClaims() {
 
   useEffect(() => setStream({ balance: '' }), [streamID])
 
+  // TODO consider replacing this with useTimeoutWhen (imbhargav5/rooks)
   useEffect(
     function () {
       if (!stream.balance) {
@@ -89,40 +89,34 @@ function SablierClaims() {
 
   return (
     <Layout title="Sablier Claims" walletConnection>
-      <div className="text-center max-w-2xl w-full mx-auto">
-        <h1 className="text-1.5xl font-bold text-center">Sablier Claims</h1>
-        <div className="flex flex-wrap space-y-3 max-w-lg w-full mx-auto mt-10 justify-center">
-          <div className="w-full">
-            <Input
-              title="Stream ID:"
-              value={streamID}
-              onChange={handleStreamIDChange}
-              disabled={!active || claimInProgress}
-            />
-          </div>
-          <div className="w-full tabular-nums">
-            <BalanceField
-              title="Balance:"
-              value={
-                stream.balance &&
-                toFixed(fromUnit(stream.balance, stream.token.decimals), 6)
-              }
-              suffix={stream && stream.token && stream.token.symbol}
-            />
-          </div>
-        </div>
-        <div className="flex justify-center mt-7.5">
-          <Button
-            disabled={!active || claimInProgress || !stream.balance}
-            onClick={handleClaimSubmit}
-          >
-            CLAIM
-          </Button>
-        </div>
-        <p className={`text-center text-sm mt-6 ${feedback.color}`}>
-          {feedback.message}
-        </p>
+      <div className="flex flex-wrap justify-center w-full max-w-lg mx-auto mt-10 space-y-3">
+        <Input
+          disabled={!active || claimInProgress}
+          onChange={handleStreamIDChange}
+          title="Stream ID:"
+          value={streamID}
+        />
+        <Input
+          disabled
+          suffix={stream && stream.token && stream.token.symbol}
+          title="Balance:"
+          value={
+            stream.balance &&
+            toFixed(fromUnit(stream.balance, stream.token.decimals), 6)
+          }
+        />
       </div>
+      <div className="flex justify-center mt-7.5">
+        <Button
+          disabled={!active || claimInProgress || !stream.balance}
+          onClick={handleClaimSubmit}
+        >
+          CLAIM
+        </Button>
+      </div>
+      <p className={`text-center text-sm mt-6 ${feedback.color}`}>
+        {feedback.message}
+      </p>
     </Layout>
   )
 }
