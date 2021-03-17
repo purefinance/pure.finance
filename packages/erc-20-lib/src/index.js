@@ -7,12 +7,12 @@ const tokenAddress = require('./token-address')
 const uniswap = require('./uniswap')
 const weth = require('./weth')
 
-const createErc20 = function (web3, token, options = {}) {
+const createErc20 = function (web3, address, options = {}) {
   const { from, gasFactor = 2, gasPrice } = options
 
-  debug('Creating %s ERC-20 helper library for %s', token, from || '(none)')
+  debug('Creating %s ERC-20 helper library for %s', address, from || '(none)')
 
-  const contract = new web3.eth.Contract(abi, token)
+  const contract = new web3.eth.Contract(abi, address)
 
   const safeGas = (gas) => Math.ceil(gas * gasFactor)
 
@@ -39,6 +39,9 @@ const createErc20 = function (web3, token, options = {}) {
 
     balanceOf: (address) => contract.methods.balanceOf(address || from).call(),
 
+    allowance: (owner, spender) =>
+      contract.methods.allowance(owner, spender).call(),
+
     transfer: (to, value) =>
       estimateGasAndSend(contract.methods.transfer(to, value), {
         from,
@@ -46,7 +49,7 @@ const createErc20 = function (web3, token, options = {}) {
       }),
 
     approve: function (spender, value) {
-      debug('Approving %s %s to %s', value, token, spender)
+      debug('Approving %s %s to %s', value, address, spender)
       return estimateGasAndSend(contract.methods.approve(spender, value), {
         from,
         gasPrice
@@ -66,7 +69,7 @@ const createErc20 = function (web3, token, options = {}) {
           .getRouterContract(web3)
           .methods.swapExactETHForTokens(
             1,
-            [tokenAddress('WETH'), token],
+            [tokenAddress('WETH'), address],
             from,
             Math.round(Date.now() / 1000) + 60
           ),

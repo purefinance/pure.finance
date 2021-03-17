@@ -72,7 +72,10 @@
           }
         }
       }
-    ]
+    ],
+    "rules": {
+      "no-use-before-define": "error"
+    }
   },
   "husky": {
     "hooks": {
