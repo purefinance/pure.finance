@@ -10,7 +10,7 @@ const Footer = () => (
     </div>
     <div className="mt-2">
       <Link href="https://vesper.finance">
-        <a target="_blank" rel="noreferrer">
+        <a rel="noreferrer" target="_blank">
           <Vesper />
         </a>
       </Link>

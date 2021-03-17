@@ -15,8 +15,8 @@ function Wallet() {
 
   return !active && !error ? (
     <button
-      onClick={activateConnector}
       className="font-semibold focus:outline-none hover:text-gray-400"
+      onClick={activateConnector}
     >
       Connect Wallet
     </button>

@@ -63,7 +63,8 @@
         },
         "rules": {
           "react/prop-types": "off",
-          "react/react-in-jsx-scope": "off"
+          "react/react-in-jsx-scope": "off",
+          "react/jsx-sort-props": "warn"
         },
         "settings": {
           "react": {
