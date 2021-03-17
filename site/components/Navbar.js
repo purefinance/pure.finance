@@ -4,16 +4,16 @@ import Wallet from './Wallet'
 
 const Navbar = ({ walletConnection }) => {
   return (
-    <div className="flex flex-wrap w-full xl:px-0 md:h-16 items-center">
-      <div className="hidden md:block w-1/3"></div>
-      <div className="w-full md:w-1/3 flex justify-center">
+    <div className="flex flex-wrap items-center w-full xl:px-0 md:h-16">
+      <div className="hidden w-1/3 md:block"></div>
+      <div className="flex justify-center w-full md:w-1/3">
         <Link href="/">
           <a>
             <PureLogo />
           </a>
         </Link>
       </div>
-      <div className="w-full md:w-1/3 flex justify-center md:justify-end mt-4 md:mt-0">
+      <div className="flex justify-center w-full mt-4 md:w-1/3 md:justify-end md:mt-0">
         {walletConnection && <Wallet />}
       </div>
     </div>
