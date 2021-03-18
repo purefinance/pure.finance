@@ -34,6 +34,11 @@ const useTokenInput = function (onChange, allowAnyAddress) {
   const handleChange = function (e) {
     const { value } = e.target
 
+    const re = /^[0-9a-zA-Z.]*$/
+    if (!re.test(e.target.value)) {
+      return
+    }
+
     setTokenAddress(value)
     setTokenName('')
     setTokenError('')
