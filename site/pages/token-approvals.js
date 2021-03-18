@@ -18,7 +18,7 @@ const extraTokens = [].concat(
 )
 
 const useTokenInput = function (address, onChange, allowAnyAddress) {
-  const { active, chainId } = useWeb3React()
+  const { active, chainId, library } = useWeb3React()
   const { erc20 } = useContext(PureContext)
 
   const [tokenAddress, setTokenAddress] = useState('')
@@ -44,29 +44,34 @@ const useTokenInput = function (address, onChange, allowAnyAddress) {
     setTokenName('')
     setTokenError('')
 
-    const address = isAddress(value)
-      ? value
-      : util.tokenAddress(value, extraTokens)
+    const addressPromise = isAddress(value)
+      ? Promise.resolve(value)
+      : Promise.resolve(
+          util.tokenAddress(value, extraTokens) ||
+            library.eth.ens.getAddress(value).catch(() => null)
+        )
 
-    if (!address) {
-      onChange(null)
-      return
-    }
+    addressPromise.then(function (address) {
+      if (!address) {
+        onChange(null)
+        return
+      }
 
-    const contract = erc20(address)
-    contract
-      .getInfo()
-      .then(function (info) {
-        onChange(info)
-        setTokenName(info.name)
-      })
-      .catch(function () {
-        if (allowAnyAddress) {
-          onChange({ address })
-          return
-        }
-        setTokenError('Invalid token address')
-      })
+      const contract = erc20(address)
+      contract
+        .getInfo()
+        .then(function (info) {
+          onChange(info)
+          setTokenName(info.name)
+        })
+        .catch(function () {
+          if (allowAnyAddress) {
+            onChange({ address })
+            return
+          }
+          setTokenError('Invalid token address')
+        })
+    })
   }
 
   useEffect(
@@ -243,14 +248,14 @@ const TokenApprovalsForm = function ({ query }) {
       <div className="flex flex-wrap justify-center w-full max-w-lg mx-auto mt-10 space-y-4">
         <div className="w-full h-24">
           <Input
-            placeholder="address or symbol"
+            placeholder="address, symbol or ENS name"
             title="Token Address:"
             {...tokenInput}
           />
         </div>
         <div className="w-full h-24">
           <Input
-            placeholder="address"
+            placeholder="address or ENS name"
             title="Spender Address:"
             {...spenderInput}
           />
