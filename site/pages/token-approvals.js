@@ -16,15 +16,16 @@ const extraTokens = [].concat(
   vesperMetadata.tokens
 )
 
-const useTokenInput = function (onChange) {
+const useTokenInput = function (onChange, allowAnyAddress) {
   const { active, chainId } = useWeb3React()
   const { erc20 } = useContext(PureContext)
 
-  const [tokenAddress, setTokenAddress] = useState()
-  const [tokenError, setTokenError] = useState()
-  const [tokenName, setTokenName] = useState()
+  const [tokenAddress, setTokenAddress] = useState('')
+  const [tokenError, setTokenError] = useState('')
+  const [tokenName, setTokenName] = useState('')
 
   useEffect(() => {
+    onChange(null)
     setTokenAddress('')
     setTokenName('')
     setTokenError('')
@@ -46,7 +47,6 @@ const useTokenInput = function (onChange) {
       return
     }
 
-    // TODO debounce this call
     const contract = erc20(address)
     contract
       .getInfo()
@@ -54,9 +54,12 @@ const useTokenInput = function (onChange) {
         onChange(info)
         setTokenName(info.name)
       })
-      .catch(function (err) {
+      .catch(function () {
+        if (allowAnyAddress) {
+          onChange({ address })
+          return
+        }
         setTokenError('Invalid token address')
-        console.warn(err.message)
       })
   }
 
@@ -69,11 +72,17 @@ const useTokenInput = function (onChange) {
   }
 }
 
-const useAllowanceInput = function (token, spender, allowance, setAllowance) {
+const useAllowanceInput = function (
+  token,
+  spender,
+  allowance,
+  setAllowance,
+  setFeedback
+) {
   const { account, active, chainId } = useWeb3React()
-  const { erc20 } = useContext(PureContext)
+  const { tokenApprovals } = useContext(PureContext)
 
-  const disabled = !token || !spender || !active || !erc20
+  const disabled = !token || !spender || !active || !tokenApprovals
 
   useEffect(
     function () {
@@ -88,15 +97,13 @@ const useAllowanceInput = function (token, spender, allowance, setAllowance) {
         return
       }
 
-      const contract = erc20(token.address)
-      contract
-        .allowance(account, spender.address)
+      tokenApprovals
+        .allowance(token.address, account, spender.address)
         .then(function (currentAllowance) {
           setAllowance(fromUnit(currentAllowance, token.decimals))
         })
         .catch(function (err) {
-          // Send message to feedback too?
-          console.warn(err.message)
+          setFeedback('error', err.message)
         })
     },
     [token, spender, account, chainId]
@@ -142,6 +149,8 @@ const useFeedback = function () {
 }
 
 const useFormButton = function (disabled, setFeedback, onClick) {
+  const { active } = useWeb3React()
+
   const [inProgress, setInProgress] = useState(false)
 
   const handleClick = function () {
@@ -159,6 +168,16 @@ const useFormButton = function (disabled, setFeedback, onClick) {
       })
   }
 
+  useEffect(
+    function () {
+      if (active) {
+        return
+      }
+      setInProgress(false)
+    },
+    [active]
+  )
+
   return {
     disabled: disabled || inProgress,
     onClick: handleClick
@@ -166,13 +185,16 @@ const useFormButton = function (disabled, setFeedback, onClick) {
 }
 
 const TokenApprovalsForm = function () {
-  const [token, setToken] = useState()
+  const { account } = useWeb3React()
+  const { tokenApprovals } = useContext(PureContext)
+
+  const [token, setToken] = useState(null)
   const tokenInput = useTokenInput(setToken)
 
-  const [spender, setSpender] = useState()
-  const spenderInput = useTokenInput(setSpender)
+  const [spender, setSpender] = useState(null)
+  const spenderInput = useTokenInput(setSpender, true)
 
-  const [allowance, setAllowance] = useState()
+  const [allowance, setAllowance] = useState('')
   const allowanceInput = useAllowanceInput(
     token,
     spender,
@@ -182,38 +204,22 @@ const TokenApprovalsForm = function () {
 
   const [feedback, setFeedback] = useFeedback()
 
-  const { account, erc20 } = useContext(PureContext)
-  const approveDisabled = !allowance || !erc20
-  const approveAmount = function (amount) {
-    const contract = erc20(token.address)
-    return contract
-      .allowance(account, spender.address)
-      .then(function (currentAllowance) {
-        if (amount === currentAllowance) {
-          throw new Error('Allowance already set')
-        }
-      })
-      .then(() => contract.approve(spender.address, amount))
-      .then(function (receipt) {
-        console.log('DONE', receipt.events.Approval.returnValues)
-        return contract.allowance(account, spender.address)
-      })
-      .then(function (newAllowance) {
-        setAllowance(fromUnit(newAllowance, token.decimals))
-      })
-  }
-  const approveAllowance = () =>
-    approveAmount(toUnit(allowance, token.decimals))
-  const approveInfinite = () => approveAmount((2n ** 256n - 1n).toString()) // 2 ^ 256 - 1
-  const approveButton = useFormButton(
-    approveDisabled,
-    setFeedback,
-    approveAllowance
+  const approveDisabled = !allowance
+  const approveButton = useFormButton(approveDisabled, setFeedback, () =>
+    tokenApprovals.approve(
+      token.address,
+      spender.address,
+      toUnit(allowance, token.decimals)
+    )
   )
-  const infiniteButton = useFormButton(
-    approveDisabled,
-    setFeedback,
-    approveInfinite
+  const infiniteButton = useFormButton(approveDisabled, setFeedback, () =>
+    tokenApprovals
+      .approveInfinite(token.address, spender.address)
+      .then(() =>
+        tokenApprovals
+          .allowance(token.address, account, spender.address)
+          .then(setAllowance)
+      )
   )
 
   return (
