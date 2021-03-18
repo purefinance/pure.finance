@@ -2,6 +2,7 @@ import { isAddress } from 'web3-utils'
 import { useContext, useEffect, useState } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { util } from 'erc-20-lib'
+import { withRouter } from 'next/router'
 import vesperMetadata from 'vesper-metadata'
 
 import Button from '../components/Button'
@@ -16,7 +17,7 @@ const extraTokens = [].concat(
   vesperMetadata.tokens
 )
 
-const useTokenInput = function (onChange, allowAnyAddress) {
+const useTokenInput = function (address, onChange, allowAnyAddress) {
   const { active, chainId } = useWeb3React()
   const { erc20 } = useContext(PureContext)
 
@@ -67,6 +68,16 @@ const useTokenInput = function (onChange, allowAnyAddress) {
         setTokenError('Invalid token address')
       })
   }
+
+  useEffect(
+    function () {
+      if (!address || !erc20) {
+        return
+      }
+      handleChange({ target: { value: address } })
+    },
+    [address, erc20]
+  )
 
   return {
     caption: tokenError || tokenName,
@@ -189,15 +200,15 @@ const useFormButton = function (disabled, setFeedback, onClick) {
   }
 }
 
-const TokenApprovalsForm = function () {
+const TokenApprovalsForm = function ({ query }) {
   const { account } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
 
   const [token, setToken] = useState(null)
-  const tokenInput = useTokenInput(setToken)
+  const tokenInput = useTokenInput(query.token, setToken)
 
   const [spender, setSpender] = useState(null)
-  const spenderInput = useTokenInput(setSpender, true)
+  const spenderInput = useTokenInput(query.spender, setSpender, true)
 
   const [allowance, setAllowance] = useState('')
   const allowanceInput = useAllowanceInput(
@@ -263,12 +274,12 @@ const TokenApprovalsForm = function () {
   )
 }
 
-const TokenApprovals = function () {
+const TokenApprovals = function ({ router }) {
   return (
     <Layout title="Token Approvals" walletConnection>
-      <TokenApprovalsForm />
+      <TokenApprovalsForm query={router.query} />
     </Layout>
   )
 }
 
-export default TokenApprovals
+export default withRouter(TokenApprovals)
