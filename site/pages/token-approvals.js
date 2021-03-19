@@ -1,8 +1,8 @@
 import { isAddress, isHexStrict } from 'web3-utils'
 import { useCallback, useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { useWeb3React } from '@web3-react/core'
 import { util } from 'erc-20-lib'
-import { withRouter } from 'next/router'
 import debounce from 'lodash.debounce'
 import vesperMetadata from 'vesper-metadata'
 
@@ -223,9 +223,10 @@ const useFormButton = function (disabled, setFeedback, onClick) {
   }
 }
 
-const TokenApprovalsForm = function ({ query }) {
+const TokenApprovalsForm = function () {
   const { account } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
+  const { query } = useRouter()
 
   const [token, setToken] = useState(null)
   const tokenInput = useTokenInput(query.token, setToken)
@@ -242,8 +243,6 @@ const TokenApprovalsForm = function ({ query }) {
   )
 
   const [feedback, setFeedback] = useFeedback()
-
-  // TODO enable approve only if change
 
   const approveDisabled = !allowance
   const approveButton = useFormButton(approveDisabled, setFeedback, () =>
@@ -299,13 +298,12 @@ const TokenApprovalsForm = function ({ query }) {
   )
 }
 
-const TokenApprovals = function ({ router }) {
+const TokenApprovals = function () {
   return (
     <Layout title="Token Approvals" walletConnection>
-      <TokenApprovalsForm query={router.query} />
+      <TokenApprovalsForm />
     </Layout>
   )
 }
 
-// TODO change to useRouter
-export default withRouter(TokenApprovals)
+export default TokenApprovals
