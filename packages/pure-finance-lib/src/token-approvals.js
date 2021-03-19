@@ -3,6 +3,8 @@
 const createErc20 = require('erc-20-lib')
 const debug = require('debug')('purefi:token-approvals')
 
+const tryParseEvmError = require('../lib/parse-evm-error')
+
 const createTokenApprovals = function (web3, options) {
   const { from } = options
 
@@ -17,12 +19,15 @@ const createTokenApprovals = function (web3, options) {
   const approve = function (tokenAddress, spender, amount) {
     debug('Approving %s of %s for %s', amount, tokenAddress, spender)
     const erc20 = createErc20(web3, tokenAddress, { from })
-    return erc20.allowance(from, spender).then(function (allowance) {
-      if (amount === allowance) {
-        throw new Error('Allowance already set')
-      }
-      return erc20.approve(spender, amount)
-    })
+    return erc20
+      .allowance(from, spender)
+      .then(function (currentAllowance) {
+        if (amount === currentAllowance) {
+          throw new Error('Allowance already set')
+        }
+        return erc20.approve(spender, amount)
+      })
+      .catch(tryParseEvmError)
   }
 
   const approveInfinite = function (tokenAddress, spender) {

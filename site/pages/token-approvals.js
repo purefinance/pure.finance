@@ -1,8 +1,9 @@
-import { isAddress } from 'web3-utils'
-import { useContext, useEffect, useState } from 'react'
+import { isAddress, isHexStrict } from 'web3-utils'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { util } from 'erc-20-lib'
 import { withRouter } from 'next/router'
+import debounce from 'lodash.debounce'
 import vesperMetadata from 'vesper-metadata'
 
 import Button from '../components/Button'
@@ -32,6 +33,50 @@ const useTokenInput = function (address, onChange, allowAnyAddress) {
     setTokenError('')
   }, [active, chainId])
 
+  const delayedGetTokenInfo = useCallback(
+    debounce(function (value) {
+      setTokenError('')
+
+      const addressPromise = isAddress(value)
+        ? Promise.resolve(value)
+        : Promise.resolve(
+            util.tokenAddress(value, extraTokens) ||
+              library.eth.ens
+                .getAddress(value)
+                .catch((err) => console.log(err) || null)
+          )
+
+      addressPromise.then(function (addressFound) {
+        if (!addressFound) {
+          setTokenError(
+            isHexStrict(value) ? 'Invalid address' : 'Address not found'
+          )
+          onChange(null)
+          return
+        }
+
+        setTokenAddress(addressFound)
+
+        const contract = erc20(addressFound)
+        contract
+          .getInfo()
+          .then(function (info) {
+            onChange(info)
+            setTokenName(info.name)
+          })
+          .catch(function () {
+            if (allowAnyAddress) {
+              setTokenName('')
+              onChange({ address: addressFound })
+              return
+            }
+            setTokenError('Invalid token address')
+          })
+      })
+    }, 1000),
+    [erc20]
+  )
+
   const handleChange = function (e) {
     const { value } = e.target
 
@@ -44,34 +89,7 @@ const useTokenInput = function (address, onChange, allowAnyAddress) {
     setTokenName('')
     setTokenError('')
 
-    const addressPromise = isAddress(value)
-      ? Promise.resolve(value)
-      : Promise.resolve(
-          util.tokenAddress(value, extraTokens) ||
-            library.eth.ens.getAddress(value).catch(() => null)
-        )
-
-    addressPromise.then(function (address) {
-      if (!address) {
-        onChange(null)
-        return
-      }
-
-      const contract = erc20(address)
-      contract
-        .getInfo()
-        .then(function (info) {
-          onChange(info)
-          setTokenName(info.name)
-        })
-        .catch(function () {
-          if (allowAnyAddress) {
-            onChange({ address })
-            return
-          }
-          setTokenError('Invalid token address')
-        })
-    })
+    delayedGetTokenInfo(value)
   }
 
   useEffect(
@@ -225,6 +243,8 @@ const TokenApprovalsForm = function ({ query }) {
 
   const [feedback, setFeedback] = useFeedback()
 
+  // TODO enable approve only if change
+
   const approveDisabled = !allowance
   const approveButton = useFormButton(approveDisabled, setFeedback, () =>
     tokenApprovals.approve(
@@ -287,4 +307,5 @@ const TokenApprovals = function ({ router }) {
   )
 }
 
+// TODO change to useRouter
 export default withRouter(TokenApprovals)

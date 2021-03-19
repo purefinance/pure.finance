@@ -74,6 +74,7 @@
       }
     ],
     "rules": {
+      "no-shadow": "warn",
       "no-use-before-define": "error"
     }
   },
