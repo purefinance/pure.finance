@@ -17,7 +17,7 @@ const CustomHead = ({ title }) => (
       }}
     />
     <title>Pure Finance {title && ` | ${title}`}</title>
-    <link rel="icon" href="/favicon.ico" />
+    <link href="/favicon.ico" rel="icon" />
   </Head>
 )
 

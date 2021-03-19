@@ -15,13 +15,13 @@ function Wallet() {
 
   return !active && !error ? (
     <button
-      onClick={activateConnector}
       className="font-semibold focus:outline-none hover:text-gray-400"
+      onClick={activateConnector}
     >
       Connect Wallet
     </button>
   ) : active ? (
-    <div className="text-center md:text-right font-semibold">
+    <div className="font-semibold text-center md:text-right">
       <p className="text-xs text-gray-400">Address:</p>
       <div>
         <div className="font-bold focus:outline-none">{shortenedAccount}</div>
