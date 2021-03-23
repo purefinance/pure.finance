@@ -13,6 +13,7 @@
   "dependencies": {
     "@web3-react/core": "^6.1.1",
     "@web3-react/injected-connector": "^6.0.7",
+    "@web3-react/walletconnect-connector": "^6.1.9",
     "autoprefixer": "^10.2.4",
     "big.js": "^6.0.3",
     "erc-20-lib": "^1.0.0",
@@ -22,6 +23,7 @@
     "pure-finance-lib": "^1.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-modal": "^3.12.1",
     "serve": "^11.3.2",
     "tailwindcss": "^2.0.3",
     "vesper-metadata": "^2.0.0",
