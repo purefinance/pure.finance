@@ -6,7 +6,9 @@ const UtilityBox = ({ buttonText, buttonHref }) => (
     <Link href={buttonHref}>
       <a>
         <div className="border-2 rounded-md">
-          <img className=" pb-14 px-0.5" src="/utilities-box-graphic.png" />
+          <div className="pb-14 px-0.5">
+            <img height={156} src="/utilities-box-graphic.png" width={336} />
+          </div>
         </div>
         <div className="flex justify-center -mt-6">
           <div className="mx-auto">
