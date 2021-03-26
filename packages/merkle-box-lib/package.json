@@ -11,6 +11,7 @@
   "scripts": {
     "fork:start": "[ -f .env ] && . .env ; npm run fork:stop ; ganache-cli --fork \"$NODE_BASE_URL\" --host 0.0.0.0 --mnemonic \"$MNEMONIC\"",
     "fork:stop": "kill -TERM $(lsof -i :8545 -s TCP:LISTEN -t)",
+    "deps:check": "dependency-check --no-dev .",
     "test:e2e": "E2E=true mocha --bail --exit test/e2e.spec.js"
   },
   "devDependencies": {
@@ -22,5 +23,9 @@
     "merkletreejs": "^0.2.13",
     "mocha": "^8.2.1",
     "web3": "^1.3.0"
+  },
+  "dependencies": {
+    "debug": "^4.3.1",
+    "web3-utils": "^1.3.4"
   }
 }

@@ -9,7 +9,11 @@
   ],
   "main": "src/index.js",
   "scripts": {
+    "deps:check": "dependency-check --no-dev .",
     "test:e2e": "DEBUG=sablier* DEBUG_COLORS=true E2E=true FORCE_COLOR=true mocha --bail --exit test/e2e.spec.js"
+  },
+  "dependencies": {
+    "debug": "^4.3.1"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.2.2",

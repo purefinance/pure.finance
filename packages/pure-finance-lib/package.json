@@ -8,7 +8,9 @@
     "src"
   ],
   "main": "src/index.js",
-  "scripts": {},
+  "scripts": {
+    "deps:check": "dependency-check --no-dev ."
+  },
   "dependencies": {
     "debug": "^4.3.1",
     "erc-20-lib": "^1.0.0",
