@@ -7,7 +7,9 @@
     "src"
   ],
   "main": "src/index.js",
-  "scripts": {},
+  "scripts": {
+    "deps:check": "dependency-check --no-dev ."
+  },
   "dependencies": {
     "@uniswap/default-token-list": "^2.0.0",
     "debug": "^4.3.1",
