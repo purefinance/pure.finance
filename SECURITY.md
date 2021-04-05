@@ -3,9 +3,9 @@
 This document outlines security procedures and general policies for the `Pure Finance`
 project.
 
-  * [Reporting a Bug](#reporting-a-bug)
-  * [Disclosure Policy](#disclosure-policy)
-  * [Comments on this Policy](#comments-on-this-policy)
+- [Reporting a Bug](#reporting-a-bug)
+- [Disclosure Policy](#disclosure-policy)
+- [Comments on this Policy](#comments-on-this-policy)
 
 ## Reporting a Bug
 
@@ -25,6 +25,7 @@ Report security bugs in third-party modules to the person or team maintaining
 the module.
 
 ## Pure Finance bug bounty program
+
 The project engages in an official bug bounty program for security researchers and responsible public disclosures. See https:// for further details.
 
 ## Disclosure Policy
@@ -33,10 +34,10 @@ When the security team receives a security bug report, they will assign it to a
 primary handler. This person will coordinate the fix and release process,
 involving the following steps:
 
-  * Confirm the problem and determine the affected versions.
-  * Audit code to find any potential similar problems.
-  * Prepare fixes for all releases still under maintenance. These fixes will be
-    released as fast as possible to npm.
+- Confirm the problem and determine the affected versions.
+- Audit code to find any potential similar problems.
+- Prepare fixes for all releases still under maintenance. These fixes will be
+  released as fast as possible to npm.
 
 ## Comments on this Policy
 
