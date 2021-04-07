@@ -5,6 +5,7 @@ import {
 } from '@web3-react/injected-connector'
 import { UserRejectedRequestError as UserRejectedRequestErrorWalletConnect } from '@web3-react/walletconnect-connector'
 import ReactModal from 'react-modal'
+import useTranslation from 'next-translate/useTranslation'
 
 const customStyles = {
   overlay: {
@@ -33,30 +34,34 @@ const customStyles = {
 }
 
 const getErrorMessage = function ({ error }) {
+  const { t } = useTranslation('common')
   if (error instanceof NoEthereumProviderError) {
-    return 'No Ethereum browser extension detected, install MetaMask on desktop or visit from a dApp browser on mobile.'
+    return t('error-no-ethereum-provider')
   } else if (error instanceof UnsupportedChainIdError) {
-    return "You're connected to an unsupported network."
+    return t('error-unsupported-network')
   } else if (
     error instanceof UserRejectedRequestErrorInjected ||
     error instanceof UserRejectedRequestErrorWalletConnect
   ) {
-    return 'Please authorize this website to access your Ethereum account.'
+    return t('error-rejected-wallet-connection')
   }
   console.error(error)
-  return 'An unknown error occurred.'
+  return t('error-unknown')
 }
 
 const ErrorHandler = function (error) {
+  const { t } = useTranslation('common')
   return (
     <ReactModal ariaHideApp={false} isOpen={true} style={customStyles}>
       <div className="flex flex-wrap justify-center p-4 space-y-5 lg:p-10">
-        <h1 className="text-lg font-bold">Error: {getErrorMessage(error)}</h1>
+        <h1 className="text-lg font-bold">
+          {t('error')}: {getErrorMessage(error)}
+        </h1>
         <button
           className="px-4 py-2 font-semibold border rounded focus:outline-none focus:shadow-outline"
           onClick={() => window.location.reload()}
         >
-          RELOAD
+          {t('reload').toUpperCase()}
         </button>
       </div>
     </ReactModal>
