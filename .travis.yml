@@ -18,7 +18,7 @@ jobs:
 
     - stage: Deploy
 
-      if: branch =~ ^(master|site-i18n)$
+      if: branch =~ ^(master|prod)$
 
       script: skip
 
