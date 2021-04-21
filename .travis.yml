@@ -1,0 +1,34 @@
+os: linux
+dist: focal
+
+language: node_js
+node_js:
+  - '12' # AWS default
+
+git:
+  submodules: false
+
+before_script: git remote set-branches --add origin master && git fetch
+
+script: npm run lint && npm run format:check && npm run deps:check && npm run test
+
+jobs:
+  include:
+    - stage: Test
+
+    - stage: Deploy
+
+      if: branch =~ ^(master|site-i18n)$
+
+      script: skip
+
+      before_deploy:
+        - pip install awscli awsebcli --upgrade --user
+        - npm ci
+
+      deploy:
+        provider: script
+        script: scripts/1-site
+        skip_cleanup: true
+        on:
+          all_branches: true

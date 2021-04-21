@@ -20,7 +20,7 @@ const Footer = function () {
         </Link>
       </div>
       <div className="flex justify-between w-full pt-3 mt-20 text-xs text-gray-500 border-t-2 space-x-4">
-        <div>
+        <div className="w-1/2">
           <p>{t('copyright')}</p>
         </div>
         <LanguageSelector />
