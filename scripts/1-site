@@ -94,7 +94,7 @@ install-prod-deps-only
 
 # ------------------------------------------------------------------------------
 
-if [ -n "$(echo "$CHANGED" | { grep pure-site || true; })" ]; then
+if [ -n "$(echo "$CHANGED" | { grep pure-finance-site || true; })" ]; then
   echo "WEB SERVER"
   cd site
 
