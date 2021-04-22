@@ -6,11 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --no-dev pages/*",
-    "export": "next export",
     "postinstall": "patch-package",
-    "preexport": "npm run build",
-    "prestart": "npm run export",
-    "start": "serve out -p ${PORT:-3000}"
+    "prestart": "npm run build",
+    "start": "next start"
   },
   "dependencies": {
     "@web3-react/core": "^6.1.1",
@@ -21,6 +19,7 @@
     "erc-20-lib": "^1.0.0",
     "lodash.debounce": "^4.0.8",
     "next": "^10.0.7",
+    "next-translate": "^1.0.5",
     "patch-package": "^6.4.7",
     "pure-finance-lib": "^1.0.0",
     "react": "17.0.1",

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Button from './Button'
+import useTranslation from 'next-translate/useTranslation'
 
 const UtilityBox = ({ buttonText, buttonHref }) => (
   <div className="mx-2 mt-6">
@@ -20,15 +21,24 @@ const UtilityBox = ({ buttonText, buttonHref }) => (
   </div>
 )
 
-const Utilities = () => (
-  <div className="flex flex-wrap justify-center w-full">
-    <div className="w-full mb-3.5">
-      <p className="font-bold text-center text-gray-600">Utilities:</p>
+const Utilities = function () {
+  const { t } = useTranslation('common')
+  return (
+    <div className="flex flex-wrap justify-center w-full">
+      <div className="w-full mb-3.5">
+        <p className="font-bold text-center text-gray-600">{t('utilties')}</p>
+      </div>
+      <UtilityBox buttonHref="/merkle-claims" buttonText={t('merkle-claims')} />
+      <UtilityBox
+        buttonHref="/sablier-claims"
+        buttonText={t('sablier-claims')}
+      />
+      <UtilityBox
+        buttonHref="/token-approvals"
+        buttonText={t('token-approvals')}
+      />
     </div>
-    <UtilityBox buttonHref="/merkle-claims" buttonText="Merkle Claims" />
-    <UtilityBox buttonHref="/sablier-claims" buttonText="Sablier Claims" />
-    <UtilityBox buttonHref="/token-approvals" buttonText="Token Approvals" />
-  </div>
-)
+  )
+}
 
 export default Utilities

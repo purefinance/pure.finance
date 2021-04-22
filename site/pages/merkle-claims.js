@@ -6,8 +6,10 @@ import Layout from '../components/Layout'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import { fromUnit, toFixed, watchAsset } from '../utils'
+import useTranslation from 'next-translate/useTranslation'
 
 function MerkleClaims() {
+  const { t } = useTranslation('common')
   const { active, account, chainId } = useWeb3React()
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
@@ -31,7 +33,7 @@ function MerkleClaims() {
         if (h.isClaimable) {
           clearFeedback()
         } else {
-          setErrorMessage('Already Claimed')
+          setErrorMessage(t('already-claimed'))
         }
         setHolding(h)
       })
@@ -53,11 +55,11 @@ function MerkleClaims() {
 
   const handleClaimSubmit = () => {
     setClaimInProgress(true)
-    setInfoMessage('Claim in Progress')
+    setInfoMessage(t('claim-in-progress'))
     return merkle
       .claim(claimID, holding.amount, holding.proof)
       .then(function () {
-        setSuccessMessage('Claim Succeeded')
+        setSuccessMessage(t('claim-succeeded'))
         setClaimID('')
       })
       .catch((e) => setErrorMessage(e.message))
@@ -73,18 +75,18 @@ function MerkleClaims() {
   useEffect(() => setHolding({ amount: '', isClaimable: false }), [claimID])
 
   return (
-    <Layout title="Merkle Claims" walletConnection>
+    <Layout title={t('merkle-claims')} walletConnection>
       <div className="flex flex-wrap justify-center w-full max-w-lg mx-auto mt-10 space-y-3">
         <Input
           disabled={!active || claimInProgress}
           onChange={handleClaimIDChange}
-          title="Claim ID:"
+          title={`${t('claim-id')}:`}
           value={claimID}
         />
         <Input
           disabled
           suffix={holding && holding.token && holding.token.symbol}
-          title="Balance:"
+          title={`${t('balance')}:`}
           value={
             holding.amount &&
             toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
@@ -97,7 +99,7 @@ function MerkleClaims() {
           disabled={!active || !holding.isClaimable || claimInProgress}
           onClick={handleClaimSubmit}
         >
-          CLAIM
+          {t('claim').toUpperCase()}
         </Button>
       </div>
       <p className={`text-center text-sm mt-6 ${feedback.color}`}>

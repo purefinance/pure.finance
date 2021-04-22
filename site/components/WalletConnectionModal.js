@@ -1,4 +1,5 @@
 import ReactModal from 'react-modal'
+import useTranslation from 'next-translate/useTranslation'
 
 const customStyles = {
   overlay: {
@@ -25,31 +26,34 @@ const customStyles = {
   }
 }
 
-const WalletConnectionModal = ({ wallets, onRequestClose }) => (
-  <ReactModal
-    ariaHideApp={false}
-    isOpen={true}
-    onRequestClose={onRequestClose}
-    style={customStyles}
-  >
-    <div className="w-full">
-      <h1 className="px-10 pt-10 pb-5 text-xl font-bold text-center">
-        Connect Your Wallet
-      </h1>
-    </div>
-    <div className="flex flex-wrap justify-center pb-10 lg:px-20">
-      {wallets.map((w) => (
-        <div className="p-4" key={w.name}>
-          <button
-            className="w-40 px-4 py-2 font-semibold border rounded focus:outline-none focus:shadow-outline"
-            onClick={() => w.handleConnection()}
-          >
-            {w.name}
-          </button>
-        </div>
-      ))}
-    </div>
-  </ReactModal>
-)
+const WalletConnectionModal = function ({ wallets, onRequestClose }) {
+  const { t } = useTranslation('common')
+  return (
+    <ReactModal
+      ariaHideApp={false}
+      isOpen={true}
+      onRequestClose={onRequestClose}
+      style={customStyles}
+    >
+      <div className="w-full">
+        <h1 className="px-10 pt-10 pb-5 text-xl font-bold text-center">
+          {t('connect-wallet')}
+        </h1>
+      </div>
+      <div className="flex flex-wrap justify-center pb-10 lg:px-20">
+        {wallets.map((w) => (
+          <div className="p-4" key={w.name}>
+            <button
+              className="w-40 px-4 py-2 font-semibold border rounded focus:outline-none focus:shadow-outline"
+              onClick={() => w.handleConnection()}
+            >
+              {w.name}
+            </button>
+          </div>
+        ))}
+      </div>
+    </ReactModal>
+  )
+}
 
 export default WalletConnectionModal

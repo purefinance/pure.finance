@@ -6,8 +6,10 @@ import Layout from '../components/Layout'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import { fromUnit, toFixed, watchAsset } from '../utils'
+import useTranslation from 'next-translate/useTranslation'
 
 function SablierClaims() {
+  const { t } = useTranslation('common')
   const { active, account, chainId } = useWeb3React()
   const [streamID, setStreamID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
@@ -49,11 +51,11 @@ function SablierClaims() {
 
   const handleClaimSubmit = () => {
     setClaimInProgress(true)
-    setInfoMessage('Claim in Progress')
+    setInfoMessage(t('claim-in-progress'))
     return sablier
       .withdrawFromStream(streamID)
       .then(function () {
-        setSuccessMessage('Claim Succeeded')
+        setSuccessMessage(t('claim-succeeded'))
         setStreamID('')
       })
       .catch((e) => setErrorMessage(e.message))
@@ -88,18 +90,18 @@ function SablierClaims() {
   )
 
   return (
-    <Layout title="Sablier Claims" walletConnection>
+    <Layout title={t('sablier-claims')} walletConnection>
       <div className="flex flex-wrap justify-center w-full max-w-lg mx-auto mt-10 space-y-3">
         <Input
           disabled={!active || claimInProgress}
           onChange={handleStreamIDChange}
-          title="Stream ID:"
+          title={`${t('stream-id')}:`}
           value={streamID}
         />
         <Input
           disabled
           suffix={stream && stream.token && stream.token.symbol}
-          title="Balance:"
+          title={`${t('balance')}:`}
           value={
             stream.balance &&
             toFixed(fromUnit(stream.balance, stream.token.decimals), 6)
@@ -111,7 +113,7 @@ function SablierClaims() {
           disabled={!active || claimInProgress || !stream.balance}
           onClick={handleClaimSubmit}
         >
-          CLAIM
+          {t('claim')}
         </Button>
       </div>
       <p className={`text-center text-sm mt-6 ${feedback.color}`}>

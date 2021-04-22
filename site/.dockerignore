@@ -1,0 +1,6 @@
+.elasticbeanstalk/*
+.env.local
+.eslintcache
+.git
+.gitignore
+.next

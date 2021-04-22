@@ -5,6 +5,8 @@ import WalletConnectionModal from './WalletConnectionModal'
 import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 const persistLastConnectorKey = 'lastConnector'
 
+import useTranslation from 'next-translate/useTranslation'
+
 const persistLastConnector = (connectorName) =>
   window.localStorage.setItem(persistLastConnectorKey, connectorName)
 const getLastConnector = () =>
@@ -27,6 +29,7 @@ function Wallet() {
     setError
   } = useWeb3React()
 
+  const { t } = useTranslation('common')
   const shortenedAccount = shortAccount(account)
 
   const [activatingConnector, setActivatingConnector] = useState()
@@ -142,11 +145,11 @@ function Wallet() {
           className="font-semibold focus:outline-none hover:text-gray-400"
           onClick={() => setShowWalletConnector(true)}
         >
-          Connect Wallet
+          {t('connect-wallet')}
         </button>
       ) : (
         <div className="font-semibold text-center md:text-right">
-          <p className="text-xs text-gray-400">Address:</p>
+          <p className="text-xs text-gray-400">{t('address')}:</p>
           <div>
             <div className="font-bold focus:outline-none">
               {shortenedAccount}
@@ -158,7 +161,7 @@ function Wallet() {
               font-semibold focus:outline-none text-gray-400 hover:text-black`}
               onClick={deactivateConnector}
             >
-              Disconnect
+              {t('disconnect')}
             </button>
           </div>
         </div>
