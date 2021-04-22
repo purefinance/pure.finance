@@ -3,10 +3,7 @@ dist: focal
 
 language: node_js
 node_js:
-  - '12' # AWS default
-
-git:
-  submodules: false
+  - '14'
 
 before_script: git remote set-branches --add origin master && git fetch
 

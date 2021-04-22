@@ -94,32 +94,30 @@ install-prod-deps-only
 
 # ------------------------------------------------------------------------------
 
-# if [ -n "$(echo "$CHANGED" | { grep pure-site || true; })" ]; then
+if [ -n "$(echo "$CHANGED" | { grep pure-site || true; })" ]; then
+  echo "WEB SERVER"
+  cd site
 
-echo "APP WEB SERVER"
-cd site
+  echo "Replacing local dependencies"
+  replace-symlinked-deps
 
-echo "Replacing local dependencies"
-replace-symlinked-deps
+  echo "Initalizing site"
+  SITE_EB_APP_NAME=pure-site
+  eb-init "$SITE_EB_APP_NAME"
 
-echo "Initalizing site"
-SITE_EB_APP_NAME=pure-site
-eb-init "$SITE_EB_APP_NAME"
+  echo "Deploying web server"
+  SITE_EB_ENV_NAME=$SITE_EB_APP_NAME-$STAGE
+  SITE_EB_ENV_VARS="NEXT_PUBLIC_ANALYTICS_ID=$NEXT_PUBLIC_ANALYTICS_ID,NEXT_PUBLIC_NODE_URL=$NEXT_PUBLIC_NODE_URL,NODE_ENV=$NODE_ENV"
 
-echo "Deploying web server"
-SITE_EB_ENV_NAME=$SITE_EB_APP_NAME-$STAGE
-SITE_EB_ENV_VARS="NEXT_PUBLIC_ANALYTICS_ID=$NEXT_PUBLIC_ANALYTICS_ID,NEXT_PUBLIC_NODE_URL=$NEXT_PUBLIC_NODE_URL,NODE_ENV=$NODE_ENV"
+  ENVIRONMENT=$(eb-list "$SITE_EB_ENV_NAME")
+  if [ -z "$ENVIRONMENT" ]; then
+    echo "Creating environment"
+    eb-create "$SITE_EB_ENV_NAME" "$SITE_EB_ENV_VARS" m5.large
+  else
+    echo "Deploying to environment"
+    eb-deploy "$SITE_EB_ENV_NAME" "$SITE_EB_ENV_VARS"
+  fi
 
-ENVIRONMENT=$(eb-list "$SITE_EB_ENV_NAME")
-if [ -z "$ENVIRONMENT" ]; then
-  echo "Creating environment"
-  eb-create "$SITE_EB_ENV_NAME" "$SITE_EB_ENV_VARS" m5.large
-else
-  echo "Deploying to environment"
-  eb-deploy "$SITE_EB_ENV_NAME" "$SITE_EB_ENV_VARS"
+  echo "WEB SERVER DEPLOYED"
+  cd ..
 fi
-
-echo "APP WEB SERVER DEPLOYED"
-cd ..
-
-# fi
