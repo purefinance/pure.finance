@@ -40,10 +40,6 @@ You don't need to set any special code styling, since our repos already includes
   - Built in Node Modules (such as path)
   - Local Modules (using relative paths)
   - Set alphabetical order under each case
-- Place class properties in the following order:
-  - Class methods and properties (methods starting with `static`)
-  - Instance methods and properties
-- Avoid platform-dependent code
 
 ### Documentation Styleguide
 
