@@ -307,11 +307,13 @@ const TokenApprovalsForm = function () {
 }
 
 const TokenApprovals = function () {
+  const { t } = useTranslation('common')
   return (
-    <Layout title="Token Approvals" walletConnection>
+    <Layout title={t('token-approvals')} walletConnection>
       <TokenApprovalsForm />
     </Layout>
   )
 }
 
+export const getStaticProps = () => ({})
 export default TokenApprovals
