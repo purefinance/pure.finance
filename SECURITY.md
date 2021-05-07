@@ -3,9 +3,11 @@
 This document outlines security procedures and general policies for the `Pure Finance`
 project.
 
-- [Reporting a Bug](#reporting-a-bug)
-- [Disclosure Policy](#disclosure-policy)
-- [Comments on this Policy](#comments-on-this-policy)
+- [Security Policies and Procedures](#security-policies-and-procedures)
+  - [Reporting a Bug](#reporting-a-bug)
+  - [Pure Finance bug bounty program](#pure-finance-bug-bounty-program)
+  - [Disclosure Policy](#disclosure-policy)
+  - [Comments on this Policy](#comments-on-this-policy)
 
 ## Reporting a Bug
 
@@ -13,7 +15,7 @@ Thank you for improving the security of `Pure Finance`. We appreciate your effor
 responsible disclosure and will make every effort to acknowledge your
 contributions.
 
-Report security bugs by emailing the lead maintainer at info@pure.finance by following the [issue template](#).
+Report security bugs by emailing the lead maintainer at info@pure.finance by following the [issue template](https://github.com/purefinance/pure.finance/blob/master/ISSUE_TEMPLATE.md).
 
 The lead maintainer will acknowledge your email within 48 hours, and will send a
 more detailed response within 48 hours indicating the next steps in handling
@@ -26,7 +28,8 @@ the module.
 
 ## Pure Finance bug bounty program
 
-The project engages in an official bug bounty program for security researchers and responsible public disclosures. See https:// for further details.
+The project engages in an official bug bounty program for security researchers and responsible public disclosures.
+See #dev-general channel on [Discord](https://discord.com/invite/Pm8UDaazsK) for further details.
 
 ## Disclosure Policy
 

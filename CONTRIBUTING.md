@@ -36,17 +36,6 @@ You don't need to set any special code styling, since our repos already includes
 
 - Start reading our code and you'll get the hang of it. We optimize it for readability.
 - Prefer the object spread operator ({...anotherObj}) to Object.assign()
-- Inline exports with expressions whenever possible
-
-```js
-// Use this:
-export default class ClassName {}
-
-// Instead of:
-class ClassName {}
-export default ClassName
-```
-
 - Place `requires` in the following order:
   - Built in Node Modules (such as path)
   - Local Modules (using relative paths)
@@ -72,7 +61,7 @@ Use [Markdown](https://daringfireball.net/projects/markdown)
 First of all make sure that the bug was not already reported by searching on GitHub under `Issues`.
 When you are creating a bug report, please include as many details as possible by filling out our required [template].
 Due to the funds management nature of Pure Finance app, any security vulnerability must be treated as confidental, do not open up a GitHub issue if the bug is a security vulnerability, and instead refer to our security policy here:
-[Security Policy](#)
+[Security Policy](https://github.com/purefinance/pure.finance/blob/master/SECURITY.md)
 
 General tips:
 
@@ -86,7 +75,7 @@ General tips:
 - Specify the name and version of the OS/Browser/other applicable software you're using.
 
 Then, you can file a new feature by using a template:
-[Issue Template](#)
+[Issue Template](https://github.com/purefinance/pure.finance/blob/master/ISSUE_TEMPLATE.md)
 
 ### 4. Suggesting Enhancements
 
@@ -114,10 +103,7 @@ General tips:
 - Specify the name and version of the OS/Browser/other applicable software you're using.
 
 Then, you can file a new feature by using a template:
-[Feature Template](#)
-
-- Github Feature Request Template
-  [Feature Request Template](#)
+[Feature Request template](https://github.com/purefinance/pure.finance/blob/master/FEATURE_REQUEST_TEMPLATE.md)
 
 ### 5. Pull Requests
 
@@ -130,7 +116,7 @@ The process described here has several goals:
 
 Please follow these steps to have your contribution considered by the maintainers:
 
-- Follow all instructions in the [Pull Request Template]()
+- Follow all instructions in the [Pull Request Template](https://github.com/purefinance/pure.finance/blob/master/PULL_REQUEST_TEMPLATE.md)
 - Follow the styleguides as stated in step [#2](#2-code-styleguides)
 - If the pull request features a UI improvement, please include a screenshot in order to let maintainers to have a glimpse of it.
 - After you submit your pull request, verify that all [status checks](https://help.github.com/articles/about-status-checks/) are passing.
@@ -141,7 +127,7 @@ While the prerequisites above must be satisfied prior to having your pull reques
 
 ### 6. Translating guide
 
-We are happy to have people volunteer to translate the App. Just follow the steps as described [here](https://github.com/bloqpriv/vesper-monorepo/wiki).
+We are happy to have people volunteer to translate the App. Just follow the steps as described [in our wiki](https://github.com/purefinance/pure.finance/wiki).
 
 ### 7. Issue and Pull Request Labels
 
