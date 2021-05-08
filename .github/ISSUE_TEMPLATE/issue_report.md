@@ -1,3 +1,9 @@
+---
+name: Issue report
+about: Create a new issue report
+title: "[DATE]: [FEATURE NAME]"
+---
+
 Issue tracker is **ONLY** used for reporting bugs.
 Your issue may already be reported! Please search on the issue tracker before creating one.
 
