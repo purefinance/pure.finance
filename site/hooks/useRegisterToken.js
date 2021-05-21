@@ -1,17 +1,17 @@
-import { useEffect } from 'react'
+import { useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
-import { tokens } from '@uniswap/default-token-list'
+import defaultTokenList from '@uniswap/default-token-list'
 import { injected } from '../utils/connectors'
 
 export const useRegisterToken = function ({ symbol }) {
   const { account, chainId, connector } = useWeb3React()
 
-  useEffect(
+  const registerToken = useCallback(
     function () {
       const storageKey = `isTokenRegistered-${symbol}-${account}-${chainId}`
       const { ethereum, localStorage } = window
       const { symbol: tokenSymbol, address, decimals, logoURI } =
-        tokens.find(
+        defaultTokenList.tokens.find(
           ({ symbol: tokenSymbol, chainId: tokenChainId }) =>
             tokenSymbol === symbol && tokenChainId === chainId
         ) ?? {}
@@ -24,7 +24,7 @@ export const useRegisterToken = function ({ symbol }) {
         return
       }
 
-      ethereum
+      return ethereum
         .request({
           method: 'wallet_watchAsset',
           params: {
@@ -49,4 +49,6 @@ export const useRegisterToken = function ({ symbol }) {
     },
     [symbol, account, chainId, connector, injected]
   )
+
+  return registerToken
 }

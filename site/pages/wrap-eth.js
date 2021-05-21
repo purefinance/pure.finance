@@ -39,16 +39,10 @@ const WrapUnwrapEth = function () {
   const [value, setValue] = useState('')
   const { t } = useTranslation('common')
 
-  useRegisterToken({ symbol: 'WETH' })
+  const registerToken = useRegisterToken({ symbol: 'WETH' })
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
-
-  const handleSwitch = function () {
-    setOperation((currentValue) =>
-      currentValue === Operation.Wrap ? Operation.Unwrap : Operation.Wrap
-    )
-  }
 
   const isValidNumber =
     value !== '' &&
@@ -76,7 +70,11 @@ const WrapUnwrapEth = function () {
           }
           return erc20Service.wrapEther(valueInWei)
         })
-        .then(() => setSuccessMessage(t('wrap-eth-success', { value })))
+        .then(() => {
+          setSuccessMessage(t('wrap-eth-success', { value }))
+          setValue('')
+        })
+        .then(() => registerToken())
         .catch((err) => setErrorMessage(err.message))
     }
 
@@ -88,11 +86,17 @@ const WrapUnwrapEth = function () {
         }
         return erc20Service.unwrapEther(valueInWei)
       })
-      .then(() => setSuccessMessage(t('unwrap-weth-success', { value })))
+      .then(() => {
+        setSuccessMessage(t('unwrap-weth-success', { value }))
+        setValue('')
+      })
       .catch((err) => setErrorMessage(err.message))
   }
 
   const destinyToken = operation === Operation.Wrap ? 'WETH' : 'ETH'
+  const originToken = operation === Operation.Wrap ? 'ETH' : 'WETH'
+  const isWrapDisabled = operation === Operation.Wrap
+  const isUnwrapDisabled = operation === Operation.Unwrap
 
   return (
     <Layout title={t('wrap-unwrap-eth')} walletConnection>
@@ -100,20 +104,38 @@ const WrapUnwrapEth = function () {
         className="flex flex-col items-center w-full max-w-lg mx-auto"
         onSubmit={handleSubmit}
       >
-        <div className="w-full">
+        <div className="flex justify-center w-full my-7">
+          <button
+            className={`w-full capitalize h-10 ${
+              isWrapDisabled
+                ? 'bg-gray-800 text-white cursor-not-allowed'
+                : 'hover:bg-gray-800 hover:text-white'
+            }`}
+            disabled={isWrapDisabled}
+            onClick={() => setOperation(Operation.Wrap)}
+          >
+            {t('wrap')}
+          </button>
+          <button
+            className={`w-full capitalize h-10 ${
+              isUnwrapDisabled
+                ? 'bg-gray-800 text-white cursor-not-allowed'
+                : 'hover:bg-gray-800 hover:text-white'
+            }`}
+            disabled={isUnwrapDisabled}
+            onClick={() => setOperation(Operation.Unwrap)}
+          >
+            {t('unwrap')}
+          </button>
+        </div>
+        <div className="w-full mb-7">
           <Input
             onChange={(e) => setValue(e.target.value)}
             placeholder={t('enter-amount-here')}
+            suffix={originToken}
             value={value}
           />
         </div>
-        <button
-          className="bg-transparent my-7"
-          onClick={handleSwitch}
-          type="button"
-        >
-          Switch
-        </button>
         <div className="w-full">
           <Input
             disabled
