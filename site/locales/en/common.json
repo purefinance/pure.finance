@@ -15,11 +15,14 @@
   "connect-wallet": "Connect wallet",
   "copyright": "Copyright © 2021 Pure Finance. All Rights Reserved.",
   "disconnect": "Disconect",
+  "enter-amount-here": "Enter your Amount here",
   "invalid-address": "Invalid address",
   "invalid-token-address": "Invalid token address",
   "language-en": "English",
   "language-zh": "中文",
   "merkle-claims": "Merkle Claims",
+  "not-enough-funds-unwrap": "Not enough WETH funds to Unwrap",
+  "not-enough-funds-wrap": "Not enough ETH funds to Wrap",
   "reload": "Reload",
   "sablier-claims": "Sablier Claims",
   "spender-address": "Spender Address",
@@ -29,5 +32,11 @@
   "token-address": "Token Address",
   "token-address-placeholder": "address, symbol or ENS name",
   "token-approvals": "Token approvals",
-  "utilties": "Utilities"
+  "unwrap": "unwrap",
+  "unwrap-weth-success": "You unwrapped {{value}} WETH successfully!",
+  "utilties": "Utilities",
+  "wrap": "wrap",
+  "wrap-unwrap-eth": "Wrap/Unwrap ETH",
+  "wrap-eth-success": "You wrapped {{value}} ETH successfully!",
+  "you-will-get": "You'll get"
 }
