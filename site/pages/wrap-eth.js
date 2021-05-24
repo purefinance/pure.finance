@@ -33,15 +33,6 @@ const useTemporalMessage = function () {
   return state
 }
 
-const getBalanceCaption = function ({ balance = '0', isLoading, symbol }) {
-  if (isLoading) {
-    return 'Loading your balance...'
-  }
-  return `Your balance is ${
-    Big(balance).gt(0) ? toFixed(fromUnit(balance)) : '0'
-  } ${symbol}`
-}
-
 const WrapUnwrapEth = function () {
   const { active, account } = useWeb3React()
   const { erc20 } = useContext(PureContext)
@@ -105,6 +96,17 @@ const WrapUnwrapEth = function () {
         return Promise.all([reloadEthBalance(), reloadWethBalance()])
       })
       .catch((err) => setErrorMessage(err.message))
+  }
+
+  const getBalanceCaption = function ({ balance = '0', isLoading, symbol }) {
+    if (isLoading) {
+      return t('loading-balance')
+    }
+    const Decimals = 6
+    return t('your-balance-is', {
+      balance: Big(balance).gt(0) ? toFixed(fromUnit(balance), Decimals) : '0',
+      symbol
+    })
   }
 
   const destinyToken = isWrapping ? 'WETH' : 'ETH'

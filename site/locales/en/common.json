@@ -20,6 +20,7 @@
   "invalid-token-address": "Invalid token address",
   "language-en": "English",
   "language-zh": "中文",
+  "loading-balance": "Loading balance...",
   "merkle-claims": "Merkle Claims",
   "not-enough-funds-unwrap": "Not enough WETH funds to Unwrap",
   "not-enough-funds-wrap": "Not enough ETH funds to Wrap",
@@ -38,5 +39,6 @@
   "wrap": "wrap",
   "wrap-unwrap-eth": "Wrap/Unwrap ETH",
   "wrap-eth-success": "You wrapped {{value}} ETH successfully!",
+  "your-balance-is": "Your balance is {{balance}} {{symbol}}",
   "you-will-get": "You'll get"
 }

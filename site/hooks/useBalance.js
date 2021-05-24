@@ -4,15 +4,16 @@ import useSWR from 'swr'
 import PureContext from '../components/context/Pure'
 
 export const useBalance = function ({ symbol }) {
-  const { active, account, library } = useWeb3React()
+  const { active, account: userAccount, library } = useWeb3React()
   const { erc20 } = useContext(PureContext)
-  const erc20Service = erc20?.(account)
+
   const { data, mutate, error } = useSWR(
-    [`${symbol}-Balance-${account}`],
-    async function () {
+    [`${symbol}-Balance-${userAccount}`, userAccount, erc20],
+    async function (_, account, erc20Instancer) {
       if (!active) {
         return Promise.resolve(null)
       }
+      const erc20Service = erc20Instancer?.(account)
       switch (symbol) {
         case 'ETH':
           return library.eth.getBalance(account, 'latest')
