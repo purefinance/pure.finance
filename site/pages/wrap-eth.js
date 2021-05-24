@@ -6,8 +6,9 @@ import useTranslation from 'next-translate/useTranslation'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import PureContext from '../components/context/Pure'
-import { toUnit } from '../utils'
+import { fromUnit, toUnit, toFixed } from '../utils'
 import { useRegisterToken } from '../hooks/useRegisterToken'
+import { useBalance } from '../hooks/useBalance'
 
 const Operation = {
   Wrap: 1,
@@ -32,10 +33,29 @@ const useTemporalMessage = function () {
   return state
 }
 
+const getBalanceCaption = function ({ balance = '0', isLoading, symbol }) {
+  if (isLoading) {
+    return 'Loading your balance...'
+  }
+  return `Your balance is ${
+    Big(balance).gt(0) ? toFixed(fromUnit(balance)) : '0'
+  } ${symbol}`
+}
+
 const WrapUnwrapEth = function () {
-  const { active, account, library } = useWeb3React()
+  const { active, account } = useWeb3React()
   const { erc20 } = useContext(PureContext)
   const [operation, setOperation] = useState(Operation.Wrap)
+  const {
+    data: ethBalance,
+    isLoading: isLoadingEthBalance,
+    mutate: reloadEthBalance
+  } = useBalance({ symbol: 'ETH' })
+  const {
+    data: wEthBalance,
+    isLoading: isLoadingWethBalance,
+    mutate: reloadWethBalance
+  } = useBalance({ symbol: 'WETH' })
   const [value, setValue] = useState('')
   const { t } = useTranslation('common')
 
@@ -49,6 +69,9 @@ const WrapUnwrapEth = function () {
     /^(0|[1-9]\d*)(\.\d+)?$/.test(value) &&
     Big(value).gt(Big(0))
 
+  const valueInWei = Big(toUnit(isValidNumber ? value : 0)).toFixed(0)
+  const isWrapping = operation === Operation.Wrap
+
   const handleSubmit = function (e) {
     e.preventDefault()
     if (!active || !isValidNumber) {
@@ -57,46 +80,51 @@ const WrapUnwrapEth = function () {
 
     const erc20Service = erc20(account)
 
-    const valueInWei = Big(toUnit(value)).toFixed(0)
-
-    const isWrapping = operation === Operation.Wrap
-
     if (isWrapping) {
-      return library.eth
-        .getBalance(account, 'latest')
-        .then(function (balance) {
-          if (Big(balance).lt(valueInWei)) {
-            return Promise.reject(new Error(t('not-enough-funds-wrap')))
-          }
-          return erc20Service.wrapEther(valueInWei)
-        })
+      return erc20Service
+        .wrapEther(valueInWei)
         .then(() => {
           setSuccessMessage(t('wrap-eth-success', { value }))
           setValue('')
         })
-        .then(() => registerToken())
+        .then(() =>
+          Promise.all([
+            registerToken(),
+            reloadEthBalance(),
+            reloadWethBalance()
+          ])
+        )
         .catch((err) => setErrorMessage(err.message))
     }
 
     return erc20Service
-      .wrappedEtherBalanceOf()
-      .then(function (balance) {
-        if (Big(balance).lte(valueInWei)) {
-          return Promise.reject(new Error(t('not-enough-funds-unwrap')))
-        }
-        return erc20Service.unwrapEther(valueInWei)
-      })
+      .unwrapEther(valueInWei)
       .then(() => {
         setSuccessMessage(t('unwrap-weth-success', { value }))
         setValue('')
+        return Promise.all([reloadEthBalance(), reloadWethBalance()])
       })
       .catch((err) => setErrorMessage(err.message))
   }
 
-  const destinyToken = operation === Operation.Wrap ? 'WETH' : 'ETH'
-  const originToken = operation === Operation.Wrap ? 'ETH' : 'WETH'
+  const destinyToken = isWrapping ? 'WETH' : 'ETH'
+  const originToken = isWrapping ? 'ETH' : 'WETH'
+  const canWrap = Big(ethBalance ? ethBalance : '0').gt(valueInWei)
+  const canUnwrap = Big(wEthBalance ? wEthBalance : '-1').gte(valueInWei)
+
   const isWrapDisabled = operation === Operation.Wrap
   const isUnwrapDisabled = operation === Operation.Unwrap
+
+  const wrapCaption = {
+    balance: ethBalance,
+    symbol: 'ETH',
+    isLoading: isLoadingEthBalance
+  }
+  const unwrapCaption = {
+    balance: wEthBalance,
+    symbol: 'WETH',
+    isLoading: isLoadingWethBalance
+  }
 
   return (
     <Layout title={t('wrap-unwrap-eth')} walletConnection>
@@ -106,7 +134,7 @@ const WrapUnwrapEth = function () {
       >
         <div className="flex justify-center w-full my-7">
           <button
-            className={`w-full capitalize h-10 ${
+            className={`w-full capitalize h-10 border-b ${
               isWrapDisabled
                 ? 'bg-gray-800 text-white cursor-not-allowed'
                 : 'hover:bg-gray-800 hover:text-white'
@@ -117,7 +145,7 @@ const WrapUnwrapEth = function () {
             {t('wrap')}
           </button>
           <button
-            className={`w-full capitalize h-10 ${
+            className={`w-full capitalize h-10 border-b ${
               isUnwrapDisabled
                 ? 'bg-gray-800 text-white cursor-not-allowed'
                 : 'hover:bg-gray-800 hover:text-white'
@@ -130,6 +158,9 @@ const WrapUnwrapEth = function () {
         </div>
         <div className="w-full mb-7">
           <Input
+            caption={getBalanceCaption(
+              isWrapping ? wrapCaption : unwrapCaption
+            )}
             onChange={(e) => setValue(e.target.value)}
             placeholder={t('enter-amount-here')}
             suffix={originToken}
@@ -138,6 +169,9 @@ const WrapUnwrapEth = function () {
         </div>
         <div className="w-full">
           <Input
+            caption={getBalanceCaption(
+              isWrapping ? unwrapCaption : wrapCaption
+            )}
             disabled
             suffix={destinyToken}
             title={t('you-will-get')}
@@ -145,8 +179,13 @@ const WrapUnwrapEth = function () {
           />
         </div>
         <Button
-          className="capitalize mt-7.5"
-          disabled={!active || !isValidNumber}
+          className="uppercase mt-7.5"
+          disabled={
+            !active ||
+            !isValidNumber ||
+            (operation === Operation.Wrap && !canWrap) ||
+            (operation === Operation.Unwrap && !canUnwrap)
+          }
         >
           {t(operation === Operation.Wrap ? 'wrap' : 'unwrap')}
         </Button>
