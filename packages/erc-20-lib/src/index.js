@@ -63,6 +63,18 @@ const createErc20 = function (web3, address, options = {}) {
         value
       }),
 
+    unwrapEther: (value) =>
+      estimateGasAndSend(weth.getContract(web3).methods.withdraw(value), {
+        from,
+        gasPrice
+      }),
+
+    wrappedEtherBalanceOf: (address) =>
+      weth
+        .getContract(web3)
+        .methods.balanceOf(address || from)
+        .call(),
+
     swapEther: (value) =>
       estimateGasAndSend(
         uniswap

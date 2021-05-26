@@ -37,6 +37,7 @@ const Utilities = function () {
         buttonHref="/token-approvals"
         buttonText={t('token-approvals')}
       />
+      <UtilityBox buttonHref="/wrap-eth" buttonText={t('wrap-unwrap-eth')} />
     </div>
   )
 }
