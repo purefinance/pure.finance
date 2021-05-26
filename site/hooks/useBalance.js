@@ -13,7 +13,7 @@ export const useBalance = function ({ symbol }) {
       if (!active) {
         return Promise.resolve(null)
       }
-      const erc20Service = erc20Instancer?.(account)
+      const erc20Service = erc20Instancer(account)
       switch (symbol) {
         case 'ETH':
           return library.eth.getBalance(account, 'latest')

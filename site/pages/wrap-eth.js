@@ -99,6 +99,9 @@ const WrapUnwrapEth = function () {
   }
 
   const getBalanceCaption = function ({ balance = '0', isLoading, symbol }) {
+    if (!active) {
+      return null
+    }
     if (isLoading) {
       return t('loading-balance')
     }

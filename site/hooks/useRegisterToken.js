@@ -1,54 +1,31 @@
-import { useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import defaultTokenList from '@uniswap/default-token-list'
-import { injected } from '../utils/connectors'
+import { watchAsset } from '../utils'
 
 export const useRegisterToken = function ({ symbol }) {
-  const { account, chainId, connector } = useWeb3React()
+  const { account, chainId } = useWeb3React()
 
-  const registerToken = useCallback(
-    function () {
-      const storageKey = `isTokenRegistered-${symbol}-${account}-${chainId}`
-      const { ethereum, localStorage } = window
-      const { symbol: tokenSymbol, address, decimals, logoURI } =
-        defaultTokenList.tokens.find(
-          ({ symbol: tokenSymbol, chainId: tokenChainId }) =>
-            tokenSymbol === symbol && tokenChainId === chainId
-        ) ?? {}
-
-      if (
-        connector !== injected ||
-        !address ||
-        localStorage.getItem(storageKey) === 'true'
-      ) {
-        return
+  const registerToken = function () {
+    const token = defaultTokenList.tokens.find(
+      ({ symbol: tokenSymbol, chainId: tokenChainId }) =>
+        tokenSymbol === symbol && tokenChainId === chainId
+    )
+    if (!token) {
+      console.warn(
+        `Trying to register token ${symbol} but metadata was not found.`
+      )
+      return
+    }
+    const { logoURI, ...restOfToken } = token
+    watchAsset({
+      account,
+      chainId,
+      token: {
+        ...restOfToken,
+        image: logoURI
       }
-
-      return ethereum
-        .request({
-          method: 'wallet_watchAsset',
-          params: {
-            type: 'ERC20',
-            options: {
-              address, // The address that the token is at.
-              symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-              decimals, // The number of decimals in the token
-              image: logoURI // A string url of the token logo
-            }
-          }
-        })
-        .then(function () {
-          window.localStorage.setItem(storageKey, 'true')
-          // eslint-disable-next-line no-console
-          console.log('Token successfully registered on MetaMask.')
-        })
-        .catch((err) =>
-          // eslint-disable-next-line no-console
-          console.warn(err)
-        )
-    },
-    [symbol, account, chainId, connector, injected]
-  )
+    })
+  }
 
   return registerToken
 }
