@@ -22,6 +22,13 @@ const createErc20 = function (web3, address, options = {}) {
         method.estimateGas(transactionOptions).then(safeGas)
     ).then((gas) => method.send({ ...transactionOptions, gas }))
 
+  const approve = function (spender, value) {
+    return estimateGasAndSend(contract.methods.approve(spender, value), {
+      from,
+      gasPrice
+    })
+  }
+
   return {
     getInfo: () =>
       Promise.all([
@@ -50,11 +57,17 @@ const createErc20 = function (web3, address, options = {}) {
 
     approve: function (spender, value) {
       debug('Approving %s %s to %s', value, address, spender)
-      return estimateGasAndSend(contract.methods.approve(spender, value), {
-        from,
-        gasPrice
-      })
+      return approve(spender, value)
     },
+
+    revoke: function (spender) {
+      debug('Revoking allowance for %s to %s', address, spender)
+      return approve(spender, '0')
+    },
+
+    symbol: () => contract.methods.symbol().call(),
+
+    decimals: () => contract.methods.decimals().call(),
 
     wrapEther: (value) =>
       estimateGasAndSend(weth.getContract(web3).methods.deposit(), {

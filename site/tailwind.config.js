@@ -24,6 +24,9 @@ module.exports = {
       },
       colors: {
         vesper: '#4138AC'
+      },
+      gridTemplateColumns: {
+        approval: 'repeat(3, max-content) max-content'
       }
     }
   },
