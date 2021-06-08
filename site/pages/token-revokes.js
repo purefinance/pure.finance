@@ -20,12 +20,9 @@ const getPreviousFromBlock = (pivotBlock, chunkIndex, minBlock) =>
 
 const useLastBlockNumber = function () {
   const { active, library, chainId } = useWeb3React()
-  return useSWR(active ? [`lastBlockNumber-${chainId}`, chainId] : null, () => {
-    return library.eth.getBlockNumber().then((number) => {
-      console.log(`last block number is ${number}`)
-      return number
-    })
-  })
+  return useSWR(active ? [`lastBlockNumber-${chainId}`, chainId] : null, () =>
+    library.eth.getBlockNumber()
+  )
 }
 
 const parseLogs = (logs) =>
@@ -252,6 +249,44 @@ function useTokenApprovals() {
   return { ...syncBlock, syncStatus: syncStatus, setSyncStatus }
 }
 
+const useErc20Token = function (address) {
+  const { active, library } = useWeb3React()
+  return useSWR(active ? address : null, function () {
+    const erc20Service = createErc20(library, address)
+    return Promise.all([erc20Service.symbol(), erc20Service.decimals()])
+  })
+}
+
+const UNLIMITED =
+  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+const Allowance = function ({ address, data }) {
+  const { library } = useWeb3React()
+  const { t } = useTranslation('common')
+
+  const { data: token } = useErc20Token(address)
+
+  if (data === UNLIMITED) {
+    return <span className="m-auto">{t('unlimited')}</span>
+  }
+
+  if (!token) {
+    return <span className="m-auto"></span>
+  }
+  const [, decimals] = token
+  const allowanceInWei = library.utils.hexToNumberString(data)
+  const value = toFixed(fromUnit(allowanceInWei, decimals), 6)
+  return <span className="m-auto">{value}</span>
+}
+
+const Token = function ({ address }) {
+  const { data: token } = useErc20Token(address)
+  if (!token) {
+    return <span className="m-auto"></span>
+  }
+  const [symbol] = token
+  return <span className="m-auto">{symbol}</span>
+}
+
 const TokenRevokes = function () {
   const { active } = useWeb3React()
   const { erc20 } = useContext(PureContext)
@@ -316,44 +351,4 @@ const TokenRevokes = function () {
   )
 }
 
-const useErc20Token = function (address) {
-  const { active, library } = useWeb3React()
-  return useSWR(active ? address : null, function () {
-    const erc20Service = createErc20(library, address)
-    return Promise.all([erc20Service.symbol(), erc20Service.decimals()])
-  })
-}
-
-const UNLIMITED =
-  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-const Allowance = function ({ address, data }) {
-  const { library } = useWeb3React()
-  const { t } = useTranslation('common')
-
-  const { data: token } = useErc20Token(address)
-
-  if (data === UNLIMITED) {
-    return <span className="m-auto">{t('unlimited')}</span>
-  }
-
-  if (!token) {
-    return <span className="m-auto"></span>
-  }
-  const [, decimals] = token
-  const allowanceInWei = library.utils.hexToNumberString(data)
-  const value = toFixed(fromUnit(allowanceInWei, decimals), 6)
-  return <span className="m-auto">{value}</span>
-}
-
-const Token = function ({ address }) {
-  const { data: token } = useErc20Token(address)
-  if (!token) {
-    return <span className="m-auto"></span>
-  }
-  const [symbol] = token
-  return <span className="m-auto">{symbol}</span>
-}
-
 export default TokenRevokes
-
-module.exports.getNewestApprovals = getNewestApprovals
