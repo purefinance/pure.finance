@@ -73,15 +73,17 @@ const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
     .filter(Boolean) // remove empties
 }
 
+const DEFAULT_SYNC_BLOCK_STATE = {
+  fromBlock: MIN_BLOCK_TO_SYNC,
+  toBlock: undefined,
+  hasSyncToMinBlock: false,
+  chunkIndex: 0,
+  tokenApprovals: []
+}
+
 function useTokenApprovals() {
   const { active, library, account, chainId } = useWeb3React()
-  const [syncBlock, setSyncBlock] = useState({
-    fromBlock: MIN_BLOCK_TO_SYNC,
-    toBlock: undefined,
-    hasSyncToMinBlock: false,
-    chunkIndex: 0,
-    tokenApprovals: []
-  })
+  const [syncBlock, setSyncBlock] = useState(DEFAULT_SYNC_BLOCK_STATE)
 
   const [syncStatus, setSyncStatus] = useState(SyncStatus.Syncing)
 
@@ -100,6 +102,7 @@ function useTokenApprovals() {
       const storedItem = localStorage.getItem(localStorageKey)
 
       if (!storedItem) {
+        setSyncBlock(DEFAULT_SYNC_BLOCK_STATE)
         return
       }
 
