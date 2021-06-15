@@ -2,6 +2,7 @@ import { useWeb3React } from '@web3-react/core'
 import React, { useState, useEffect, useContext } from 'react'
 import useTranslation from 'next-translate/useTranslation'
 import useSWR from 'swr'
+import Big from 'big.js'
 import createErc20 from 'erc-20-lib'
 import Layout from '../components/Layout'
 import Button from '../components/Button'
@@ -96,6 +97,7 @@ function useTokenApprovals() {
   useEffect(
     function () {
       if (!localStorageKey) {
+        setSyncBlock(DEFAULT_SYNC_BLOCK_STATE)
         return
       }
 
@@ -256,29 +258,28 @@ const useErc20Token = function (address) {
   const { active, library } = useWeb3React()
   return useSWR(active ? address : null, function () {
     const erc20Service = createErc20(library, address)
-    return Promise.all([erc20Service.symbol(), erc20Service.decimals()])
+    return Promise.all([
+      erc20Service.symbol(),
+      erc20Service.decimals(),
+      erc20Service.totalSupply()
+    ])
   })
 }
 
-const UNLIMITED =
-  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 const Allowance = function ({ address, data }) {
   const { library } = useWeb3React()
   const { t } = useTranslation('common')
 
   const { data: token } = useErc20Token(address)
 
-  if (data === UNLIMITED) {
-    return <span className="m-auto">{t('unlimited')}</span>
-  }
-
   if (!token) {
     return <span className="m-auto"></span>
   }
-  const [, decimals] = token
+  const [, decimals, totalSupply] = token
   const allowanceInWei = library.utils.hexToNumberString(data)
   const value = toFixed(fromUnit(allowanceInWei, decimals), 6)
-  return <span className="m-auto">{value}</span>
+  const isUnlimited = Big(totalSupply).times(10).lt(allowanceInWei)
+  return <span className="m-auto">{isUnlimited ? t('unlimited') : value}</span>
 }
 
 const Token = function ({ address }) {
