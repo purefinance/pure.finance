@@ -355,4 +355,5 @@ const TokenRevokes = function () {
   )
 }
 
+export const getStaticProps = () => ({})
 export default TokenRevokes
