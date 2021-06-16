@@ -9,7 +9,7 @@ export const EtherscanLink = function ({ address, tx, long = false }) {
   const text = address ?? tx
   return (
     <a
-      className="m-auto text-sm font-semibold text-gray-400 false focus:outline-none hover:text-black"
+      className="m-auto font-semibold text-gray-400 false focus:outline-none hover:text-black"
       href={url}
       rel="noreferrer"
       target="_blank"

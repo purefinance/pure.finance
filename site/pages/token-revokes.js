@@ -7,7 +7,7 @@ import createErc20 from 'erc-20-lib'
 import Layout from '../components/Layout'
 import Button from '../components/Button'
 import { EtherscanLink } from '../components/EtherscanLink'
-import { fromUnit, toFixed } from '../utils'
+import { fromUnit } from '../utils'
 import PureContext from '../components/context/Pure'
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
@@ -277,9 +277,20 @@ const Allowance = function ({ address, data }) {
   }
   const [, decimals, totalSupply] = token
   const allowanceInWei = library.utils.hexToNumberString(data)
-  const value = toFixed(fromUnit(allowanceInWei, decimals), 6)
+  const value = Big(fromUnit(allowanceInWei, decimals), 6).toNumber()
   const isUnlimited = Big(totalSupply).times(10).lt(allowanceInWei)
-  return <span className="m-auto">{isUnlimited ? t('unlimited') : value}</span>
+  const formatter = new Intl.NumberFormat('default', {
+    maximumFractionDigits: 9,
+    minimumFractionDigits: 6
+  })
+  return (
+    <span
+      className="w-full m-auto overflow-hidden whitespace-nowrap overflow-ellipsis"
+      title={formatter.format(value)}
+    >
+      {isUnlimited ? t('unlimited') : formatter.format(value)}
+    </span>
+  )
 }
 
 const Token = function ({ address }) {
@@ -312,26 +323,20 @@ const TokenRevokes = function () {
   }
 
   return (
-    <Layout walletConnection>
-      {!active && <h3>{t('connect-to-sync')}</h3>}
-      {active && syncStatus === SyncStatus.Syncing && (
-        <h3>{t('syncing-your-approvals')}</h3>
-      )}
-      {active && isRevoking && <h3>{t('revoking-approval')}</h3>}
-      {syncStatus === SyncStatus.Error && <h3>{t('generic-error')}</h3>}
-      {tokenApprovals.length === 0 && syncStatus === SyncStatus.Finished && (
-        <p>{t('no-approvals')}</p>
-      )}
+    <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
       {tokenApprovals.length > 0 && (
         <section className="flex flex-col overflow-x-auto">
-          <h3 className="font-bold text-center text-gray-600">
-            {t('approvals')}
-          </h3>
           <div className="my-6 grid grid-cols-approval place-content-center gap-y-5 gap-x-12">
-            <span className="m-auto">{t('token')}</span>
-            <span className="m-auto">{t('spender-address')}</span>
-            <span className="m-auto">{t('allowance')}</span>
-            <span></span>
+            <span className="m-auto font-bold text-gray-600">{t('token')}</span>
+            <span className="m-auto font-bold text-gray-600">
+              {t('spender-address')}
+            </span>
+            <span className="m-auto font-bold text-gray-600">
+              {t('allowance')}
+            </span>
+            <span className="m-auto font-bold text-gray-600">
+              {t('actions')}
+            </span>
             {tokenApprovals.map(
               ({ address, allowance, transactionHash, spender }) => (
                 <React.Fragment key={transactionHash}>
@@ -350,6 +355,15 @@ const TokenRevokes = function () {
             )}
           </div>
         </section>
+      )}
+      {!active && <h3>{t('connect-to-sync')}</h3>}
+      {active && syncStatus === SyncStatus.Syncing && (
+        <h3>{t('syncing-your-approvals')}</h3>
+      )}
+      {active && isRevoking && <h3>{t('revoking-approval')}</h3>}
+      {syncStatus === SyncStatus.Error && <h3>{t('generic-error')}</h3>}
+      {tokenApprovals.length === 0 && syncStatus === SyncStatus.Finished && (
+        <p>{t('no-approvals')}</p>
       )}
     </Layout>
   )

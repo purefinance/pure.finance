@@ -26,7 +26,8 @@ module.exports = {
         vesper: '#4138AC'
       },
       gridTemplateColumns: {
-        approval: 'repeat(3, max-content) max-content'
+        approval:
+          'minmax(0, 3.75rem) minmax(3.75rem, 1fr) minmax(0, 1fr) max-content'
       }
     }
   },
