@@ -349,7 +349,7 @@ const TokenRevokes = function () {
                     className="hidden md:block"
                     disabled={!active}
                     onClick={() => handleRevoke(address, unpad(spender))}
-                    width="28"
+                    width="w-28"
                   >
                     {t('revoke')}
                   </Button>
@@ -357,7 +357,7 @@ const TokenRevokes = function () {
                     className="flex justify-center mx-auto md:hidden"
                     disabled={!active}
                     onClick={() => handleRevoke(address, unpad(spender))}
-                    width="10"
+                    width="w-10"
                   >
                     <svg
                       className="md:hidden"
