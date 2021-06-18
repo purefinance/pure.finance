@@ -207,4 +207,5 @@ const WrapUnwrapEth = function () {
   )
 }
 
+export const getStaticProps = () => ({})
 export default WrapUnwrapEth
