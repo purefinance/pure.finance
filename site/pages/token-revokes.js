@@ -326,9 +326,9 @@ const TokenRevokes = function () {
     <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
       {tokenApprovals.length > 0 && (
         <section className="flex flex-col overflow-x-auto">
-          <div className="my-6 grid grid-cols-approval place-content-center gap-y-5 gap-x-12">
+          <div className="my-6 grid grid-cols-approval-sm md:grid-cols-approval place-content-center gap-y-5 gap-x-12">
             <span className="m-auto font-bold text-gray-600">{t('token')}</span>
-            <span className="m-auto font-bold text-gray-600">
+            <span className="hidden m-auto font-bold text-gray-600 md:block">
               {t('spender-address')}
             </span>
             <span className="m-auto font-bold text-gray-600">
@@ -341,14 +341,36 @@ const TokenRevokes = function () {
               ({ address, allowance, transactionHash, spender }) => (
                 <React.Fragment key={transactionHash}>
                   <Token address={address} />
-                  <EtherscanLink address={unpad(spender)} />
+                  <div className="hidden md:block">
+                    <EtherscanLink address={unpad(spender)} />
+                  </div>
                   <Allowance address={address} data={allowance} />
                   <Button
+                    className="hidden md:block"
                     disabled={!active}
                     onClick={() => handleRevoke(address, unpad(spender))}
-                    width="28"
+                    width="w-28"
                   >
                     {t('revoke')}
+                  </Button>
+                  <Button
+                    className="flex justify-center mx-auto md:hidden"
+                    disabled={!active}
+                    onClick={() => handleRevoke(address, unpad(spender))}
+                    width="w-10"
+                  >
+                    <svg
+                      className="md:hidden"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      width="18"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
+                        fill="white"
+                      />
+                    </svg>
                   </Button>
                 </React.Fragment>
               )
