@@ -1,11 +1,13 @@
 import { useWeb3React } from '@web3-react/core'
-import { useState, useEffect } from 'react'
-import { injected, walletconnect } from '../utils/connectors'
-import WalletConnectionModal from './WalletConnectionModal'
-import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
-const persistLastConnectorKey = 'lastConnector'
-
 import useTranslation from 'next-translate/useTranslation'
+import { useState, useEffect } from 'react'
+
+import shortAccount from '../utils/account'
+import { injected, walletconnect, walletlink } from '../utils/connectors'
+
+import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
+import WalletConnectionModal from './WalletConnectionModal'
+const persistLastConnectorKey = 'lastConnector'
 
 const persistLastConnector = (connectorName) =>
   window.localStorage.setItem(persistLastConnectorKey, connectorName)
@@ -14,11 +16,7 @@ const getLastConnector = () =>
 const removeLastConnector = () =>
   window.localStorage.removeItem(persistLastConnectorKey)
 
-function shortAccount(account) {
-  return account ? `${account.substr(0, 6)}...${account.substr(38, 4)}` : null
-}
-
-function Wallet() {
+const Wallet = function () {
   const {
     account,
     active,
@@ -28,13 +26,12 @@ function Wallet() {
     error,
     setError
   } = useWeb3React()
-
   const { t } = useTranslation('common')
   const shortenedAccount = shortAccount(account)
 
   const [activatingConnector, setActivatingConnector] = useState()
   const [showWalletConnector, setShowWalletConnector] = useState(false)
-  const [tried, setTried] = useState(false)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
 
   useEffect(
     function () {
@@ -47,10 +44,17 @@ function Wallet() {
 
   useEffect(
     function () {
+      const lastConnector = getLastConnector()
+      setErrorModalOpen(true)
+      if (error && lastConnector === 'walletconnect')
+        walletconnect.walletConnectProvider = undefined
       if (error) removeLastConnector()
     },
     [error]
   )
+
+  const [tried, setTried] = useState(false)
+
   useEffect(function () {
     const lastConnector = getLastConnector()
     if (lastConnector === 'injected') {
@@ -66,6 +70,8 @@ function Wallet() {
         })
     } else if (lastConnector === 'walletconnect') {
       activate(walletconnect, setError)
+    } else if (lastConnector === 'walletlink') {
+      activate(walletlink, setError)
     }
   }, [])
 
@@ -124,6 +130,20 @@ function Wallet() {
         connector.close()
         removeLastConnector()
       }
+    },
+    {
+      name: 'Coinbase Wallet',
+      connector: walletlink,
+      handleConnection() {
+        setActivatingConnector(walletlink)
+        activate(walletlink, setError)
+        persistLastConnector('walletlink')
+        setShowWalletConnector(false)
+      },
+      handleDisconnection() {
+        connector.close()
+        removeLastConnector()
+      }
     }
   ]
 
@@ -133,13 +153,16 @@ function Wallet() {
 
   return (
     <>
-      {showWalletConnector && (
-        <WalletConnectionModal
-          onRequestClose={() => setShowWalletConnector(false)}
-          wallets={wallets}
-        />
-      )}
-      {error && <WalletConnectionErrorHandler error={error} />}
+      <WalletConnectionModal
+        modalIsOpen={showWalletConnector}
+        onRequestClose={() => setShowWalletConnector(false)}
+        wallets={wallets}
+      />
+      <WalletConnectionErrorHandler
+        error={error}
+        modalIsOpen={errorModalOpen}
+        onRequestClose={() => setErrorModalOpen(false)}
+      />
       {!active ? (
         <button
           className="font-semibold focus:outline-none hover:text-gray-400"
