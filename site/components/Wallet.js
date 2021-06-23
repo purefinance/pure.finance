@@ -17,15 +17,8 @@ const removeLastConnector = () =>
   window.localStorage.removeItem(persistLastConnectorKey)
 
 const Wallet = function () {
-  const {
-    account,
-    active,
-    activate,
-    connector,
-    deactivate,
-    error,
-    setError
-  } = useWeb3React()
+  const { account, active, activate, connector, deactivate, error, setError } =
+    useWeb3React()
   const { t } = useTranslation('common')
   const shortenedAccount = shortAccount(account)
 

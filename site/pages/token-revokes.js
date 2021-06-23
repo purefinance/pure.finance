@@ -108,12 +108,8 @@ function useTokenApprovals() {
         return
       }
 
-      const {
-        toBlock,
-        hasSyncToMinBlock,
-        chunkIndex,
-        tokenApprovals
-      } = JSON.parse(storedItem)
+      const { toBlock, hasSyncToMinBlock, chunkIndex, tokenApprovals } =
+        JSON.parse(storedItem)
 
       if (hasSyncToMinBlock) {
         setSyncBlock({

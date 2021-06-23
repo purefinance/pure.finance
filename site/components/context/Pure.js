@@ -25,8 +25,8 @@ export const PureContextProvider = function ({ children }) {
         setMerkle(createMerkle(library, { from: account }))
         setSablier(createSablier(library, { from: account }))
         setTokenApprovals(createTokenApprovals(library, { from: account }))
-        setErc20(() => (address) =>
-          createErc20(library, address, { from: account })
+        setErc20(
+          () => (address) => createErc20(library, address, { from: account })
         )
       }
     },
