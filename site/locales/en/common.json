@@ -16,7 +16,7 @@
   "connect-wallet": "Connect wallet",
   "connect-to-sync": "Please connect your wallet to search for approvals.",
   "copyright": "Copyright © 2021 Pure Finance. All Rights Reserved.",
-  "disconnect": "Disconect",
+  "disconnect": "Disconnect",
   "enter-amount-here": "Enter your amount here",
   "error": "Error",
   "error-no-ethereum-provider": "No Ethereum browser extension detected, install MetaMask on desktop or visit from a dApp browser on mobile.",

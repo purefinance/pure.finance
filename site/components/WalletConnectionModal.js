@@ -1,58 +1,41 @@
-import ReactModal from 'react-modal'
+import Modal from './Modal'
 import useTranslation from 'next-translate/useTranslation'
+import SvgContainer from './svg/SvgContainer'
 
-const customStyles = {
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(140, 140, 160, 0.2)',
-    zIndex: 10
-  },
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    width: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    padding: 0,
-    borderRadius: '0.5rem',
-    boxShadow:
-      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-  }
-}
-
-const WalletConnectionModal = function ({ wallets, onRequestClose }) {
+const WalletConnectionModal = function ({
+  modalIsOpen,
+  onRequestClose,
+  wallets
+}) {
   const { t } = useTranslation('common')
   return (
-    <ReactModal
-      ariaHideApp={false}
-      isOpen={true}
+    <Modal
+      className="bg-white rounded-md"
+      modalIsOpen={modalIsOpen}
       onRequestClose={onRequestClose}
-      style={customStyles}
     >
-      <div className="w-full">
-        <h1 className="px-10 pt-10 pb-5 text-xl font-bold text-center">
-          {t('connect-wallet')}
-        </h1>
-      </div>
+      <h1 className="px-10 pt-10 pb-5 text-xl font-bold text-center ">
+        {t('connect-wallet')}
+      </h1>
       <div className="flex flex-wrap justify-center pb-10 lg:px-20">
         {wallets.map((w) => (
           <div className="p-4" key={w.name}>
             <button
-              className="w-40 px-4 py-2 font-semibold border rounded focus:outline-none focus:shadow-outline"
+              className="flex items-center justify-center px-4 py-2 font-semibold border rounded w-60 focus:outline-none focus:ring "
               onClick={() => w.handleConnection()}
             >
+              <SvgContainer
+                className="mr-2"
+                height="40"
+                name={w.name.replace(/\s/g, '')}
+                width="40"
+              />
               {w.name}
             </button>
           </div>
         ))}
       </div>
-    </ReactModal>
+    </Modal>
   )
 }
 
