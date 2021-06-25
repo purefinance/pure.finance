@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --no-dev pages/*",
+    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --ignore-module next-secure-headers --no-dev pages/*",
     "postinstall": "patch-package",
     "prestart": "npm run build",
     "start": "next start"
@@ -21,6 +21,7 @@
     "erc-20-lib": "^1.0.0",
     "lodash.debounce": "^4.0.8",
     "next": "^10.0.7",
+    "next-secure-headers": "^2.2.0",
     "next-translate": "^1.0.6",
     "patch-package": "^6.4.7",
     "pure-finance-lib": "^1.0.0",
