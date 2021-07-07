@@ -15,8 +15,19 @@ import PureContext from '../components/context/Pure'
 import { fromUnit, toUnit } from '../utils'
 
 const extraTokens = [].concat(
+  // Include all Vesper pool tokens and the VSP token.
   vesperMetadata.pools.map((p) => ({ ...p, symbol: p.name })),
-  vesperMetadata.tokens
+  vesperMetadata.tokens,
+  // Include the VUSD token.
+  // In the future, this data should come from vusd-lib.
+  [
+    {
+      symbol: 'VUSD',
+      address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
+      decimals: 18,
+      chainId: 1
+    }
+  ]
 )
 
 const useTokenInput = function (address, onChange, allowAnyAddress) {
