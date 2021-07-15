@@ -1,9 +1,9 @@
-import { useWeb3React } from '@web3-react/core'
+import { useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { useState, useEffect } from 'react'
+import { useWeb3React } from '@web3-react/core'
 
-import shortAccount from '../utils/account'
 import { injected, walletconnect, walletlink } from '../utils/connectors'
+import shortAccount from '../utils/account'
 
 import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'

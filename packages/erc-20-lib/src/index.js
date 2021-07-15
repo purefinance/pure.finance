@@ -57,12 +57,12 @@ const createErc20 = function (web3, address, options = {}) {
         gasPrice
       }),
 
-    approve: function (spender, value) {
+    approve(spender, value) {
       debug('Approving %s %s to %s', value, address, spender)
       return approve(spender, value)
     },
 
-    revoke: function (spender) {
+    revoke(spender) {
       debug('Revoking allowance for %s to %s', address, spender)
       return approve(spender, '0')
     },

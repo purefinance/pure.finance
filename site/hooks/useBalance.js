@@ -1,6 +1,7 @@
 import { useContext } from 'react'
-import { useWeb3React } from '@web3-react/core'
 import useSWR from 'swr'
+import { useWeb3React } from '@web3-react/core'
+
 import PureContext from '../components/context/Pure'
 
 export const useBalance = function ({ symbol }) {
@@ -28,7 +29,7 @@ export const useBalance = function ({ symbol }) {
   )
   return {
     data,
-    error: error,
+    error,
     isLoading: !data && !error,
     mutate
   }
