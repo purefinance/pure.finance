@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useWeb3React } from '@web3-react/core'
 import { util } from 'erc-20-lib'
 import debounce from 'lodash.debounce'
-import vesperMetadata from 'vesper-metadata'
+import vesperTokens from 'vesper-metadata/src/vesper.tokenlist.json'
 import useTranslation from 'next-translate/useTranslation'
 
 import { fromUnit, toUnit } from '../utils'
@@ -13,22 +13,6 @@ import Button from '../components/Button'
 import Input from '../components/Input'
 import Layout from '../components/Layout'
 import PureContext from '../components/context/Pure'
-
-const extraTokens = [].concat(
-  // Include all Vesper pool tokens and the VSP token.
-  vesperMetadata.pools.map((p) => ({ ...p, symbol: p.name })),
-  vesperMetadata.tokens,
-  // Include the VUSD token.
-  // In the future, this data should come from vusd-lib.
-  [
-    {
-      symbol: 'VUSD',
-      address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
-      decimals: 18,
-      chainId: 1
-    }
-  ]
-)
 
 const useTokenInput = function (address, onChange, allowAnyAddress) {
   const { t } = useTranslation('common')
@@ -53,7 +37,7 @@ const useTokenInput = function (address, onChange, allowAnyAddress) {
       const addressPromise = isAddress(value)
         ? Promise.resolve(value)
         : Promise.resolve(
-            util.tokenAddress(value, extraTokens) ||
+            util.tokenAddress(value, vesperTokens.tokens) ||
               library.eth.ens
                 .getAddress(value)
                 .catch((err) => console.log(err) || null)
