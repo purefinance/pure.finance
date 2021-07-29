@@ -4,6 +4,7 @@ const watchAsset = function (params) {
   const { account, chainId, token } = params
   const { address, decimals, image, symbol } = token
 
+  // @ts-ignore ts(2339)
   const { ethereum } = window
   if (!ethereum || !ethereum.isMetaMask) {
     return

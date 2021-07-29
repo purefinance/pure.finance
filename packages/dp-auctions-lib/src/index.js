@@ -132,7 +132,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
   // Get the list of auctions of a collection. In addition to the data returned
   // by the contract, additional data is added for easier display in the UI.
   //
-  // TODO this function should be memoized. If the total number of auctions did
+  // TODO this function could be memoized. If the total number of auctions did
   // not change or the collection length did not change, it is safe to return
   // a cached list.
   const getCollectionAuctions = function (collectionId) {

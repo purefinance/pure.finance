@@ -16,6 +16,7 @@ import Transactions from '../../../components/Transactions'
 import fetchJson from '../../../utils/fetch-json'
 import { fromUnit } from '../../../utils'
 import ssDpa from '../../../utils/dp-auctions'
+import { useRegisterToken } from '../../../hooks/useRegisterToken'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -230,6 +231,7 @@ const DPAuctionBuyControl = function ({ auction }) {
   const { t } = useTranslation('common')
   const { account, active, library: web3 } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionsContext)
+  const registerToken = useRegisterToken()
 
   const [dpa, setDpa] = useState(null)
   useEffect(
@@ -254,9 +256,8 @@ const DPAuctionBuyControl = function ({ auction }) {
       .then(setCanBid)
   })
 
-  // TODO disable the button and re-enable later
   const handleBuyAuctionClick = function () {
-    const opId = Date.now() // TODO use a sequence
+    const opId = Date.now()
 
     const { emitter } = dpa.bidAuction(auction.id, { from: account })
 
@@ -297,17 +298,17 @@ const DPAuctionBuyControl = function ({ auction }) {
         })
       })
       .on('result', function ({ fees, status, price }) {
-        // TODO register received tokens.
         addTransactionStatus({
           actualFee: fromUnit(fees),
           opId,
           transactionStatus: status ? 'confirmed' : 'canceled',
           sent: fromUnit(price, auction.paymentToken.decimals)
         })
+        auction.tokens.forEach(registerToken)
       })
       .on('error', function (err) {
         addTransactionStatus({
-          message: err.message, // TODO translate
+          message: err.message,
           opId,
           transactionStatus: 'error'
         })

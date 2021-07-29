@@ -6,7 +6,6 @@ import Modal from './Modal'
 import SvgContainer from './svg/SvgContainer'
 import { useNumberFormat } from '../hooks/useNumberFormat'
 
-// TODO tipLink???
 const TransactionModalRow = function ({ text, value, tipLink = '' }) {
   return (
     <JustifiedBetweenRow

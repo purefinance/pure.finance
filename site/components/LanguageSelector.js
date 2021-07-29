@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 
-// FIXME Fix the language selection for pages with query params (auctionId).
 const LanguageSelector = function () {
   const { asPath, locale, locales } = useRouter()
   const { t } = useTranslation()

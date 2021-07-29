@@ -323,7 +323,7 @@ const TokenRevokes = function () {
     <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
       {tokenApprovals.length > 0 && (
         <section className="flex flex-col overflow-x-auto">
-          <div className="grid my-6 grid-cols-approval-sm md:grid-cols-approval place-content-center gap-y-5 gap-x-12">
+          <div className="my-6 grid grid-cols-approval-sm md:grid-cols-approval place-content-center gap-y-5 gap-x-12">
             <span className="m-auto font-bold text-gray-600">{t('token')}</span>
             <span className="hidden m-auto font-bold text-gray-600 md:block">
               {t('spender-address')}
