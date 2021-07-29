@@ -5,6 +5,10 @@ const SvgContainer = function ({ name, ...props }) {
     return null
   }
   const SvgComponent = svgList[name.toLowerCase()]
+  if (!SvgComponent) {
+    console.warn(`SVG component missing: ${name}`)
+    return null
+  }
   return <SvgComponent {...props} />
 }
 
