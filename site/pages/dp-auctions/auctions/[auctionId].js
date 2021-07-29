@@ -397,31 +397,6 @@ const DPAuction = function ({ auction }) {
   )
 }
 
-// TODO Button for testing only. Remove! ***************************************
-const TestStopAuctionButton = function ({ auction }) {
-  const { t } = useTranslation('common')
-
-  const { account, active, library: web3 } = useWeb3React()
-
-  const handleStopAuctionClick = function () {
-    const dpa = createDpaLib(web3)
-    dpa
-      .stopAuction(auction.id, { from: account })
-      .promise.then(console.log)
-      .catch(console.warn)
-  }
-
-  return (
-    <Button
-      disabled={!active || auction.stopped || auction.payee !== account}
-      onClick={handleStopAuctionClick}
-    >
-      TEST - {t('stop-auction')} - TEST
-    </Button>
-  )
-}
-// *****************************************************************************
-
 // This is the main app component. It holds all the views like the auctions
 // list, the auction detail, etc.
 export default function DPAuctionsDetails({ auctionId, initialData, error }) {
@@ -448,11 +423,6 @@ export default function DPAuctionsDetails({ auctionId, initialData, error }) {
               <div>{error}</div>
             </>
           )}
-          {/* TODO this is for testing only. Remove! */}
-          <div className="mt-10">
-            <TestStopAuctionButton auction={auction} />
-          </div>
-          {/********************************************************************/}
         </div>
         <Transactions />
       </Layout>

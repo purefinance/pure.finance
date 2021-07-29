@@ -1,13 +1,10 @@
 import { DateTime } from 'luxon'
 import Link from 'next/link'
-import createDpaLib from 'dp-auctions-lib'
 import orderBy from 'lodash.orderby'
 import useSWR from 'swr'
 import { useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { useWeb3React } from '@web3-react/core'
 
-import Button from '../../components/Button'
 import Layout from '../../components/Layout'
 import TokenAmount from '../../components/TokenAmount'
 import fetchJson from '../../utils/fetch-json'
@@ -108,40 +105,6 @@ const DPAuctionsTable = function ({ auctions }) {
   )
 }
 
-// TODO Button for testing only. Remove! ***************************************
-const TestNewAuctionButton = function () {
-  const { t } = useTranslation('common')
-  const { account, active, library: web3 } = useWeb3React()
-
-  const handleNewAuctionClick = function () {
-    const dpa = createDpaLib(web3)
-    const auction = {
-      ceiling: '1000000000000000',
-      floor: '1',
-      collectionId: '0',
-      paymentToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-      payee: account,
-      endBlock: 12922000,
-      tokens: [
-        '0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421',
-        '0x6b175474e89094c44da98b954eedeac495271d0f'
-      ], // VSP, DAI
-      tokenAmounts: ['3250000000000000', '240000000000000']
-    }
-    dpa
-      .createAuction(auction, { from: account })
-      .promise.then(console.log)
-      .catch(console.warn)
-  }
-
-  return (
-    <Button disabled={!active} onClick={handleNewAuctionClick}>
-      TEST - {t('new-auction')} - TEST
-    </Button>
-  )
-}
-// *****************************************************************************
-
 // The auctions are grouped in collections. The default is collection ID 0. The
 // ID in the contracts is a uint256 so using strings here.
 //
@@ -175,11 +138,6 @@ export default function DPAuctions({ initialData, error }) {
           <DPAuctionsTable auctions={auctions} />
         )}
       </div>
-      {/* TODO This button is for testing purposes only. Remove! *************/}
-      <div className="mt-10">
-        <TestNewAuctionButton />
-      </div>
-      {/**********************************************************************/}
     </Layout>
   )
 }
