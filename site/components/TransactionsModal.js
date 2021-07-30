@@ -10,15 +10,19 @@ const TransactionModalRow = function ({ text, value, tipLink = '' }) {
   return (
     <JustifiedBetweenRow
       keyComponent={
-        <p
-          className={`text-gray-350 text-sm ${
-            tipLink ? 'flex justify-bewtween cursor-pointer' : ''
-          }`}
-          onClick={() => tipLink && window.open(tipLink, '_blank')}
-        >
-          {text}
-          {tipLink && <SvgContainer className="ml-1" name="questionmark" />}
-        </p>
+        tipLink ? (
+          <a
+            className={'text-gray-350 text-sm flex justify-bewtween'}
+            href={tipLink}
+            rel="noreferrer"
+            target={'_blank'}
+          >
+            {text}
+            <SvgContainer className="ml-1" name="questionmark" />
+          </a>
+        ) : (
+          <p className={'text-gray-350 text-sm'}>{text}</p>
+        )
       }
       valueComponent={<p className="text-sm font-semibold">{value}</p>}
     />
@@ -47,9 +51,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
           <button className="float-right" onClick={closeModal}>
             <SvgContainer name="close" />
           </button>
-          <p className="mb-2 font-bold text-left">
-            {t(`${transaction.operation}`)}
-          </p>
+          <p className="mb-2 font-bold text-left">{t(transaction.operation)}</p>
         </div>
         <div className="mt-4">
           {/* Values sent and received */}
@@ -73,7 +75,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
           <div className="py-4">
             <TransactionModalRow
               text={t('total-transactions')}
-              value={transaction.suffixes && transaction.suffixes.length}
+              value={transaction.suffixes.length}
             />
             <TransactionModalRow
               text={isConfirmed ? t('total-tx-fee') : t('estimated-tx-fee')}
@@ -109,21 +111,17 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                 }
               />
               {transaction[`transactionHash-${idx}`] && (
-                <>
-                  <TransactionModalRow
-                    text={t('transaction-hash')}
-                    value={
-                      <EtherscanLink
-                        tx={transaction[`transactionHash-${idx}`]}
-                      />
-                    }
-                  />
-                </>
+                <TransactionModalRow
+                  text={t('transaction-hash')}
+                  value={
+                    <EtherscanLink tx={transaction[`transactionHash-${idx}`]} />
+                  }
+                />
               )}
             </div>
           ))}
 
-          {/* Stauts icon and error message */}
+          {/* Status icon and error message */}
           <div className="pt-4 border-t border-gray-300">
             <SvgContainer
               className="m-auto"

@@ -9,7 +9,7 @@ npx lerna run --stream dev
 
 Then open the browser at http://localhost:3000.
 
-### Addind a new mini-app
+### Adding a new mini-app
 
 1. Add the new page component at `site/pages`.
 1. Add it to the `Utilities` component so it appears in the home page.

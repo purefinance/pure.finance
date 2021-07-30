@@ -24,7 +24,7 @@ const DPAuctionsRow = function ({ auction }) {
   const calcEndTime = () =>
     Date.now() +
     (auction.endBlock - auction.currentBlock) * ETH_BLOCK_TIME * 1000
-  const endTime = useUpdatingState(calcEndTime, 10000) // 10s
+  const endTime = useUpdatingState(calcEndTime, 10000, [auction.currentBlock]) // 10s
 
   return (
     <Link href={`dp-auctions/auctions/${auction.id}`}>

@@ -19,7 +19,6 @@ function Transactions() {
   return (
     <TransactionsModal
       closeModal={closeModal}
-      key={openedOpId}
       modalIsOpen={modalIsOpen}
       transaction={transaction}
     />
