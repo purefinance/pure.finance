@@ -11,7 +11,7 @@ import PureContext from '../components/context/Pure'
 
 function MerkleClaims() {
   const { t } = useTranslation('common')
-  const { active, account, chainId } = useWeb3React()
+  const { active, account } = useWeb3React()
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
@@ -65,7 +65,7 @@ function MerkleClaims() {
       })
       .catch((e) => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
-      .then(() => watchAsset({ account, chainId, token: holding.token }))
+      .then(() => watchAsset({ account, token: holding.token }))
   }
 
   useEffect(() => {

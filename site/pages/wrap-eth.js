@@ -51,7 +51,7 @@ const WrapUnwrapEth = function () {
   const [value, setValue] = useState('')
   const { t } = useTranslation('common')
 
-  const registerToken = useRegisterToken({ symbol: 'WETH' })
+  const registerToken = useRegisterToken()
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
@@ -81,7 +81,7 @@ const WrapUnwrapEth = function () {
         })
         .then(() =>
           Promise.all([
-            registerToken(),
+            registerToken({ symbol: 'WETH' }),
             reloadEthBalance(),
             reloadWethBalance()
           ])

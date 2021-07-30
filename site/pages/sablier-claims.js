@@ -11,7 +11,7 @@ import PureContext from '../components/context/Pure'
 
 function SablierClaims() {
   const { t } = useTranslation('common')
-  const { active, account, chainId } = useWeb3React()
+  const { active, account } = useWeb3React()
   const [streamID, setStreamID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [stream, setStream] = useState({ balance: '' })
@@ -61,7 +61,7 @@ function SablierClaims() {
       })
       .catch((e) => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
-      .then(() => watchAsset({ account, chainId, token: stream.token }))
+      .then(() => watchAsset({ account, token: stream.token }))
   }
 
   useEffect(() => {

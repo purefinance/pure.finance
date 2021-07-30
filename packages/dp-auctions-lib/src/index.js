@@ -15,8 +15,10 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const UNLIMITED = (2n ** 256n - 1n).toString()
 
 const tokens = [].concat(defaultTokens, vTokens)
-const tokenInfo = (tokenAddress) =>
-  tokens.find((token) => token.address === tokenAddress && token.chainId === 1)
+const tokenInfo = (tokenAddress, chainId = 1) =>
+  tokens.find(
+    (token) => token.address === tokenAddress && token.chainId === chainId
+  )
 
 const createDPAuctionsLib = function (web3, options = {}) {
   const { gasFactor = 2 } = options
@@ -24,7 +26,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
   debug('Creating Descending Price Auction helper library')
 
   const dpa = new web3.eth.Contract(dpaAbi, DPA_ADDRESS)
-  const router = getRouterContract(web3)
+  const router = getRouterContract(web3) // This only works for chainId 1
 
   const execTransactions = createExecutor({ web3, overestimation: gasFactor })
 
