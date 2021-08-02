@@ -10,15 +10,19 @@
     "src"
   ],
   "repository": "purefinance/pure.finance",
-  "scripts": {},
+  "scripts": {
+    "deps:check": "dependency-check --no-dev ."
+  },
   "bugs": {
     "url": "https://github.com/purefinance/pure.finance/issues"
   },
   "dependencies": {
     "@uniswap/default-token-list": "^2.0.0",
     "big.js": "^6.1.1",
+    "debug": "^4.3.2",
     "erc-20-abi": "^1.0.0",
     "erc-20-lib": "^1.0.0",
+    "p-series": "^2.1.0",
     "p-tap": "^4.0.0",
     "vesper-metadata": "^2.12.0"
   }
