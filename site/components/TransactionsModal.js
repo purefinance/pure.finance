@@ -12,7 +12,7 @@ const TransactionModalRow = function ({ text, value, tipLink = '' }) {
       keyComponent={
         tipLink ? (
           <a
-            className={'text-gray-350 text-sm flex justify-bewtween'}
+            className={'text-gray-350 text-sm flex justify-between'}
             href={tipLink}
             rel="noreferrer"
             target={'_blank'}
