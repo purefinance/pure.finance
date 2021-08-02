@@ -10,7 +10,7 @@ const { getRouterContract } = require('erc-20-lib/src/uniswap')
 const createExecutor = require('./exec-transactions')
 const dpaAbi = require('./abi.json')
 
-const DPA_ADDRESS = '0xeDceB6D349dEcb675BD4dDC90b5A05e3f813B56D'
+const DPA_ADDRESS = '0x164D41ceB60489D2e054394Fc05ED1894Db3898a' // Chain ID 1
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const UNLIMITED = (2n ** 256n - 1n).toString()
 
@@ -48,7 +48,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
       auction.tokens
         .map((token, i) => ({
           amount: auction.tokenAmounts[i],
-          ...tokenInfo(token)
+          ...tokenInfo(token) // TODO specify the chainId
         }))
         .map(addTokenValue(auction.paymentToken))
     )
@@ -56,27 +56,20 @@ const createDPAuctionsLib = function (web3, options = {}) {
   // If the auction is stopped, get the stopping price and stopping block. To do
   // so, look for the `AuctionStopped` event, get the block number and get the
   // current price at that block.
-  //
-  // Currently the event `AuctionStopped` has no indexed params so the result
-  // can only be filtered by ID here.
-  // See https://github.com/bloqpriv/pf-auctions/issues/17
   const getStoppingData = (auction) =>
     auction.stopped && auction.winner === ZERO_ADDRESS
       ? dpa
-          .getPastEvents('AuctionStopped', { fromBlock: auction.startBlock })
-          .then((events) =>
-            events.find((e) => e.returnValues.id === auction.id)
-          )
+          .getPastEvents('AuctionStopped', {
+            fromBlock: auction.startBlock,
+            id: auction.id
+          })
           .then(
-            (auctionStoppedEvent) =>
+            ([auctionStoppedEvent]) =>
               auctionStoppedEvent
-                ? dpa.methods
-                    .getCurrentPrice(auction.id)
-                    .call({}, auctionStoppedEvent.blockNumber)
-                    .then((stoppingPrice) => ({
-                      stoppingBlock: auctionStoppedEvent.blockNumber,
-                      stoppingPrice
-                    }))
+                ? {
+                    stoppingBlock: auctionStoppedEvent.blockNumber,
+                    stoppingPrice: auctionStoppedEvent.returnValues.price
+                  }
                 : {} // The auction floored (ended).
           )
       : {} // The auction is running or won.
@@ -104,7 +97,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
       ...auction,
       tokens: tokensData,
       tokenAmounts: null,
-      paymentToken: tokenInfo(auction.paymentToken),
+      paymentToken: tokenInfo(auction.paymentToken), // TODO specify the chainId
       currentValue: tokensData
         .reduce((sum, token) => sum + BigInt(token.value), BigInt(0))
         .toString(),
