@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --ignore-module next-secure-headers --no-dev pages/*",
+    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --ignore-module next-secure-headers --no-dev ./pages/*.js ./pages/*/*.js ./pages/*/*/*.js",
     "postinstall": "patch-package",
     "prestart": "npm run build",
     "start": "next start"
@@ -18,8 +18,11 @@
     "@web3-react/walletlink-connector": "^6.2.1",
     "autoprefixer": "^10.2.4",
     "big.js": "^6.0.3",
+    "dp-auctions-lib": "^1.0.0",
     "erc-20-lib": "^1.0.0",
     "lodash.debounce": "^4.0.8",
+    "lodash.orderby": "^4.6.0",
+    "luxon": "^2.0.1",
     "next": "^10.0.7",
     "next-secure-headers": "^2.2.0",
     "next-translate": "^1.0.6",
@@ -29,7 +32,8 @@
     "react-dom": "17.0.1",
     "swr": "^0.5.6",
     "tailwindcss": "^2.0.3",
-    "vesper-metadata": "^2.0.0",
+    "vesper-metadata": "^2.12.0",
+    "victory": "^35.9.2",
     "web3": "^1.3.0",
     "web3-utils": "^1.3.4"
   },

@@ -1,14 +1,15 @@
-import { useState, useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Big from 'big.js'
-import { useWeb3React } from '@web3-react/core'
-import Layout from '../components/Layout'
 import useTranslation from 'next-translate/useTranslation'
-import Input from '../components/Input'
+import { useWeb3React } from '@web3-react/core'
+
+import { fromUnit, toFixed, toUnit } from '../utils'
 import Button from '../components/Button'
+import Input from '../components/Input'
+import Layout from '../components/Layout'
 import PureContext from '../components/context/Pure'
-import { fromUnit, toUnit, toFixed } from '../utils'
-import { useRegisterToken } from '../hooks/useRegisterToken'
 import { useBalance } from '../hooks/useBalance'
+import { useRegisterToken } from '../hooks/useRegisterToken'
 
 const Operation = {
   Wrap: 1,
@@ -50,7 +51,7 @@ const WrapUnwrapEth = function () {
   const [value, setValue] = useState('')
   const { t } = useTranslation('common')
 
-  const registerToken = useRegisterToken({ symbol: 'WETH' })
+  const registerToken = useRegisterToken()
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
@@ -80,7 +81,7 @@ const WrapUnwrapEth = function () {
         })
         .then(() =>
           Promise.all([
-            registerToken(),
+            registerToken({ symbol: 'WETH' }),
             reloadEthBalance(),
             reloadWethBalance()
           ])

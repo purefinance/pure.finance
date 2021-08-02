@@ -1,3 +1,5 @@
 .github
+.nyc_output
+coverage
 site/.next
 site/out

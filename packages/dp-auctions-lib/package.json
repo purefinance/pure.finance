@@ -1,0 +1,25 @@
+{
+  "name": "dp-auctions-lib",
+  "version": "1.0.0",
+  "description": "> TODO: description",
+  "author": "Gabriel Montes <gabriel@bloq.com>",
+  "homepage": "https://github.com/purefinance/pure.finance#readme",
+  "license": "MIT",
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "repository": "purefinance/pure.finance",
+  "scripts": {},
+  "bugs": {
+    "url": "https://github.com/purefinance/pure.finance/issues"
+  },
+  "dependencies": {
+    "@uniswap/default-token-list": "^2.0.0",
+    "big.js": "^6.1.1",
+    "erc-20-abi": "^1.0.0",
+    "erc-20-lib": "^1.0.0",
+    "p-tap": "^4.0.0",
+    "vesper-metadata": "^2.12.0"
+  }
+}

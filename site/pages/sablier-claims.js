@@ -1,16 +1,17 @@
-import { useWeb3React } from '@web3-react/core'
-import { useContext, useState, useCallback, useEffect } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import debounce from 'lodash.debounce'
-import PureContext from '../components/context/Pure'
-import Layout from '../components/Layout'
-import Input from '../components/Input'
-import Button from '../components/Button'
-import { fromUnit, toFixed, watchAsset } from '../utils'
 import useTranslation from 'next-translate/useTranslation'
+import { useWeb3React } from '@web3-react/core'
+
+import { fromUnit, toFixed, watchAsset } from '../utils'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import Layout from '../components/Layout'
+import PureContext from '../components/context/Pure'
 
 function SablierClaims() {
   const { t } = useTranslation('common')
-  const { active, account, chainId } = useWeb3React()
+  const { active, account } = useWeb3React()
   const [streamID, setStreamID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [stream, setStream] = useState({ balance: '' })
@@ -60,7 +61,7 @@ function SablierClaims() {
       })
       .catch((e) => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
-      .then(() => watchAsset({ account, chainId, token: stream.token }))
+      .then(() => watchAsset({ account, token: stream.token }))
   }
 
   useEffect(() => {

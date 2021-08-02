@@ -1,7 +1,11 @@
 .DS_Store
 .env
+.env*.local
+!site/.env
 .eslintcache
+.nyc_output
 node_modules
-packages/**/recipients*.json
+packages/**/coverage
 packages/**/dataset*.json
+packages/**/recipients*.json
 site/public/test*.json

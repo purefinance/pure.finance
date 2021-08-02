@@ -4,31 +4,15 @@ import { useRouter } from 'next/router'
 import { useWeb3React } from '@web3-react/core'
 import { util } from 'erc-20-lib'
 import debounce from 'lodash.debounce'
-import vesperMetadata from 'vesper-metadata'
+import vesperTokens from 'vesper-metadata/src/vesper.tokenlist.json'
 import useTranslation from 'next-translate/useTranslation'
 
+import { fromUnit, toUnit } from '../utils'
+import { useFormButton } from '../hooks/useFormButton'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import Layout from '../components/Layout'
 import PureContext from '../components/context/Pure'
-
-import { fromUnit, toUnit } from '../utils'
-
-const extraTokens = [].concat(
-  // Include all Vesper pool tokens and the VSP token.
-  vesperMetadata.pools.map((p) => ({ ...p, symbol: p.name })),
-  vesperMetadata.tokens,
-  // Include the VUSD token.
-  // In the future, this data should come from vusd-lib.
-  [
-    {
-      symbol: 'VUSD',
-      address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
-      decimals: 18,
-      chainId: 1
-    }
-  ]
-)
 
 const useTokenInput = function (address, onChange, allowAnyAddress) {
   const { t } = useTranslation('common')
@@ -53,7 +37,7 @@ const useTokenInput = function (address, onChange, allowAnyAddress) {
       const addressPromise = isAddress(value)
         ? Promise.resolve(value)
         : Promise.resolve(
-            util.tokenAddress(value, extraTokens) ||
+            util.tokenAddress(value, vesperTokens.tokens) ||
               library.eth.ens
                 .getAddress(value)
                 .catch((err) => console.log(err) || null)
@@ -200,43 +184,6 @@ const useFeedback = function () {
   return [feedback, setFeedback]
 }
 
-const useFormButton = function (disabled, setFeedback, onClick) {
-  const { t } = useTranslation('common')
-  const { active } = useWeb3React()
-
-  const [inProgress, setInProgress] = useState(false)
-
-  const handleClick = function () {
-    setInProgress(true)
-    setFeedback('info', t('approval-in-progress'))
-    onClick()
-      .then(function () {
-        setFeedback('success', t('approval-succeeded'))
-      })
-      .catch(function (err) {
-        setFeedback('error', err.message)
-      })
-      .finally(function () {
-        setInProgress(false)
-      })
-  }
-
-  useEffect(
-    function () {
-      if (active) {
-        return
-      }
-      setInProgress(false)
-    },
-    [active]
-  )
-
-  return {
-    disabled: disabled || inProgress,
-    onClick: handleClick
-  }
-}
-
 const TokenApprovalsForm = function () {
   const { t } = useTranslation('common')
   const { account } = useWeb3React()
@@ -259,22 +206,45 @@ const TokenApprovalsForm = function () {
 
   const [feedback, setFeedback] = useFeedback()
 
+  // Depending on the progress state of the approval operation, set the feedback
+  // color and message.
+  const onProgress = function (err, state) {
+    if (err) {
+      setFeedback('error', err.message)
+      return
+    }
+
+    const messages = {
+      info: t('approval-in-progress'),
+      success: t('approval-succeeded')
+    }
+    setFeedback(state, messages[state])
+  }
+
+  // Set the approval buttons behavior, linking to the contract calls and
+  // progress feedback.
   const approveDisabled = !allowance
-  const approveButton = useFormButton(approveDisabled, setFeedback, () =>
-    tokenApprovals.approve(
-      token.address,
-      spender.address,
-      toUnit(allowance, token.decimals)
-    )
+  const approveButton = useFormButton(
+    approveDisabled,
+    () =>
+      tokenApprovals.approve(
+        token.address,
+        spender.address,
+        toUnit(allowance, token.decimals)
+      ),
+    onProgress
   )
-  const infiniteButton = useFormButton(approveDisabled, setFeedback, () =>
-    tokenApprovals
-      .approveInfinite(token.address, spender.address)
-      .then(() =>
-        tokenApprovals
-          .allowance(token.address, account, spender.address)
-          .then(setAllowance)
-      )
+  const infiniteButton = useFormButton(
+    approveDisabled,
+    () =>
+      tokenApprovals
+        .approveInfinite(token.address, spender.address)
+        .then(() =>
+          tokenApprovals
+            .allowance(token.address, account, spender.address)
+            .then(setAllowance)
+        ),
+    onProgress
   )
 
   return (

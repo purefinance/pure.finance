@@ -77,8 +77,22 @@
       }
     ],
     "rules": {
+      "arrow-body-style": [
+        "warn",
+        "never"
+      ],
+      "camelcase": "warn",
+      "new-cap": "warn",
       "no-shadow": "warn",
-      "no-use-before-define": "error"
+      "no-use-before-define": "error",
+      "object-shorthand": "warn",
+      "react/jsx-sort-props": "warn",
+      "sort-imports": [
+        "warn",
+        {
+          "allowSeparatedGroups": true
+        }
+      ]
     }
   },
   "husky": {

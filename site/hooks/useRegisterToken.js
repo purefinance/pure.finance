@@ -1,31 +1,32 @@
+import { tokens } from '@uniswap/default-token-list'
+import { useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
-import defaultTokenList from '@uniswap/default-token-list'
+
 import { watchAsset } from '../utils'
 
-export const useRegisterToken = function ({ symbol }) {
-  const { account, chainId } = useWeb3React()
+export const useRegisterToken = function () {
+  const { account, chainId: _chainId } = useWeb3React()
 
-  const registerToken = function () {
-    const token = defaultTokenList.tokens.find(
-      ({ symbol: tokenSymbol, chainId: tokenChainId }) =>
-        tokenSymbol === symbol && tokenChainId === chainId
-    )
-    if (!token) {
-      console.warn(
-        `Trying to register token ${symbol} but metadata was not found.`
-      )
-      return
-    }
-    const { logoURI, ...restOfToken } = token
-    watchAsset({
-      account,
-      chainId,
-      token: {
-        ...restOfToken,
-        image: logoURI
+  // This is required to workaround ganache-cli to mess up with the chain ID.
+  const chainId = _chainId === 1337 ? 1 : _chainId
+
+  const registerToken = useCallback(
+    function (_token) {
+      const token = !_token.address
+        ? tokens.find(
+            (t) => t.symbol === _token.symbol && t.chainId === chainId
+          )
+        : { chainId, ..._token }
+
+      if (!token) {
+        console.warn(`Metadata not found for ${_token.symbol}:${chainId}.`)
+        return
       }
-    })
-  }
+
+      watchAsset({ account, token })
+    },
+    [account, chainId]
+  )
 
   return registerToken
 }

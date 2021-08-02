@@ -1,14 +1,15 @@
-import { useWeb3React } from '@web3-react/core'
-import React, { useState, useEffect, useContext } from 'react'
-import useTranslation from 'next-translate/useTranslation'
-import useSWR from 'swr'
+import React, { useContext, useEffect, useState } from 'react'
 import Big from 'big.js'
 import createErc20 from 'erc-20-lib'
-import Layout from '../components/Layout'
+import useSWR from 'swr'
+import useTranslation from 'next-translate/useTranslation'
+import { useWeb3React } from '@web3-react/core'
+
 import Button from '../components/Button'
 import { EtherscanLink } from '../components/EtherscanLink'
-import { fromUnit } from '../utils'
+import Layout from '../components/Layout'
 import PureContext from '../components/context/Pure'
+import { fromUnit } from '../utils'
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
 const APPROVAL_TOPIC =
@@ -247,7 +248,7 @@ function useTokenApprovals() {
     [active, library, account, chainId, setSyncBlock]
   )
 
-  return { ...syncBlock, syncStatus: syncStatus, setSyncStatus }
+  return { ...syncBlock, syncStatus, setSyncStatus }
 }
 
 const useErc20Token = function (address) {

@@ -1,6 +1,6 @@
 'use strict'
 
-const Big = require('big.js')
+const Big = require('big.js').default
 
 const watchAsset = require('./wallet-watch-asset')
 
