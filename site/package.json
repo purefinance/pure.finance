@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@uniswap/default-token-list": "^2.0.0",
-    "@web3-react/core": "^6.1.1",
+    "@web3-react/core": "6.1.9",
     "@web3-react/injected-connector": "^6.0.7",
-    "@web3-react/walletconnect-connector": "^6.1.9",
-    "@web3-react/walletlink-connector": "^6.2.1",
+    "@web3-react/walletconnect-connector": "6.2.4",
+    "@web3-react/walletlink-connector": "6.2.3",
     "autoprefixer": "^10.2.4",
     "big.js": "^6.0.3",
     "dp-auctions-lib": "^1.0.0",
