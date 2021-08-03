@@ -13,8 +13,8 @@ const noop = Function.prototype
  * @param {string} params.account The account that that will watch the token.
  * @param {object} params.token The token to watch (Uniswap Token List format).
  * @param {string} params.token.address The address.
- * @param {string} params.token.chainId The chain ID.
- * @param {string} [params.token.decimals] The decimals.
+ * @param {number} params.token.chainId The chain ID.
+ * @param {number} [params.token.decimals] The decimals.
  * @param {string} [params.token.logoURI] The logo URL.
  * @param {string} [params.token.symbol] The symbol.
  * @param {function} [callback] Called with the error on failure.
@@ -74,7 +74,7 @@ const watchAsset = function ({ account, token }, callback = noop) {
       callback()
     })
     .catch(function (err) {
-      debug('Failed: $s', err.message)
+      debug('Failed: %s', err.message)
       callback(err)
     })
 }
