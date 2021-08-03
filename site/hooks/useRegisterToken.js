@@ -2,7 +2,7 @@ import { tokens } from '@uniswap/default-token-list'
 import { useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
 
-import { watchAsset } from '../utils'
+import watchAsset from 'wallet-watch-asset'
 
 export const useRegisterToken = function () {
   const { account, chainId: _chainId } = useWeb3React()
