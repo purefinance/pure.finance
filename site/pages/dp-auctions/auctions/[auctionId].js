@@ -4,6 +4,7 @@ import createDpaLib from 'dp-auctions-lib'
 import useSWR from 'swr'
 import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
+import watchAsset from 'wallet-watch-asset'
 
 import TransactionsContext, {
   TransactionsContextProvider
@@ -16,7 +17,6 @@ import Transactions from '../../../components/Transactions'
 import fetchJson from '../../../utils/fetch-json'
 import { fromUnit } from '../../../utils'
 import ssDpa from '../../../utils/dp-auctions'
-import { useRegisterToken } from '../../../hooks/useRegisterToken'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -231,7 +231,6 @@ const DPAuctionBuyControl = function ({ auction }) {
   const { t } = useTranslation('common')
   const { account, active, library: web3 } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionsContext)
-  const registerToken = useRegisterToken()
 
   const [dpa, setDpa] = useState(null)
   useEffect(
@@ -304,7 +303,9 @@ const DPAuctionBuyControl = function ({ auction }) {
           transactionStatus: status ? 'confirmed' : 'canceled',
           sent: fromUnit(price, auction.paymentToken.decimals)
         })
-        auction.tokens.forEach(registerToken)
+        auction.tokens.forEach(function (token) {
+          watchAsset({ account, token })
+        })
       })
       .on('error', function (err) {
         addTransactionStatus({

@@ -1,7 +1,9 @@
 import { useContext, useEffect, useState } from 'react'
 import Big from 'big.js'
+import { tokens } from '@uniswap/default-token-list'
 import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
+import watchAsset from 'wallet-watch-asset'
 
 import { fromUnit, toFixed, toUnit } from '../utils'
 import Button from '../components/Button'
@@ -9,7 +11,6 @@ import Input from '../components/Input'
 import Layout from '../components/Layout'
 import PureContext from '../components/context/Pure'
 import { useBalance } from '../hooks/useBalance'
-import { useRegisterToken } from '../hooks/useRegisterToken'
 
 const Operation = {
   Wrap: 1,
@@ -35,7 +36,7 @@ const useTemporalMessage = function () {
 }
 
 const WrapUnwrapEth = function () {
-  const { active, account } = useWeb3React()
+  const { active, account, chainId } = useWeb3React()
   const { erc20 } = useContext(PureContext)
   const [operation, setOperation] = useState(Operation.Wrap)
   const {
@@ -50,8 +51,6 @@ const WrapUnwrapEth = function () {
   } = useBalance({ symbol: 'WETH' })
   const [value, setValue] = useState('')
   const { t } = useTranslation('common')
-
-  const registerToken = useRegisterToken()
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
@@ -72,6 +71,12 @@ const WrapUnwrapEth = function () {
 
     const erc20Service = erc20(account)
 
+    // Work around chain id issues with Ganache. Then find WETH token info.
+    const _chainId = chainId === 1337 ? 1 : chainId
+    const weth = tokens.find(
+      (token) => token.symbol === 'WETH' && token.chainId === _chainId
+    )
+
     if (isWrapping) {
       return erc20Service
         .wrapEther(valueInWei)
@@ -81,7 +86,7 @@ const WrapUnwrapEth = function () {
         })
         .then(() =>
           Promise.all([
-            registerToken({ symbol: 'WETH' }),
+            watchAsset({ account, token: weth }),
             reloadEthBalance(),
             reloadWethBalance()
           ])

@@ -1,6 +1,10 @@
+/* eslint-env browser */
+
 'use strict'
 
-const noop = () => undefined
+const debug = require('debug')('watch-asset')
+
+const noop = Function.prototype
 
 /**
  * Helper to let EIP-747 compatible wallets track ERC20 assets.
@@ -9,14 +13,20 @@ const noop = () => undefined
  * @param {string} params.account The account that that will watch the token.
  * @param {object} params.token The token to watch (Uniswap Token List format).
  * @param {string} params.token.address The address.
- * @param {string} params.token.chainId The chain ID.
- * @param {string} [params.token.decimals] The decimals.
+ * @param {number} params.token.chainId The chain ID.
+ * @param {number} [params.token.decimals] The decimals.
  * @param {string} [params.token.logoURI] The logo URL.
  * @param {string} [params.token.symbol] The symbol.
  * @param {function} [callback] Called with the error on failure.
  */
 const watchAsset = function ({ account, token }, callback = noop) {
   const { address, decimals, chainId, logoURI: image, symbol } = token
+
+  // If not running in a browser, error out.
+  if (!window) {
+    callback(new Error('Only browser environments are supported'))
+    return
+  }
 
   // The only wallet known for supporting EIP-747 so far is MetaMask.
   // @ts-ignore ts(2339)
@@ -60,11 +70,11 @@ const watchAsset = function ({ account, token }, callback = noop) {
       }
 
       window.localStorage.setItem(key, value.concat(tokenId))
-      console.log(`${symbol} added to the wallet's watch list`)
+      debug("%s added to the wallet's watch list", symbol)
       callback()
     })
     .catch(function (err) {
-      console.warn(`Failed: ${err.message}`)
+      debug('Failed: %s', err.message)
       callback(err)
     })
 }
