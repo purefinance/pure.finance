@@ -150,6 +150,23 @@ const createDPAuctionsLib = function (web3, options = {}) {
       )
   }
 
+  // Get the total number of collections. The contract returns the amount
+  // ignoring collection ID 0, which always exist. And even when the result is
+  // a uint256, just parse it to a number here. Are we going to have more than
+  // 2^53 collections in the near future?
+  const getTotalCollections = function () {
+    debug('Getting total collections')
+    return dpa.methods
+      .totalCollections()
+      .call()
+      .then((count) => Number.parseInt(count) + 1)
+      .then(
+        pTap(function (count) {
+          debug('There are %s collection%s', count, count === 1 ? '' : 's')
+        })
+      )
+  }
+
   // Checks if the auction is still running and if the account has enough
   // balance to bid for the auction at the current auction price. Token
   // allowance is not checked.
@@ -319,6 +336,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
     createAuction,
     getAuction,
     getCollectionAuctions,
+    getTotalCollections,
     stopAuction
   }
 }
