@@ -64,9 +64,13 @@
           "sourceType": "module"
         },
         "rules": {
+          "@next/next/no-html-link-for-pages": [
+            "warn",
+            "site/pages"
+          ],
+          "react/jsx-sort-props": "warn",
           "react/prop-types": "off",
           "react/react-in-jsx-scope": "off",
-          "react/jsx-sort-props": "warn",
           "sort-imports": [
             "warn",
             {
