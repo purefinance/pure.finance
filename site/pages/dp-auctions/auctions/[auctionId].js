@@ -121,7 +121,7 @@ const DPAuctionPriceChart = function ({ auction }) {
             axisLabel: { padding: 40 },
             ticks: { stroke: 'black', size: 5 }
           }}
-          tickFormat={(t) => t.toString()}
+          tickFormat={(tick) => tick.toString()}
           tickValues={xTickValues}
         />
         <VictoryAxis
@@ -241,19 +241,22 @@ const DPAuctionBuyControl = function ({ auction }) {
   )
 
   const [canBid, setCanBid] = useState(false)
-  useEffect(function () {
-    if (!dpa || account === auction.payee) {
-      setCanBid(false)
-      return
-    }
-    dpa
-      .canBidAuction(account, auction.id)
-      .catch(function () {
-        console.warn('Could not check if user can bid')
-        return false
-      })
-      .then(setCanBid)
-  })
+  useEffect(
+    function () {
+      if (!dpa || account === auction.payee) {
+        setCanBid(false)
+        return
+      }
+      dpa
+        .canBidAuction(account, auction.id)
+        .catch(function () {
+          console.warn('Could not check if user can bid')
+          return false
+        })
+        .then(setCanBid)
+    },
+    [dpa, account, auction]
+  )
 
   const handleBuyAuctionClick = function () {
     const opId = Date.now()
@@ -439,12 +442,21 @@ export const getStaticProps = ({ params }) =>
     .getAuction(params.auctionId, true)
     .then((initialData) => ({
       notFound: !initialData,
-      props: { auctionId: params.auctionId, initialData },
+      props: {
+        auctionId: params.auctionId,
+        initialData
+      },
       revalidate: ETH_BLOCK_TIME
     }))
     .catch((err) => ({
-      props: { auctionId: params.auctionId, error: err.message }
+      props: {
+        auctionId: params.auctionId,
+        error: err.message
+      }
     }))
 
 // Do not statically render any auction page.
-export const getStaticPaths = () => ({ paths: [], fallback: 'blocking' })
+export const getStaticPaths = () => ({
+  paths: [],
+  fallback: 'blocking'
+})

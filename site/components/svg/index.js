@@ -1,3 +1,4 @@
+import caret from './Caret'
 import checkmark from './Checkmark'
 import close from './Close'
 import coinbasewallet from './CoinbaseWallet'
@@ -6,7 +7,8 @@ import loading from './Loading'
 import metamask from './Metamask'
 import walletconnect from './WalletConnect'
 
-export default {
+const icons = {
+  caret,
   checkmark,
   close,
   coinbasewallet,
@@ -15,3 +17,5 @@ export default {
   metamask,
   walletconnect
 }
+
+export default icons
