@@ -282,7 +282,7 @@ const Allowance = function ({ address, data }) {
   })
   return (
     <span
-      className="w-full m-auto overflow-hidden whitespace-nowrap overflow-ellipsis"
+      className="m-auto w-full whitespace-nowrap overflow-hidden overflow-ellipsis"
       title={formatter.format(value)}
     >
       {isUnlimited ? t('unlimited') : formatter.format(value)}
@@ -323,15 +323,15 @@ const TokenRevokes = function () {
     <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
       {tokenApprovals.length > 0 && (
         <section className="flex flex-col overflow-x-auto">
-          <div className="my-6 grid grid-cols-approval-sm md:grid-cols-approval place-content-center gap-y-5 gap-x-12">
-            <span className="m-auto font-bold text-gray-600">{t('token')}</span>
-            <span className="hidden m-auto font-bold text-gray-600 md:block">
+          <div className="grid-cols-approval-sm md:grid-cols-approval grid gap-x-12 gap-y-5 place-content-center my-6">
+            <span className="m-auto text-gray-600 font-bold">{t('token')}</span>
+            <span className="hidden m-auto text-gray-600 font-bold md:block">
               {t('spender-address')}
             </span>
-            <span className="m-auto font-bold text-gray-600">
+            <span className="m-auto text-gray-600 font-bold">
               {t('allowance')}
             </span>
-            <span className="m-auto font-bold text-gray-600">
+            <span className="m-auto text-gray-600 font-bold">
               {t('actions')}
             </span>
             {tokenApprovals.map(

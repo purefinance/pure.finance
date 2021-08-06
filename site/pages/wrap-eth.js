@@ -140,10 +140,10 @@ const WrapUnwrapEth = function () {
   return (
     <Layout title={t('wrap-unwrap-eth')} walletConnection>
       <form
-        className="flex flex-col items-center w-full max-w-lg mx-auto"
+        className="flex flex-col items-center mx-auto w-full max-w-lg"
         onSubmit={handleSubmit}
       >
-        <div className="flex justify-center w-full my-7">
+        <div className="flex justify-center my-7 w-full">
           <button
             className={`w-full capitalize h-10 border-b ${
               isWrapDisabled
@@ -167,7 +167,7 @@ const WrapUnwrapEth = function () {
             {t('unwrap')}
           </button>
         </div>
-        <div className="w-full mb-7">
+        <div className="mb-7 w-full">
           <Input
             caption={getBalanceCaption(
               isWrapping ? wrapCaption : unwrapCaption
@@ -190,7 +190,7 @@ const WrapUnwrapEth = function () {
           />
         </div>
         <Button
-          className="uppercase mt-7.5"
+          className="mt-7.5 uppercase"
           disabled={
             !active ||
             !isValidNumber ||
@@ -202,10 +202,10 @@ const WrapUnwrapEth = function () {
         </Button>
       </form>
       {!!errorMessage && (
-        <p className="mt-6 text-sm text-center text-red-600">{errorMessage}</p>
+        <p className="mt-6 text-center text-red-600 text-sm">{errorMessage}</p>
       )}
       {!!successMessage && (
-        <p className="mt-6 text-sm text-center text-green-400">
+        <p className="mt-6 text-center text-green-400 text-sm">
           {successMessage}
         </p>
       )}

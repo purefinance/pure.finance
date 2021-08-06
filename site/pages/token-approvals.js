@@ -249,7 +249,7 @@ const TokenApprovalsForm = function () {
 
   return (
     <>
-      <div className="flex flex-wrap justify-center w-full max-w-lg mx-auto mt-10 space-y-4">
+      <div className="flex flex-wrap justify-center mt-10 mx-auto w-full max-w-lg space-y-4">
         <div className="w-full h-24">
           <Input
             placeholder={t('token-address-placeholder')}
@@ -270,12 +270,12 @@ const TokenApprovalsForm = function () {
           {...allowanceInput}
         />
       </div>
-      <div className="flex justify-center mt-7.5">
+      <div className="mt-7.5 flex justify-center">
         <Button {...approveButton}>
           {t('approve-allowance').toUpperCase()}
         </Button>
       </div>
-      <div className="flex justify-center mt-7.5">
+      <div className="mt-7.5 flex justify-center">
         <Button {...infiniteButton}>
           {t('approve-infinite').toUpperCase()}
         </Button>

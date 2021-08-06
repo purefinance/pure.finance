@@ -3,7 +3,7 @@ import Button from './Button'
 import useTranslation from 'next-translate/useTranslation'
 
 const UtilityBox = ({ buttonText, buttonHref }) => (
-  <div className="mx-2 mt-6">
+  <div className="mt-6 mx-2">
     <Link href={buttonHref}>
       <a>
         <div className="border-2 rounded-md">
@@ -25,8 +25,8 @@ const Utilities = function () {
   const { t } = useTranslation('common')
   return (
     <div className="flex flex-wrap justify-center w-full">
-      <div className="w-full mb-3.5">
-        <p className="font-bold text-center text-gray-600">{t('utilties')}</p>
+      <div className="mb-3.5 w-full">
+        <p className="text-center text-gray-600 font-bold">{t('utilties')}</p>
       </div>
       <UtilityBox buttonHref="/merkle-claims" buttonText={t('merkle-claims')} />
       <UtilityBox

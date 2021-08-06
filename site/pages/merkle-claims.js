@@ -78,7 +78,7 @@ function MerkleClaims() {
 
   return (
     <Layout title={t('merkle-claims')} walletConnection>
-      <div className="flex flex-wrap justify-center w-full max-w-lg mx-auto mt-10 space-y-3">
+      <div className="flex flex-wrap justify-center mt-10 mx-auto w-full max-w-lg space-y-3">
         <Input
           disabled={!active || claimInProgress}
           onChange={handleClaimIDChange}
@@ -95,9 +95,9 @@ function MerkleClaims() {
           }
         />
       </div>
-      <div className="flex justify-center mt-7.5">
+      <div className="mt-7.5 flex justify-center">
         <Button
-          className="flex justify-center mt-7.5"
+          className="mt-7.5 flex justify-center"
           disabled={!active || !holding.isClaimable || claimInProgress}
           onClick={handleClaimSubmit}
         >
