@@ -5,7 +5,6 @@ import useSWR from 'swr'
 import { useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
 
-import Button from '../../../components/Button'
 import Dropdown from '../../../components/Dropdown'
 import Layout from '../../../components/Layout'
 import SvgContainer from '../../../components/svg/SvgContainer'
@@ -94,16 +93,18 @@ const DPAuctionsTable = function ({ auctions }) {
       ) : (
         <div>{t('no-auctions')}</div>
       )}
-      <div className="mt-2">
-        <input
-          checked={showEnded}
-          className="mr-1"
-          id="ended-toggle"
-          onChange={() => setShowEnded(!showEnded)}
-          type="checkbox"
-        />
-        <label htmlFor="ended-toggle">{t('show-ended-auctions')}</label>
-      </div>
+      {auctions.length ? (
+        <div className="mt-2">
+          <input
+            checked={showEnded}
+            className="mr-1"
+            id="ended-toggle"
+            onChange={() => setShowEnded(!showEnded)}
+            type="checkbox"
+          />
+          <label htmlFor="ended-toggle">{t('show-ended-auctions')}</label>
+        </div>
+      ) : null}
     </>
   )
 }
