@@ -119,7 +119,7 @@ const createCollectionSelector = (collectionId) =>
     const rotate = isOpen ? 'transform rotate-180' : ''
     return (
       <div className="font-bold">
-        {t('collection')} {collectionId}
+        {t('collection', { collectionId })}
         <SvgContainer
           className={`absolute inline w-6 h-6 fill-current ${rotate}`}
           name="caret"
@@ -144,13 +144,11 @@ const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
           {new Array(count).fill(null).map((_, i) =>
             Number.parseInt(collectionId) === i ? (
               <li className={'font-bold'} key={i}>
-                {t('collection')} {i}
+                {t('collection', { collectionId: i })}
               </li>
             ) : (
               <Link href={`/dp-auctions/collections/${i}`} passHref>
-                <li key={i}>
-                  {t('collection')} {i}
-                </li>
+                <li key={i}>{t('collection', { collectionId: i })}</li>
               </Link>
             )
           )}
