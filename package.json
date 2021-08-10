@@ -4,25 +4,25 @@
   "license": "MIT",
   "author": "Gabriel Montes",
   "scripts": {
-    "format": "prettier --write .",
     "format:check": "prettier --check .",
     "deps:check": "lerna run --stream deps:check",
     "lint": "eslint --cache .",
-    "lint:fix": "eslint --cache --fix .",
     "postinstall": "lerna bootstrap",
     "test": "lerna run --stream test"
   },
   "devDependencies": {
     "dependency-check": "^4.1.0",
     "eslint": "^7.29.0",
+    "eslint-config-next": "^11.0.1",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-tailwind": "^0.2.1",
     "husky": "^4.3.8",
     "lerna": "^4.0.0",
     "lint-staged": "^10.5.4",
+    "next": "^11.0.1",
     "precinct": "^8.1.0",
-    "prettier": "^2.3.1"
+    "prettier": "^2.3.1",
+    "prettier-plugin-tailwind": "^2.2.12",
+    "tailwindcss": "^2.2.7"
   },
   "eslintConfig": {
     "env": {
@@ -54,8 +54,7 @@
         },
         "extends": [
           "eslint:recommended",
-          "plugin:react/recommended",
-          "plugin:tailwind/recommended",
+          "next",
           "prettier"
         ],
         "parserOptions": {
@@ -65,9 +64,19 @@
           "sourceType": "module"
         },
         "rules": {
+          "@next/next/no-html-link-for-pages": [
+            "warn",
+            "site/pages"
+          ],
+          "react/jsx-sort-props": "warn",
           "react/prop-types": "off",
           "react/react-in-jsx-scope": "off",
-          "react/jsx-sort-props": "warn"
+          "sort-imports": [
+            "warn",
+            {
+              "allowSeparatedGroups": true
+            }
+          ]
         },
         "settings": {
           "react": {
@@ -85,14 +94,7 @@
       "new-cap": "warn",
       "no-shadow": "warn",
       "no-use-before-define": "error",
-      "object-shorthand": "warn",
-      "react/jsx-sort-props": "warn",
-      "sort-imports": [
-        "warn",
-        {
-          "allowSeparatedGroups": true
-        }
-      ]
+      "object-shorthand": "warn"
     }
   },
   "husky": {
@@ -102,8 +104,8 @@
     }
   },
   "lint-staged": {
-    "*.js": "npm run lint:fix",
-    "*.{css,js,json,md}": "npm run format"
+    "*.js": "eslint --cache --fix",
+    "*.{css,js,json,md}": "prettier --write"
   },
   "prettier": {
     "semi": false,

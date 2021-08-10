@@ -14,14 +14,14 @@ const WalletConnectionModal = function ({
       modalIsOpen={modalIsOpen}
       onRequestClose={onRequestClose}
     >
-      <h1 className="px-10 pt-10 pb-5 text-xl font-bold text-center ">
+      <h1 className="pb-5 pt-10 px-10 text-center text-xl font-bold">
         {t('connect-wallet')}
       </h1>
       <div className="flex flex-wrap justify-center pb-10 lg:px-20">
         {wallets.map((w) => (
           <div className="p-4" key={w.name}>
             <button
-              className="flex items-center justify-center px-4 py-2 font-semibold border rounded w-60 focus:outline-none focus:ring "
+              className="flex items-center justify-center px-4 py-2 w-60 font-semibold border rounded focus:outline-none focus:ring"
               onClick={() => w.handleConnection()}
             >
               <SvgContainer

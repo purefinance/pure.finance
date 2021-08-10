@@ -17,10 +17,10 @@ const Modal = function ({ onRequestClose, children, ...props }) {
 const ModalContainer = function ({ modalIsOpen, ...props }) {
   return modalIsOpen ? (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+      <div className="fixed z-50 inset-0 flex items-center justify-center outline-none focus:outline-none overflow-x-hidden overflow-y-auto">
         <Modal {...props} />
       </div>
-      <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
+      <div className="fixed z-40 inset-0 bg-black opacity-25"></div>
     </>
   ) : null
 }

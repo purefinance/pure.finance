@@ -41,7 +41,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
 
   return (
     <Modal
-      className="relative flex flex-col w-full h-screen bg-white border-0 shadow-lg outline-none max-w-screen-sm focus:outline-none md:rounded-lg md:h-auto"
+      className="relative flex flex-col w-full max-w-screen-sm h-screen bg-white border-0 outline-none focus:outline-none shadow-lg md:h-auto md:rounded-lg"
       modalIsOpen={modalIsOpen}
       onRequestClose={closeModal}
     >
@@ -51,7 +51,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
           <button className="float-right" onClick={closeModal}>
             <SvgContainer name="close" />
           </button>
-          <p className="mb-2 font-bold text-left">{t(transaction.operation)}</p>
+          <p className="mb-2 text-left font-bold">{t(transaction.operation)}</p>
         </div>
         <div className="mt-4">
           {/* Values sent and received */}
@@ -85,7 +85,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
             />
             <JustifiedBetweenRow
               keyComponent={
-                <p className="text-sm text-gray-350">{t('global-tx-status')}</p>
+                <p className="text-gray-350 text-sm">{t('global-tx-status')}</p>
               }
               valueComponent={
                 <p className="text-sm font-semibold">
@@ -129,7 +129,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
             />
             {transaction.message && (
               <p className="mt-1 text-center">
-                <span className="text-sm font-semibold text-red-600">
+                <span className="text-red-600 text-sm font-semibold">
                   {transaction.message}
                 </span>
               </p>

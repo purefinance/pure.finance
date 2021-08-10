@@ -5,9 +5,9 @@ import useTranslation from 'next-translate/useTranslation'
 const Footer = function () {
   const { t } = useTranslation('common')
   return (
-    <div className="flex flex-wrap justify-center w-full mt-20">
+    <div className="flex flex-wrap justify-center mt-20 w-full">
       <div className="w-full">
-        <p className="text-xs font-semibold text-center opacity-75 text-vesper">
+        <p className="text-vesper text-center text-xs font-semibold opacity-75">
           {t('sponsored-by').toUpperCase()}
         </p>
       </div>
@@ -16,7 +16,7 @@ const Footer = function () {
           <Vesper />
         </a>
       </div>
-      <div className="flex justify-between w-full pt-3 mt-20 text-xs text-gray-500 border-t-2 space-x-4">
+      <div className="flex justify-between mt-20 pt-3 w-full text-gray-500 text-xs border-t-2 space-x-4">
         <div className="w-1/2">
           <p>{t('copyright')}</p>
         </div>

@@ -3,7 +3,7 @@ import Utilities from '../components/Utilities'
 
 const HomePage = () => (
   <Layout>
-    <div className="w-full mb-14">
+    <div className="mb-14 w-full">
       <Utilities />
     </div>
   </Layout>

@@ -20,7 +20,7 @@
   "claim-in-progress": "Claim in Progress",
   "claim-succeeded": "Claim Succeeded",
   "claim": "Claim",
-  "collection": "Collection",
+  "collection": "Collection {{collectionId}}",
   "connect-to-sync": "Please connect your wallet to search for approvals.",
   "connect-wallet": "Connect wallet",
   "contains": "Contains",

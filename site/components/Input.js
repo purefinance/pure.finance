@@ -1,18 +1,18 @@
 const InputTitle = ({ title }) => (
-  <p className="font-bold text-center text-gray-600 mb-1.5">{title}</p>
+  <p className="mb-1.5 text-center text-gray-600 font-bold">{title}</p>
 )
 
 const SimpleInput = (props) => (
-  <input {...props} className="w-full h-10 text-center align-middle border-2" />
+  <input {...props} className="align-middle w-full h-10 text-center border-2" />
 )
 
 const SuffixedInput = ({ suffix, ...props }) => (
-  <div className="flex w-full h-10 text-center align-middle border-2">
+  <div className="flex align-middle w-full h-10 text-center border-2">
     <input
       {...props}
-      className="flex-1 pl-16 text-center border-r-2 tabular-nums"
+      className="flex-1 pl-16 text-center tabular-nums border-r-2"
     />
-    <div className="w-16 m-auto text-center">{suffix}</div>
+    <div className="m-auto w-16 text-center">{suffix}</div>
   </div>
 )
 

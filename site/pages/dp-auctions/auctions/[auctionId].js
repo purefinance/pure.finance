@@ -121,7 +121,7 @@ const DPAuctionPriceChart = function ({ auction }) {
             axisLabel: { padding: 40 },
             ticks: { stroke: 'black', size: 5 }
           }}
-          tickFormat={(t) => t.toString()}
+          tickFormat={(tick) => tick.toString()}
           tickValues={xTickValues}
         />
         <VictoryAxis
@@ -241,19 +241,22 @@ const DPAuctionBuyControl = function ({ auction }) {
   )
 
   const [canBid, setCanBid] = useState(false)
-  useEffect(function () {
-    if (!dpa || account === auction.payee) {
-      setCanBid(false)
-      return
-    }
-    dpa
-      .canBidAuction(account, auction.id)
-      .catch(function () {
-        console.warn('Could not check if user can bid')
-        return false
-      })
-      .then(setCanBid)
-  })
+  useEffect(
+    function () {
+      if (!dpa || account === auction.payee) {
+        setCanBid(false)
+        return
+      }
+      dpa
+        .canBidAuction(account, auction.id)
+        .catch(function () {
+          console.warn('Could not check if user can bid')
+          return false
+        })
+        .then(setCanBid)
+    },
+    [dpa, account, auction]
+  )
 
   const handleBuyAuctionClick = function () {
     const opId = Date.now()
@@ -337,7 +340,7 @@ const DPAuctionBuyControl = function ({ auction }) {
               % {t('of-value')})
             </div>
           </div>
-          <div className="w-full mt-4">
+          <div className="mt-4 w-full">
             <Button disabled={!canBid} onClick={handleBuyAuctionClick}>
               {t('buy-auction')}
             </Button>
@@ -376,10 +379,10 @@ const DPAuction = function ({ auction }) {
   return (
     <>
       <div className="flex">
-        <div className="w-1/2 mr-4">
+        <div className="mr-4 w-1/2">
           <DPAuctionPriceChart auction={auction} />
         </div>
-        <div className="w-1/2 ml-4">
+        <div className="ml-4 w-1/2">
           <div className="mb-2">
             {t('seller')}: <EtherscanLink address={auction.payee} />
           </div>
@@ -387,10 +390,10 @@ const DPAuction = function ({ auction }) {
         </div>
       </div>
       <div className="flex mt-8">
-        <div className="w-1/2 mr-4">
+        <div className="mr-4 w-1/2">
           <DPAuctionBuyControl auction={auction} />
         </div>
-        <div className="w-1/2 mr-4">
+        <div className="mr-4 w-1/2">
           <DPAuctionEndStatus auction={auction} />
         </div>
       </div>
@@ -412,8 +415,8 @@ export default function DPAuctionsDetails({ auctionId, initialData, error }) {
   return (
     <TransactionsContextProvider>
       <Layout title={t('dp-auctions')} walletConnection>
-        <div className="w-full mt-10">
-          <div className="font-bold text-gray-600 mb-1.5">
+        <div className="mt-10 w-full">
+          <div className="mb-1.5 text-gray-600 font-bold">
             {t('auction')} {auctionId}
           </div>
           {auction ? (
@@ -439,12 +442,21 @@ export const getStaticProps = ({ params }) =>
     .getAuction(params.auctionId, true)
     .then((initialData) => ({
       notFound: !initialData,
-      props: { auctionId: params.auctionId, initialData },
+      props: {
+        auctionId: params.auctionId,
+        initialData
+      },
       revalidate: ETH_BLOCK_TIME
     }))
     .catch((err) => ({
-      props: { auctionId: params.auctionId, error: err.message }
+      props: {
+        auctionId: params.auctionId,
+        error: err.message
+      }
     }))
 
 // Do not statically render any auction page.
-export const getStaticPaths = () => ({ paths: [], fallback: 'blocking' })
+export const getStaticPaths = () => ({
+  paths: [],
+  fallback: 'blocking'
+})
