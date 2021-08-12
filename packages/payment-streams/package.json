@@ -1,0 +1,28 @@
+{
+  "name": "pf-payment-streams",
+  "version": "1.0.0",
+  "author": "Gabriel Montes <gabriel@bloq.com>",
+  "homepage": "https://github.com/purefinance/pure.finance#readme",
+  "license": "MIT",
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "repository": "purefinance/pure.finance",
+  "scripts": {
+    "deps:check": "dependency-check --no-dev .",
+    "postinstall": "patch-package",
+    "test:e2e": "DEBUG=*,-mocha* DEBUG_COLORS=true E2E=true FORCE_COLOR=true mocha --bail --exit test/e2e.spec.js"
+  },
+  "dependencies": {
+    "debug": "^4.3.1",
+    "eth-exec-txs": "^1.0.0",
+    "p-tap": "^3.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "ganache-core": "^2.13.2",
+    "patch-package": "^6.4.7",
+    "web3": "^1.5.1"
+  }
+}

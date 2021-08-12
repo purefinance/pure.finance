@@ -55,6 +55,7 @@
   "not-enough-funds-unwrap": "Not enough WETH funds to Unwrap",
   "not-enough-funds-wrap": "Not enough ETH funds to Wrap",
   "of-value": "of current value",
+  "payment-streams": "Payment Streams",
   "price": "Price",
   "reload": "Reload",
   "revoke": "Revoke",

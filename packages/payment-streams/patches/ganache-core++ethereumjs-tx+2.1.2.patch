@@ -1,0 +1,13 @@
+diff --git a/node_modules/ganache-core/node_modules/ethereumjs-tx/dist/transaction.js b/node_modules/ganache-core/node_modules/ethereumjs-tx/dist/transaction.js
+index 541962c..0bc5759 100644
+--- a/node_modules/ganache-core/node_modules/ethereumjs-tx/dist/transaction.js
++++ b/node_modules/ganache-core/node_modules/ethereumjs-tx/dist/transaction.js
+@@ -302,7 +302,7 @@ var Transaction = /** @class */ (function () {
+             return;
+         }
+         var vInt = ethereumjs_util_1.bufferToInt(v);
+-        if (vInt === 27 || vInt === 28) {
++        if (vInt === 0 || vInt === 1 || vInt === 27 || vInt === 28) {
+             return;
+         }
+         var isValidEIP155V = vInt === this.getChainId() * 2 + 35 || vInt === this.getChainId() * 2 + 36;
