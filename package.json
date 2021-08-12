@@ -5,12 +5,15 @@
   "author": "Gabriel Montes",
   "scripts": {
     "format:check": "prettier --check .",
-    "deps:check": "lerna run --stream deps:check",
+    "deps:check": "lerna run --stream --concurrency 1 deps:check",
     "lint": "eslint --cache .",
     "postinstall": "lerna bootstrap",
-    "test": "lerna run --stream test"
+    "test": "lerna run --stream --concurrency 1 test",
+    "test:e2e": "npx lerna run --stream --concurrency 1 test:e2e"
   },
   "devDependencies": {
+    "@types/mocha": "^9.0.0",
+    "chai": "^4.3.4",
     "dependency-check": "^4.1.0",
     "eslint": "^7.29.0",
     "eslint-config-next": "^11.0.1",
@@ -19,6 +22,7 @@
     "husky": "^4.3.8",
     "lerna": "^4.0.0",
     "lint-staged": "^10.5.4",
+    "mocha": "^9.0.3",
     "next": "^11.0.1",
     "precinct": "^8.1.0",
     "prettier": "^2.3.1",
