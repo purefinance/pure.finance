@@ -1,0 +1,21 @@
+{
+  "name": "eth-exec-txs",
+  "version": "1.0.0",
+  "author": "Gabriel Montes <gabriel@bloq.com>",
+  "homepage": "https://github.com/purefinance/pure.finance#readme",
+  "license": "MIT",
+  "main": "src/index.js",
+  "files": [
+    "src"
+  ],
+  "repository": "purefinance/pure.finance",
+  "scripts": {
+    "deps:check": "dependency-check --no-dev ."
+  },
+  "dependencies": {
+    "big.js": "^6.1.1",
+    "debug": "^4.3.1",
+    "p-series": "^2.1.0",
+    "p-tap": "^3.0.0"
+  }
+}

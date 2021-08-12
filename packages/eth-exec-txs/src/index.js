@@ -2,7 +2,7 @@
 
 const { EventEmitter } = require('events')
 const Big = require('big.js').default
-const debug = require('debug')('vesper-lib:exec-txs')
+const debug = require('debug')('eth-exec-txs')
 const pSeries = require('p-series')
 const pTap = require('p-tap').default
 

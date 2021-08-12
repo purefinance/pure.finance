@@ -1,17 +1,18 @@
 'use strict'
 
+const { getRouterContract } = require('erc-20-lib/src/uniswap')
 const { tokens: defaultTokens } = require('@uniswap/default-token-list')
 const { tokens: vTokens } = require('vesper-metadata/src/vesper.tokenlist.json')
+const createExecutor = require('eth-exec-txs')
 const debug = require('debug')('dpa')
 const erc20Abi = require('erc-20-abi')
 const pTap = require('p-tap').default
-const { getRouterContract } = require('erc-20-lib/src/uniswap')
 
-const createExecutor = require('./exec-transactions')
 const dpaAbi = require('./abi.json')
 
 const DPA_ADDRESS = '0x164D41ceB60489D2e054394Fc05ED1894Db3898a' // Chain ID 1
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
 const UNLIMITED = (2n ** 256n - 1n).toString()
 
 const tokens = [].concat(defaultTokens, vTokens)
@@ -61,7 +62,9 @@ const createDPAuctionsLib = function (web3, options = {}) {
       ? dpa
           .getPastEvents('AuctionStopped', {
             fromBlock: auction.startBlock,
-            id: auction.id
+            filter: {
+              id: auction.id
+            }
           })
           .then(
             ([auctionStoppedEvent]) =>

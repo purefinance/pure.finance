@@ -18,11 +18,10 @@
   },
   "dependencies": {
     "@uniswap/default-token-list": "^2.0.0",
-    "big.js": "^6.1.1",
     "debug": "^4.3.2",
+    "eth-exec-txs": "^1.0.0",
     "erc-20-abi": "^1.0.0",
     "erc-20-lib": "^1.0.0",
-    "p-series": "^2.1.0",
     "p-tap": "^3.0.0",
     "vesper-metadata": "^2.12.0"
   }
