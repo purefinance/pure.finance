@@ -17,8 +17,8 @@ Then open the browser at http://localhost:3000.
 
 ## End-to-end tests
 
-Set the following environment variables: `NODE_URL`, `NODE_BASE_URL`, `MNEMONIC`.
-Then start the fork and run the tests:
+Set the following environment variables: `NODE_URL`, `MNEMONIC`.
+Then run the tests:
 
 ```sh
 npm run test:e2e

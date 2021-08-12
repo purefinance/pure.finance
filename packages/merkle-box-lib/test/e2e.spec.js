@@ -4,8 +4,9 @@ require('chai').should()
 require('dotenv').config()
 
 const { MerkleTree } = require('merkletreejs')
+const { promisify } = require('util')
 const createErc20 = require('erc-20-lib')
-const HDWalletProvider = require('@truffle/hdwallet-provider')
+const ganache = require('ganache-core')
 const Web3 = require('web3')
 
 const createMerkleBox = require('..')
@@ -16,10 +17,11 @@ const checkTxSuccess = function (receipt) {
 }
 
 describe('End-to-end', function () {
+  this.timeout(60000) // 1m
+
   const tokenAddress = createErc20.util.tokenAddress('WETH')
 
-  let from
-  let acc1, acc2
+  let acc
   let web3
   let merkleBox
   let claimGroupId
@@ -32,29 +34,51 @@ describe('End-to-end', function () {
       return
     }
 
-    // Create a web3 instance with two accounts
-    const provider = new HDWalletProvider({
-      addressIndex: 0,
-      mnemonic: process.env.MNEMONIC,
-      numberOfAddresses: 3,
-      providerOrUrl: process.env.NODE_URL
-    })
-    from = Web3.utils.toChecksumAddress(provider.getAddress(0))
-    acc1 = Web3.utils.toChecksumAddress(provider.getAddress(1))
-    acc2 = Web3.utils.toChecksumAddress(provider.getAddress(2))
-    web3 = new Web3(provider)
+    let provider
+
+    const setProvider = function () {
+      // @ts-ignore ts(2351)
+      const _web3 = new Web3(process.env.BASE_NODE_URL)
+      return _web3.eth.getChainId().then(function (chainId) {
+        // @ts-ignore ts(2339)
+        provider = ganache.provider({
+          _chainIdRpc: chainId,
+          fork: process.env.BASE_NODE_URL,
+          logger: console,
+          mnemonic: process.env.MNEMONIC,
+          verbose: false // Log RPC calls and responses
+        })
+      })
+    }
+
+    const setWeb3 = function () {
+      // @ts-ignore ts(2339)
+      web3 = new Web3(provider)
+      return web3.eth.getChainId().then(function (chainId) {
+        console.log('  Using fork with chain id %s', chainId)
+      })
+    }
+
+    const setTestAccounts = function () {
+      const listAccountsAsync = promisify(
+        provider.manager.personal_listAccounts.bind(provider.manager)
+      )
+      return listAccountsAsync().then(function (accounts) {
+        acc = accounts.map(web3.utils.toChecksumAddress)
+      })
+    }
+
+    return setProvider().then(setWeb3).then(setTestAccounts)
   })
 
   it('should create a claim group', function () {
-    this.timeout(0)
-
     // Create a WETH helper
-    const params = { from, gasFactor: 2 }
+    const params = { from: acc[0], gasFactor: 2 }
     const erc20 = createErc20(web3, tokenAddress, params)
 
     // Create a MerkleBox helper
     const merkleBoxAddress = createMerkleBox.addresses.mainnet
-    merkleBox = createMerkleBox(web3, merkleBoxAddress, { from })
+    merkleBox = createMerkleBox(web3, merkleBoxAddress, { from: acc[0] })
 
     const wrapEther = function () {
       const amount = '500000000000000000' // 0.5 ETH
@@ -70,13 +94,13 @@ describe('End-to-end', function () {
     const bufferToHex = (buffer) => `0x${buffer.toString('hex')}`
 
     const hashRecipient = ({ account, amount }) =>
-      Web3.utils.soliditySha3(
+      web3.utils.soliditySha3(
         { t: 'address', v: account },
         { t: 'uint256', v: amount }
       )
 
     const keccak256 = (buffer) =>
-      hexToBuffer(Web3.utils.keccak256(bufferToHex(buffer)))
+      hexToBuffer(web3.utils.keccak256(bufferToHex(buffer)))
 
     const getMerkleTree = function (recipients) {
       const leaves = recipients.map(hashRecipient).map(hexToBuffer)
@@ -93,8 +117,8 @@ describe('End-to-end', function () {
 
     const createClaimGroup = function () {
       const recipients = [
-        { account: acc1, amount: '300000000000' }, // 0.0000003 WETH
-        { account: acc2, amount: '500000000000' } //  0.0000005 WETH
+        { account: acc[1], amount: '300000000000' }, // 0.0000003 WETH
+        { account: acc[2], amount: '500000000000' } //  0.0000005 WETH
       ]
       const total = recipients
         .reduce((sum, recipient) => sum + BigInt(recipient.amount), BigInt(0))
@@ -133,7 +157,7 @@ describe('End-to-end', function () {
 
     return merkleBox.getHolding(claimGroupId).then(function (info) {
       info.should.have.property('erc20')
-      Web3.utils.checkAddressChecksum(info.erc20).should.be.true
+      web3.utils.checkAddressChecksum(info.erc20).should.be.true
       info.should.have.property('balance')
       info.balance.should.equal(balance)
     })
