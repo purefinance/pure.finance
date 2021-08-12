@@ -55,6 +55,7 @@
   "not-enough-funds-unwrap": "没有足够的 WETH 资金来解封",
   "not-enough-funds-wrap": "没有足够的 ETH 资金来封装",
   "of-value": "当前值",
+  "payment-streams": "Payment Streams",
   "price": "价钱",
   "reload": "重新加载",
   "revoke": "撤销",

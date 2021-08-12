@@ -40,6 +40,10 @@ const Utilities = function () {
       <UtilityBox buttonHref="/wrap-eth" buttonText={t('wrap-unwrap-eth')} />
       <UtilityBox buttonHref="/token-revokes" buttonText={t('token-revokes')} />
       <UtilityBox buttonHref="/dp-auctions" buttonText={t('dp-auctions')} />
+      <UtilityBox
+        buttonHref="/payment-streams"
+        buttonText={t('payment-streams')}
+      />
     </div>
   )
 }
