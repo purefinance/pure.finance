@@ -69,7 +69,7 @@ const DPAuctionsTable = function ({ auctions }) {
   const sortedAuctions = orderBy(
     auctions.filter((auction) => showEnded || !auction.stopped),
     ['endBlock', 'id'],
-    ['desc', 'desc']
+    ['asc', 'desc']
   )
 
   return (
