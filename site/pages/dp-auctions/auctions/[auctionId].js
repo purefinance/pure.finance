@@ -247,6 +247,7 @@ const DPAuctionBuyControl = function ({ auction }) {
         setCanBid(false)
         return
       }
+      // eslint-disable-next-line promise/catch-or-return
       dpa
         .canBidAuction(account, auction.id)
         .catch(function () {

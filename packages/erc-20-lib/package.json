@@ -14,5 +14,8 @@
     "@uniswap/default-token-list": "^2.0.0",
     "debug": "^4.3.1",
     "erc-20-abi": "^1.0.0"
+  },
+  "engines": {
+    "node": "12"
   }
 }

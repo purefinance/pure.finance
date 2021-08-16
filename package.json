@@ -6,7 +6,7 @@
   "scripts": {
     "format:check": "prettier --check .",
     "deps:check": "lerna run --stream --concurrency 1 deps:check",
-    "lint": "eslint --cache .",
+    "lint": "eslint --cache --quiet .",
     "postinstall": "lerna bootstrap",
     "test": "lerna run --stream --concurrency 1 test",
     "test:e2e": "npx lerna run --stream --concurrency 1 test:e2e"
@@ -103,7 +103,13 @@
       "no-shadow": "warn",
       "no-use-before-define": "error",
       "object-shorthand": "warn",
-      "promise/always-return": "off"
+      "promise/always-return": "off",
+      "promise/catch-or-return": [
+        "error",
+        {
+          "allowFinally": true
+        }
+      ]
     }
   },
   "husky": {

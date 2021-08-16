@@ -17,7 +17,7 @@ Then open the browser at http://localhost:3000.
 
 ## End-to-end tests
 
-Set the following environment variables: `NODE_URL`, `MNEMONIC`.
+Set the following environment variables: `BASE_NODE_URL`, `MNEMONIC`.
 Then run the tests:
 
 ```sh

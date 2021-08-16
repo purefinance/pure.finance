@@ -24,5 +24,8 @@
     "erc-20-lib": "^1.0.0",
     "p-tap": "^3.0.0",
     "vesper-metadata": "^2.12.0"
+  },
+  "engines": {
+    "node": "12"
   }
 }

@@ -38,11 +38,13 @@ const useTokenInput = function (address, onChange, allowAnyAddress) {
         ? Promise.resolve(value)
         : Promise.resolve(
             util.tokenAddress(value, vesperTokens.tokens) ||
-              library.eth.ens
-                .getAddress(value)
-                .catch((err) => console.log(err) || null)
-          )
+              library.eth.ens.getAddress(value)
+          ).catch(function (err) {
+            console.log(err)
+            return null
+          })
 
+      // eslint-disable-next-line promise/catch-or-return
       addressPromise.then(function (addressFound) {
         if (!addressFound) {
           setTokenError(
