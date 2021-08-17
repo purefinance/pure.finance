@@ -1,7 +1,8 @@
 /**
  * Usage:
  *
- *   NODE_URL=http://node.url MNEMONIC="12 words..." node scripts/create-stream.js \
+ *   NODE_URL=http://node.url MNEMONIC="12 words..." node \
+ *     scripts/create-stream.js \
  *     0x1234...5678 \
  *     1000000 USDC \
  *     2021-03-08T19:49 2021-03-09
@@ -20,7 +21,7 @@ const createSablier = require('..')
 const [recipient, amount, token, start, stop] = process.argv.slice(2)
 
 const provider = new HDWalletProvider({
-  addressIndex: process.env.ACCOUNT || 0,
+  addressIndex: Number.parseInt(process.env.ACCOUNT) || 0,
   mnemonic: process.env.MNEMONIC,
   numberOfAddresses: 1,
   providerOrUrl: process.env.NODE_URL
