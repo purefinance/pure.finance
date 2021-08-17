@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
 /**
  * Usage:
  *
- *   NODE_URL=http://node.url MNEMONIC="12 words..." scripts/create-stream.js \
+ *   NODE_URL=http://node.url MNEMONIC="12 words..." node scripts/create-stream.js \
  *     0x1234...5678 \
  *     1000000 USDC \
  *     2021-03-08T19:49 2021-03-09

@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
 /**
  * Usage:
  *
- *   NODE_URL=http://node.url MNEMONIC="12 words..." scripts/create-claim-group.js \
+ *   NODE_URL=http://node.url MNEMONIC="12 words..." node scripts/create-claim-group.js \
  *     USDC http://dataset.url/file.json 2021-12-31
  */
 

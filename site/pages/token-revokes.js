@@ -202,6 +202,9 @@ function useTokenApprovals() {
             }
           })
         })
+        .catch(function (err) {
+          console.warn('Syncing failed:', err.message)
+        })
     },
     [
       library,

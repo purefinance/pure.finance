@@ -17,5 +17,8 @@
     "merkle-box-lib": "^1.0.0",
     "node-fetch": "^2.6.1",
     "sablier-lib": "^1.0.0"
+  },
+  "engines": {
+    "node": "12"
   }
 }

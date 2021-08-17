@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
 /**
  * Usage:
  *
- *   scripts/create-dataset.js ./recipients.json > dataset.json
+ *   node scripts/create-dataset.js ./recipients.json > dataset.json
  */
 
 'use strict'

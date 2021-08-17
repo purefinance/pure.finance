@@ -1,19 +1,22 @@
 const Button = function ({
   children,
-  onClick,
-  disabled,
   className = '',
+  disabled,
+  onClick,
   width = 'w-63',
   ...props
 }) {
-  const handleClick = () => (disabled || !onClick ? null : onClick())
+  const boxStyle = `py-3 rounded-3xl ${width} focus:outline-none`
+  const textStyle = 'font-bold text-center text-sm text-white uppercase'
+  const stateStyle = disabled
+    ? 'bg-gray-200 cursor-not-allowed'
+    : 'bg-black hover:bg-gray-800'
   return (
     <button
       {...props}
-      className={`${width} bg-black rounded-3xl py-3 text-white text-center font-bold text-sm focus:outline-none ${
-        disabled ? 'bg-gray-200 cursor-not-allowed' : 'hover:bg-gray-800'
-      } ${className}`}
-      onClick={handleClick}
+      className={`${boxStyle} ${textStyle} ${stateStyle} ${className}`}
+      disabled={disabled}
+      onClick={onClick}
     >
       {children}
     </button>
