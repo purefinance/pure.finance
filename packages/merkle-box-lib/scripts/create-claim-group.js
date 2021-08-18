@@ -1,7 +1,8 @@
 /**
  * Usage:
  *
- *   NODE_URL=http://node.url MNEMONIC="12 words..." node scripts/create-claim-group.js \
+ *   NODE_URL=http://node.url MNEMONIC="12 words..." node \
+ *     scripts/create-claim-group.js \
  *     USDC http://dataset.url/file.json 2021-12-31
  */
 
@@ -19,7 +20,7 @@ const createMerkleBox = require('..')
 const [token, datasetUrl, unlock] = process.argv.slice(2)
 
 const provider = new HDWalletProvider({
-  addressIndex: process.env.ACCOUNT || 0,
+  addressIndex: Number.parseInt(process.env.ACCOUNT) || 0,
   mnemonic: process.env.MNEMONIC,
   numberOfAddresses: 1,
   providerOrUrl: process.env.NODE_URL

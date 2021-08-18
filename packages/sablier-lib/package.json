@@ -4,7 +4,6 @@
   "license": "MIT",
   "author": "Gabriel Montes <gabriel@bloq.com>",
   "files": [
-    "scripts",
     "src"
   ],
   "main": "src/index.js",
