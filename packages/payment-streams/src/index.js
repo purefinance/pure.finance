@@ -10,8 +10,12 @@ const pTap = require('p-tap').default
 const createPaymentStreams = function (web3, options = {}) {
   debug('Creating Payment Streams library')
 
-  const { gasFactor = 2 } = options
-  const execTransactions = createExecutor({ web3, overestimation: gasFactor })
+  const { from, gasFactor = 2 } = options
+  const execTransactions = createExecutor({
+    from,
+    overestimation: gasFactor,
+    web3
+  })
 
   const psfPromise = web3.eth
     .getChainId()
