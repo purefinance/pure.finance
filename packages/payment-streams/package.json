@@ -24,5 +24,8 @@
     "ganache-core": "^2.13.2",
     "patch-package": "^6.4.7",
     "web3": "^1.5.1"
+  },
+  "engines": {
+    "node": ">=12"
   }
 }

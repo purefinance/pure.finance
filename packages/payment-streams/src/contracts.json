@@ -1,7 +1,9 @@
-[
-  {
-    "address": "0x49599EB7E3b4A69B802333c773692240204f3755",
-    "birthblock": 12877534,
-    "chainId": 1
-  }
-]
+{
+  "PaymentStreamFactory": [
+    {
+      "address": "0xf36adFC4C494797411B51a1D59B99278A672e1e4",
+      "birthblock": 13334000,
+      "chainId": 1
+    }
+  ]
+}

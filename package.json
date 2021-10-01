@@ -82,6 +82,7 @@
     "*.{css,js,json,md}": "prettier --write"
   },
   "prettier": {
+    "arrowParens": "avoid",
     "semi": false,
     "singleQuote": true,
     "tabWidth": 2,

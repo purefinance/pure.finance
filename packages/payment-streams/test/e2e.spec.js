@@ -30,13 +30,12 @@ describe('Payment Streams', function () {
   before(function () {
     if (!process.env.E2E) {
       this.skip()
-      return
+      return null
     }
 
     // Data needed to unlock the deployer/owner and add streaming tokens.
-    const paymentStreamAddress = '0x49599EB7E3b4A69B802333c773692240204f3755'
-    const paymentStreamBirthblock = 12877534
-    const paymentStreamDeployer = '0xC2a8814258F0bb54F9CC1Ec6ACb7a6886097b994'
+    // const paymentStreamBirthblock = 12877534
+    // const paymentStreamDeployer = '0xC2a8814258F0bb54F9CC1Ec6ACb7a6886097b994'
 
     let provider
 
@@ -49,11 +48,11 @@ describe('Payment Streams', function () {
         provider = ganache.provider({
           _chainIdRpc: chainId,
           fork: process.env.BASE_NODE_URL,
-          fork_block_number: paymentStreamBirthblock + 21, // Deployment + 5m
+          // fork_block_number: paymentStreamBirthblock + 21, // T + 5m
           logger: console,
           mnemonic: process.env.MNEMONIC,
-          unlocked_accounts: [paymentStreamDeployer],
-          verbose: false // Log RPC calls and responses
+          // unlocked_accounts: [paymentStreamDeployer],
+          verbose: true // Log RPC calls and responses
         })
         /* eslint-enable camelcase */
       })
@@ -80,27 +79,19 @@ describe('Payment Streams', function () {
       ps = createPaymentStreams(web3)
     }
 
-    const transferOwnership = function () {
-      return ps.getContract().then(function (contract) {
-        if (contract.options.address !== paymentStreamAddress) {
-          throw new Error('Outdated PaymentStream address')
-        }
-        return contract.methods
-          .transferOwnership(acc[0])
-          .send({ from: paymentStreamDeployer })
-      })
-    }
+    // const transferOwnership = () =>
+    //   ps.getFactoryContract().then((psf) => psf.methods
+    //       .transferOwnership(acc[0])
+    //       .send({ from: paymentStreamDeployer }))
 
-    return setProvider()
-      .then(setWeb3)
-      .then(setTestAccounts)
-      .then(setLibs)
-      .then(transferOwnership)
+    return setProvider().then(setWeb3).then(setTestAccounts).then(setLibs)
+    // .then(transferOwnership)
   })
 
   it('should get the list of supported tokens', function () {
+    const from = acc[0]
     return ps
-      .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from: acc[0] })
+      .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from })
       .promise.then(checkTxSuccess)
       .then(ps.getTokens)
       .then(function (tokens) {
@@ -110,16 +101,16 @@ describe('Payment Streams', function () {
   })
 
   it('should create a stream', function () {
+    const from = acc[0]
     const usdAmount = '100000000000000000000' // 100 USD
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
 
     return ps
-      .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from: acc[0] })
+      .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from })
       .promise.then(checkTxSuccess)
       .then(
         () =>
-          ps.createStream(acc[1], usdAmount, vspAddr, endTime, { from: acc[0] })
-            .promise
+          ps.createStream(acc[1], usdAmount, vspAddr, endTime, { from }).promise
       )
       .then(checkTxSuccess)
   })
@@ -139,9 +130,7 @@ describe('Payment Streams', function () {
             .promise
         ])
       )
-      .then(function (receipts) {
-        return receipts.map(checkTxSuccess)
-      })
+      .then(receipts => receipts.map(checkTxSuccess))
       .then(() => ps.getStreams(acc[2]))
       .then(function (streams) {
         streams.length.should.equal(1)

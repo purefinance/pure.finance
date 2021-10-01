@@ -2,7 +2,7 @@
 
 const debug = require('debug')('payment-streams')
 
-const abi = require('./abi.json')
+const paymentStreamFactoryAbi = require('./abis/PaymentStreamFactory.json')
 const contracts = require('./contracts.json')
 const createExecutor = require('eth-exec-txs')
 const pTap = require('p-tap').default
@@ -13,34 +13,37 @@ const createPaymentStreams = function (web3, options = {}) {
   const { gasFactor = 2 } = options
   const execTransactions = createExecutor({ web3, overestimation: gasFactor })
 
-  const psPromise = web3.eth
+  const psfPromise = web3.eth
     .getChainId()
     // .then((chainId) => (chainId === 1337 ? 1 : chainId)) // Ganache hack
     .then(function (chainId) {
-      const contract = contracts.find((c) => (c.chainId = chainId))
+      const contract = contracts.PaymentStreamFactory.find(
+        c => (c.chainId = chainId)
+      )
       if (!contract) {
         throw new Error(`PaymentStreams not available in chain ${chainId}`)
       }
-      const instance = new web3.eth.Contract(abi, contract.address)
+      const instance = new web3.eth.Contract(
+        paymentStreamFactoryAbi,
+        contract.address
+      )
       instance.options.birthblock = contract.birthblock
       return instance
     })
 
-  // Gets the PaymentStream contract.
-  const getContract = function () {
-    return psPromise
-  }
+  // Gets the PaymentStreamFactory contract.
+  const getFactoryContract = () => psfPromise
 
   // Gets all the supported tokens.
   const getTokens = function () {
     debug('Getting the supported tokens')
-    return psPromise
-      .then((ps) =>
-        ps.getPastEvents('TokenAdded', {
-          fromBlock: ps.options.birthblock
+    return psfPromise
+      .then(psf =>
+        psf.getPastEvents('TokenAdded', {
+          fromBlock: psf.options.birthblock
         })
       )
-      .then((events) => events.map((e) => e.returnValues.tokenAddress))
+      .then(events => events.map(e => e.returnValues.tokenAddress))
       .then(
         pTap(function (tokens) {
           // @ts-ignore ts(2339)
@@ -52,9 +55,9 @@ const createPaymentStreams = function (web3, options = {}) {
   // Gets all the information of the given stream.
   const getStream = function (id) {
     debug('Getting stream %s', id)
-    return psPromise
-      .then((ps) => ps.methods.getStream(id).call())
-      .then((stream) => ({ id, ...stream }))
+    return psfPromise
+      .then(psf => psf.methods.getStream(id).call())
+      .then(stream => ({ id, ...stream }))
       .then(
         pTap(function () {
           debug('Got stream %s', id)
@@ -67,20 +70,18 @@ const createPaymentStreams = function (web3, options = {}) {
   const getIncomingStreams = function (address) {
     debug('Getting all incoming streams of %s', address)
     return (
-      psPromise
-        .then((ps) =>
-          ps.getPastEvents('StreamCreated', {
-            fromBlock: ps.options.birthblock,
+      psfPromise
+        .then(psf =>
+          psf.getPastEvents('StreamCreated', {
+            fromBlock: psf.options.birthblock,
             filter: { payee: address }
           })
         )
         // TODO Need to filter the events here until
         // bloqpriv/pf-payment-stream#13 is solved
-        .then((events) =>
-          events.filter((e) => e.returnValues.payee === address)
-        )
-        .then((events) =>
-          Promise.all(events.map((e) => e.returnValues.id).map(getStream))
+        .then(events => events.filter(e => e.returnValues.payee === address))
+        .then(events =>
+          Promise.all(events.map(e => e.returnValues.id).map(getStream))
         )
         .then(
           pTap(function (streams) {
@@ -95,15 +96,15 @@ const createPaymentStreams = function (web3, options = {}) {
   // payer is the given address.
   const getOutgoingStreams = function (address) {
     debug('Getting all outgoing streams of %s', address)
-    return psPromise
-      .then((ps) =>
-        ps.getPastEvents('StreamCreated', {
-          fromBlock: ps.options.birthblock,
+    return psfPromise
+      .then(psf =>
+        psf.getPastEvents('StreamCreated', {
+          fromBlock: psf.options.birthblock,
           filter: { payer: address }
         })
       )
-      .then((events) =>
-        Promise.all(events.map((e) => e.returnValues.id).map(getStream))
+      .then(events =>
+        Promise.all(events.map(e => e.returnValues.id).map(getStream))
       )
       .then(
         pTap(function (streams) {
@@ -119,16 +120,16 @@ const createPaymentStreams = function (web3, options = {}) {
     return Promise.all([
       getIncomingStreams(address),
       getOutgoingStreams(address)
-    ]).then(([incoming, outgoing]) => incoming.concat(outgoing))
+    ]).then(([incoming, outgoing]) => ({ incoming, outgoing }))
   }
 
   // Adds a token so it can be used in streams.
   const addToken = function (token, dex, path, transactionOptions) {
     debug('Adding %s to valid tokens list', token)
 
-    const transactionsPromise = psPromise.then((ps) => [
+    const transactionsPromise = psfPromise.then(psf => [
       {
-        method: ps.methods.addToken(token, dex, path),
+        method: psf.methods.addToken(token, dex, path),
         suffix: 'add-token',
         gas: 900000
       }
@@ -150,6 +151,7 @@ const createPaymentStreams = function (web3, options = {}) {
   }
 
   // Creates a stream.
+  // eslint-disable-next-line max-params
   const createStream = function (
     payee,
     usdAmount,
@@ -161,9 +163,15 @@ const createPaymentStreams = function (web3, options = {}) {
 
     debug('Creating stream from %s to %s', from, payee)
 
-    const transactionsPromise = psPromise.then((ps) => [
+    const transactionsPromise = psfPromise.then(psf => [
       {
-        method: ps.methods.createStream(payee, usdAmount, token, from, endTime),
+        method: psf.methods.createStream(
+          payee,
+          usdAmount,
+          token,
+          from,
+          endTime
+        ),
         suffix: 'create-stream',
         gas: 300000
       }
@@ -187,7 +195,7 @@ const createPaymentStreams = function (web3, options = {}) {
   return {
     addToken,
     createStream,
-    getContract,
+    getFactoryContract,
     getStreams,
     getTokens
   }
