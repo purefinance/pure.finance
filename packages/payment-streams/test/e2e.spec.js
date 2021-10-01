@@ -52,7 +52,7 @@ describe('Payment Streams', function () {
           logger: console,
           mnemonic: process.env.MNEMONIC,
           // unlocked_accounts: [paymentStreamDeployer],
-          verbose: true // Log RPC calls and responses
+          verbose: false // Log RPC calls and responses
         })
         /* eslint-enable camelcase */
       })
@@ -133,15 +133,16 @@ describe('Payment Streams', function () {
       .then(receipts => receipts.map(checkTxSuccess))
       .then(() => ps.getStreams(acc[2]))
       .then(function (streams) {
-        streams.length.should.equal(1)
+        streams.outgoing.length.should.equal(1)
       })
       .then(() => ps.getStreams(acc[3]))
       .then(function (streams) {
-        streams.length.should.equal(2)
+        streams.incoming.length.should.equal(1)
+        streams.outgoing.length.should.equal(1)
       })
       .then(() => ps.getStreams(acc[4]))
       .then(function (streams) {
-        streams.length.should.equal(1)
+        streams.incoming.length.should.equal(1)
       })
   })
 })
