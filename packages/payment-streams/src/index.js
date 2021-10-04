@@ -1,11 +1,12 @@
 'use strict'
 
 const debug = require('debug')('payment-streams')
+const pTap = require('p-tap').default
 
-const paymentStreamFactoryAbi = require('./abis/PaymentStreamFactory.json')
 const contracts = require('./contracts.json')
 const createExecutor = require('eth-exec-txs')
-const pTap = require('p-tap').default
+const paymentStreamAbi = require('./abis/PaymentStream.json')
+const paymentStreamFactoryAbi = require('./abis/PaymentStreamFactory.json')
 
 const createPaymentStreams = function (web3, options = {}) {
   debug('Creating Payment Streams library')
@@ -127,6 +128,17 @@ const createPaymentStreams = function (web3, options = {}) {
     ]).then(([incoming, outgoing]) => ({ incoming, outgoing }))
   }
 
+  // Gets an PaymentStream contract instance
+  const getStreamContract = function (id) {
+    debug('Getting stream %s', id)
+    return psfPromise
+      .then(pfs => pfs.methods.getStream(id).call())
+      .then(function (address) {
+        debug('Stream %s address is %s', id, address)
+        return new web3.eth.Contract(paymentStreamAbi, address)
+      })
+  }
+
   // Adds a token so it can be used in streams.
   const addToken = function (token, dex, path, transactionOptions) {
     debug('Adding %s to valid tokens list', token)
@@ -163,9 +175,9 @@ const createPaymentStreams = function (web3, options = {}) {
     endTime,
     transactionOptions
   ) {
-    const { from } = transactionOptions
+    const _from = transactionOptions.from || from
 
-    debug('Creating stream from %s to %s', from, payee)
+    debug('Creating stream from %s to %s', _from, payee)
 
     const transactionsPromise = psfPromise.then(psf => [
       {
@@ -173,7 +185,7 @@ const createPaymentStreams = function (web3, options = {}) {
           payee,
           usdAmount,
           token,
-          from,
+          _from,
           endTime
         ),
         suffix: 'create-stream',
@@ -196,8 +208,36 @@ const createPaymentStreams = function (web3, options = {}) {
     )
   }
 
+  // Claim tokens available in a streams.
+  const claim = function (id, transactionOptions) {
+    debug('Claiming tokens from stream %s', id)
+
+    const transactionsPromise = getStreamContract(id).then(ps => [
+      {
+        method: ps.methods.claim(),
+        suffix: 'claim',
+        gas: 900000 // FIXME
+      }
+    ])
+
+    const parseResults = function ([{ receipt }]) {
+      const result = receipt.events.Claimed.returnValues
+
+      debug('Token claimed', result.tokenAddress)
+
+      return { result }
+    }
+
+    return execTransactions(
+      transactionsPromise,
+      parseResults,
+      transactionOptions
+    )
+  }
+
   return {
     addToken,
+    claim,
     createStream,
     getFactoryContract,
     getStreams,
