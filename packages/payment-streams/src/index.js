@@ -57,15 +57,64 @@ const createPaymentStreams = function (web3, options = {}) {
       )
   }
 
-  // Gets all the information of the given stream.
-  const getStream = function (id) {
+  // Gets an PaymentStream contract instance
+  const getStreamContract = function (id) {
     debug('Getting stream %s', id)
     return psfPromise
-      .then(psf => psf.methods.getStream(id).call())
-      .then(stream => ({ id, ...stream }))
+      .then(pfs => pfs.methods.getStream(id).call())
+      .then(function (address) {
+        debug('Stream %s address is %s', id, address)
+        return new web3.eth.Contract(paymentStreamAbi, address)
+      })
+  }
+
+  // Gets all the information of the given stream.
+  const getStream = function (id) {
+    debug('Getting stream %s information', id)
+    return getStreamContract(id)
+      .then(ps =>
+        Promise.all([
+          ps.methods.claimed().call(),
+          ps.methods.fundingAddress().call(),
+          ps.methods.paused().call(),
+          ps.methods.payee().call(),
+          ps.methods.payer().call(),
+          ps.methods.secs().call(),
+          ps.methods.startTime().call(),
+          ps.methods.token().call(),
+          ps.methods.usdAmount().call(),
+          ps.methods.usdPerSec().call()
+        ])
+      )
+      .then(
+        ([
+          claimed,
+          fundingAddress,
+          paused,
+          payee,
+          payer,
+          secs,
+          startTime,
+          token,
+          usdAmount,
+          usdPerSec
+        ]) => ({
+          claimed,
+          fundingAddress,
+          id,
+          paused,
+          payee,
+          payer,
+          secs,
+          startTime,
+          token,
+          usdAmount,
+          usdPerSec
+        })
+      )
       .then(
         pTap(function () {
-          debug('Got stream %s', id)
+          debug('Got information of stream %s', id)
         })
       )
   }
@@ -126,17 +175,6 @@ const createPaymentStreams = function (web3, options = {}) {
       getIncomingStreams(address),
       getOutgoingStreams(address)
     ]).then(([incoming, outgoing]) => ({ incoming, outgoing }))
-  }
-
-  // Gets an PaymentStream contract instance
-  const getStreamContract = function (id) {
-    debug('Getting stream %s', id)
-    return psfPromise
-      .then(pfs => pfs.methods.getStream(id).call())
-      .then(function (address) {
-        debug('Stream %s address is %s', id, address)
-        return new web3.eth.Contract(paymentStreamAbi, address)
-      })
   }
 
   // Adds a token so it can be used in streams.
@@ -223,7 +261,120 @@ const createPaymentStreams = function (web3, options = {}) {
     const parseResults = function ([{ receipt }]) {
       const result = receipt.events.Claimed.returnValues
 
-      debug('Token claimed', result.tokenAddress)
+      debug('USD claimed was %s', result.usdAmount)
+
+      return { result }
+    }
+
+    return execTransactions(
+      transactionsPromise,
+      parseResults,
+      transactionOptions
+    )
+  }
+
+  // Pause a stream.
+  const pauseStream = function (id, transactionOptions) {
+    debug('Pausing stream %s', id)
+
+    const transactionsPromise = getStreamContract(id).then(ps => [
+      {
+        method: ps.methods.pauseStream(),
+        suffix: 'pause-stream',
+        gas: 900000 // FIXME
+      }
+    ])
+
+    const parseResults = function ([{ receipt }]) {
+      const result = receipt.events.StreamPaused.returnValues
+
+      debug('Stream %s is paused', id)
+
+      return { result }
+    }
+
+    return execTransactions(
+      transactionsPromise,
+      parseResults,
+      transactionOptions
+    )
+  }
+
+  // Resume a stream.
+  const resumeStream = function (id, transactionOptions) {
+    debug('Resuming stream %s', id)
+
+    const transactionsPromise = getStreamContract(id).then(ps => [
+      {
+        method: ps.methods.unpauseStream(),
+        suffix: 'unpause-stream',
+        gas: 900000 // FIXME
+      }
+    ])
+
+    const parseResults = function ([{ receipt }]) {
+      const result = receipt.events.StreamUnpaused.returnValues
+
+      debug('Stream %s is running', id)
+
+      return { result }
+    }
+
+    return execTransactions(
+      transactionsPromise,
+      parseResults,
+      transactionOptions
+    )
+  }
+
+  // Update the funding address
+  const updateFundingAddress = function (id, address, transactionOptions) {
+    debug('Updating funding address of %s to %s', id, address)
+
+    const transactionsPromise = getStreamContract(id).then(ps => [
+      {
+        method: ps.methods.updateFundingAddress(address),
+        suffix: 'update-funding-address',
+        gas: 900000 // FIXME
+      }
+    ])
+
+    const parseResults = function ([{ receipt }]) {
+      const result = receipt.events.FundingAddressUpdated.returnValues
+
+      debug('Funding address of %s updated to %s', id, address)
+
+      return { result }
+    }
+
+    return execTransactions(
+      transactionsPromise,
+      parseResults,
+      transactionOptions
+    )
+  }
+
+  // Update the funding rate
+  const updateFundingRate = function (
+    id,
+    usdAmound,
+    endTime,
+    transactionOptions
+  ) {
+    debug('Updating funding rate of %s to %s %s', usdAmound, endTime)
+
+    const transactionsPromise = getStreamContract(id).then(ps => [
+      {
+        method: ps.methods.updateFundingRate(usdAmound, endTime),
+        suffix: 'update-funding-rate',
+        gas: 900000 // FIXME
+      }
+    ])
+
+    const parseResults = function ([{ receipt }]) {
+      const result = receipt.events.StreamUpdated.returnValues
+
+      debug('Funding rate of %s was updated', id)
 
       return { result }
     }
@@ -241,7 +392,11 @@ const createPaymentStreams = function (web3, options = {}) {
     createStream,
     getFactoryContract,
     getStreams,
-    getTokens
+    getTokens,
+    pauseStream,
+    resumeStream,
+    updateFundingAddress,
+    updateFundingRate
   }
 }
 
