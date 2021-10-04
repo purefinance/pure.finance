@@ -74,6 +74,7 @@ const createPaymentStreams = function (web3, options = {}) {
     return getStreamContract(id)
       .then(ps =>
         Promise.all([
+          ps.methods.claimable().call(),
           ps.methods.claimed().call(),
           ps.methods.fundingAddress().call(),
           ps.methods.paused().call(),
@@ -88,6 +89,7 @@ const createPaymentStreams = function (web3, options = {}) {
       )
       .then(
         ([
+          claimable,
           claimed,
           fundingAddress,
           paused,
@@ -99,6 +101,7 @@ const createPaymentStreams = function (web3, options = {}) {
           usdAmount,
           usdPerSec
         ]) => ({
+          claimable,
           claimed,
           fundingAddress,
           id,
