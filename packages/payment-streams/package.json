@@ -12,7 +12,8 @@
   "scripts": {
     "deps:check": "dependency-check --no-dev .",
     "postinstall": "patch-package",
-    "test:e2e": "DEBUG=*,-mocha* DEBUG_COLORS=true E2E=true FORCE_COLOR=true mocha --bail --exit test/e2e.spec.js"
+    "test:e2e": "DEBUG=*,-mocha* DEBUG_COLORS=true E2E=true FORCE_COLOR=true mocha --bail --exit test/e2e.spec.js",
+    "coverage:e2e": "nyc npm run test:e2e"
   },
   "dependencies": {
     "debug": "^4.3.1",
@@ -27,5 +28,15 @@
   },
   "engines": {
     "node": ">=12"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   }
 }
