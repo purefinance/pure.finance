@@ -162,8 +162,8 @@ const createPaymentStreams = function (web3, options = {}) {
       )
       .then(
         pTap(function (stream) {
-          debug('Got information of stream %s', id)
-          debug('Stream %s: %j', id, stream)
+          // @ts-ignore ts(2339)
+          debug('Got information of stream %s at %s', id, stream.address)
         })
       )
   }
@@ -266,19 +266,72 @@ const createPaymentStreams = function (web3, options = {}) {
 
     debug('Creating stream from %s to %s', _from, payee)
 
-    const transactionsPromise = psfPromise.then(psf => [
-      {
-        method: psf.methods.createStream(
+    /* eslint-disable promise/no-nesting */
+    const transactionsPromise = psfPromise
+      .then(pfs =>
+        Promise.all([
+          pfs,
+          pfs.methods.usdToTokenAmount(token, usdAmount).call()
+        ])
+      )
+      .then(function ([psf, tokenUsdAmount]) {
+        // Prepare a spied contract method to call createStream and capture the
+        // id of the stream. Then use the id to then get the stream address.
+        // Finally, store this address promise in a variable so it can later be
+        // used to dynamically generate the next approval transaction.
+        let streamAddressPromise
+        const createStreamMethod = psf.methods.createStream(
           payee,
           usdAmount,
           token,
           _from,
           endTime
-        ),
-        suffix: 'create-stream',
-        gas: 300000
-      }
-    ])
+        )
+        const spiedCreateContractMethod = {
+          estimateGas: createStreamMethod.estimateGas,
+          send(...args) {
+            const promiEvent = createStreamMethod.send(...args)
+            streamAddressPromise = promiEvent
+              .then(receipt => receipt.events.StreamCreated.returnValues.id)
+              .then(id => psf.methods.getStream(id).call())
+            return promiEvent
+          }
+        }
+
+        // The stream address is needed to set spender in the approval call but
+        // it can only be known after the stream is created. Therefore, a
+        // contract call that can get the stream address from the promise
+        // obtained in the previous transaction is required.
+        // When executing the gas estimation, the stream address promise is
+        // resolved and the address stored to allow the send() call to be
+        // executed synchronously (and don't break the PromiEvent interface).
+        let streamAddress
+        const tokenContract = new web3.eth.Contract(erc20Abi, token)
+        const approveMethodBuilder = address =>
+          tokenContract.methods.approve(address, tokenUsdAmount)
+        const dynamicApproveMethod = {
+          estimateGas: (...args) =>
+            streamAddressPromise.then(function (address) {
+              streamAddress = address
+              return approveMethodBuilder(streamAddress).estimateGas(...args)
+            }),
+          send: (...args) => approveMethodBuilder(streamAddress).send(...args)
+        }
+
+        return [
+          {
+            method: spiedCreateContractMethod,
+            suffix: 'create-stream',
+            gas: 170000
+          },
+          {
+            method: dynamicApproveMethod,
+            suffix: 'approve',
+            gas: 45000
+          }
+        ]
+      })
+    /* eslint-enable promise/no-nesting */
 
     const parseResults = function ([{ receipt }]) {
       const result = receipt.events.StreamCreated.returnValues
@@ -377,6 +430,7 @@ const createPaymentStreams = function (web3, options = {}) {
   }
 
   // Update the funding address
+  // TODO is [new] approval needed?
   const updateFundingAddress = function (id, address, transactionOptions) {
     debug('Updating funding address of %s to %s', id, address)
 
