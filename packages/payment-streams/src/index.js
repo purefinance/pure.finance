@@ -172,27 +172,22 @@ const createPaymentStreams = function (web3, options = {}) {
   // payee is the given address.
   const getIncomingStreams = function (address) {
     debug('Getting all incoming streams of %s', address)
-    return (
-      psfPromise
-        .then(psf =>
-          psf.getPastEvents('StreamCreated', {
-            fromBlock: psf.options.birthblock,
-            filter: { payee: address }
-          })
-        )
-        // TODO Need to filter the events here until
-        // bloqpriv/pf-payment-stream#13 is solved
-        .then(events => events.filter(e => e.returnValues.payee === address))
-        .then(events =>
-          Promise.all(events.map(e => e.returnValues.id).map(getStream))
-        )
-        .then(
-          pTap(function (streams) {
-            // @ts-ignore ts(2339)
-            debug('Got %s incoming streams', streams.length)
-          })
-        )
-    )
+    return psfPromise
+      .then(psf =>
+        psf.getPastEvents('StreamCreated', {
+          fromBlock: psf.options.birthblock,
+          filter: { payee: address }
+        })
+      )
+      .then(events =>
+        Promise.all(events.map(e => e.returnValues.id).map(getStream))
+      )
+      .then(
+        pTap(function (streams) {
+          // @ts-ignore ts(2339)
+          debug('Got %s incoming streams', streams.length)
+        })
+      )
   }
 
   // Gets all outgoing streams by getting past StreamCreated events where the
