@@ -2,7 +2,9 @@
 
 const debug = require('debug')('payment-streams')
 const pTap = require('p-tap').default
+const erc20Abi = require('erc-20-abi')
 
+const { findToken } = require('./token-list')
 const contracts = require('./contracts.json')
 const createExecutor = require('eth-exec-txs')
 const paymentStreamAbi = require('./abis/PaymentStream.json')
@@ -33,11 +35,12 @@ const createPaymentStreams = function (web3, options = {}) {
         contract.address
       )
       instance.options.birthblock = contract.birthblock
+      instance.options.chainId = chainId
       return instance
     })
 
   // Gets the PaymentStreamFactory contract.
-  const getFactoryContract = () => psfPromise
+  // const getFactoryContract = () => psfPromise
 
   // Gets all the supported tokens.
   const getTokens = function () {
@@ -68,56 +71,99 @@ const createPaymentStreams = function (web3, options = {}) {
       })
   }
 
+  // Get all the data of a Stream contract.
+  const getStreamData = ps =>
+    Promise.all([
+      ps.methods.claimable().call(),
+      ps.methods.claimed().call(),
+      ps.methods.fundingAddress().call(),
+      ps.methods.paused().call(),
+      ps.methods.payee().call(),
+      ps.methods.payer().call(),
+      ps.methods.secs().call(),
+      ps.methods.startTime().call(),
+      ps.methods.token().call(),
+      ps.methods.usdAmount().call(),
+      ps.methods.usdPerSec().call()
+    ]).then(
+      ([
+        claimable,
+        claimed,
+        fundingAddress,
+        paused,
+        payee,
+        payer,
+        secs,
+        startTime,
+        token,
+        usdAmount,
+        usdPerSec
+      ]) => ({
+        claimable,
+        claimed,
+        fundingAddress,
+        paused,
+        payee,
+        payer,
+        secs,
+        startTime,
+        token,
+        usdAmount,
+        usdPerSec
+      })
+    )
+
   // Gets all the information of the given stream.
   const getStream = function (id) {
     debug('Getting stream %s information', id)
     return getStreamContract(id)
       .then(ps =>
         Promise.all([
-          ps.methods.claimable().call(),
-          ps.methods.claimed().call(),
-          ps.methods.fundingAddress().call(),
-          ps.methods.paused().call(),
-          ps.methods.payee().call(),
-          ps.methods.payer().call(),
-          ps.methods.secs().call(),
-          ps.methods.startTime().call(),
-          ps.methods.token().call(),
-          ps.methods.usdAmount().call(),
-          ps.methods.usdPerSec().call()
+          ps.options.address,
+          ps.options.chainId,
+          getStreamData(ps),
+          psfPromise
         ])
       )
+      .then(function ([address, chainId, stream, psf]) {
+        const token = new web3.eth.Contract(erc20Abi, stream.token)
+        return Promise.all([
+          address,
+          stream,
+          findToken(stream.token, chainId),
+          token.methods.allowance(stream.fundingAddress, address).call(),
+          token.methods.balanceOf(stream.fundingAddress).call(),
+          psf.methods.usdToTokenAmount(stream.token, stream.claimable).call(),
+          psf.methods.usdToTokenAmount(stream.token, stream.claimed).call(),
+          psf.methods.usdToTokenAmount(stream.token, stream.usdAmount).call()
+        ])
+      })
       .then(
         ([
-          claimable,
-          claimed,
-          fundingAddress,
-          paused,
-          payee,
-          payer,
-          secs,
-          startTime,
+          address,
+          stream,
           token,
-          usdAmount,
-          usdPerSec
+          tokenAllowance,
+          tokenBalance,
+          tokenClaimable,
+          tokenClaimed,
+          tokenUsdAmount
         ]) => ({
-          claimable,
-          claimed,
-          fundingAddress,
           id,
-          paused,
-          payee,
-          payer,
-          secs,
-          startTime,
+          address,
+          ...stream,
           token,
-          usdAmount,
-          usdPerSec
+          tokenAllowance,
+          tokenBalance,
+          tokenClaimable,
+          tokenClaimed,
+          tokenUsdAmount
         })
       )
       .then(
-        pTap(function () {
+        pTap(function (stream) {
           debug('Got information of stream %s', id)
+          debug('Stream %s: %j', id, stream)
         })
       )
   }
@@ -393,7 +439,7 @@ const createPaymentStreams = function (web3, options = {}) {
     addToken,
     claim,
     createStream,
-    getFactoryContract,
+    // getFactoryContract,
     getStreams,
     getTokens,
     pauseStream,
