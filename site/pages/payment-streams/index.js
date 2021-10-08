@@ -1,68 +1,35 @@
-import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
+import EditStream from '../../components/payment-streams/EditStream'
 
-import Button from '../../components/Button'
 import Layout from '../../components/Layout'
-import { useUpdatingStateAsync } from '../../hooks/useUpdatingState'
-import { useWeb3React } from '@web3-react/core'
+import Transactions from '../../components/Transactions'
+import CreateStream from '../../components/payment-streams/CreateStream'
+import StreamsTable from '../../components/payment-streams/StreamsTable'
 
-const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
+import { PaymentStreamsLibContextProvider } from '../../components/payment-streams/paymentStreamsLib'
+import { TransactionsContextProvider } from '../../components/context/Transactions'
+import { useRouter } from 'next/router'
 
-// TODO
-const CreateStream = function () {
-  const { active, account } = useWeb3React()
-  const disabled = !active || !account
-
-  const router = useRouter()
-  const handleClick = function (e) {
-    e.preventDefault()
-    router.push('/payment-streams/new')
-  }
+const PaymentStreams = function () {
+  const { t } = useTranslation('payment-streams')
+  const { query } = useRouter()
+  const view = query.view ?? 'index'
 
   return (
-    <Button disabled={disabled} onClick={handleClick}>
-      {/* // TODO translate */}
-      Create Stream
-    </Button>
+    <TransactionsContextProvider>
+      <PaymentStreamsLibContextProvider>
+        <Layout title={t('payment-streams')} walletConnection>
+          <div className="mt-10 w-full">
+            {view === 'index' && <StreamsTable />}
+            {view === 'create' && <CreateStream />}
+            {view === 'edit' && <EditStream />}
+          </div>
+        </Layout>
+        <Transactions />
+      </PaymentStreamsLibContextProvider>
+    </TransactionsContextProvider>
   )
 }
 
-// TODO table: status, in/out, to/from, value?, progress%, start, end, link
-const StreamsTable = function ({ ...props }) {
-  const { active, account } = useWeb3React()
-  const connected = !!(active && account)
-
-  // TODO
-  const getStreams = () => []
-  const { state, updating } = useUpdatingStateAsync(
-    [],
-    getStreams,
-    ETH_BLOCK_TIME * 1000,
-    [active, account]
-  )
-
-  return (
-    <div {...props}>
-      {connected && state.length
-        ? 'TABLE'
-        : connected && updating
-        ? 'UPDATING'
-        : connected
-        ? 'NO DATA'
-        : 'DISCONNECTED'}
-    </div>
-  )
-}
-
-// This is the main app component.
-export default function PaymentStreams() {
-  const { t } = useTranslation('common')
-  return (
-    <Layout title={t('payment-streams')} walletConnection>
-      <div className="mt-10 w-full">
-        <CreateStream />
-        <StreamsTable className="mt-8" />
-      </div>
-    </Layout>
-  )
-}
+export const getStaticProps = () => ({})
+export default PaymentStreams

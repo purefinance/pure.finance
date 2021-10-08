@@ -2,6 +2,7 @@
   "locales": ["en", "zh"],
   "defaultLocale": "en",
   "pages": {
-    "*": ["common"]
+    "*": ["common"],
+    "/payment-streams": ["payment-streams"]
   }
 }

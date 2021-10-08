@@ -33,7 +33,7 @@ const DPAuctionsRow = function ({ auction }) {
       <tr className="cursor-pointer">
         <td className="border-2">{auction.id}</td>
         <td className="border-2">
-          {auction.tokens.map((token) => (
+          {auction.tokens.map(token => (
             <div key={token.address}>
               <TokenAmount {...token} />
             </div>
@@ -67,7 +67,7 @@ const DPAuctionsTable = function ({ auctions }) {
   const [showEnded, setShowEnded] = useState(false)
 
   const sortedAuctions = orderBy(
-    auctions.filter((auction) => showEnded || !auction.stopped),
+    auctions.filter(auction => showEnded || !auction.stopped),
     ['endBlock', 'id'],
     ['asc', 'desc']
   )
@@ -85,7 +85,7 @@ const DPAuctionsTable = function ({ auctions }) {
             </tr>
           </thead>
           <tbody>
-            {sortedAuctions.map((auction) => (
+            {sortedAuctions.map(auction => (
               <DPAuctionsRow auction={auction} key={auction.id} />
             ))}
           </tbody>
@@ -112,7 +112,7 @@ const DPAuctionsTable = function ({ auctions }) {
 // To allow the Dropdown component to send open/close status and keep track of
 // what collection is selected, the selector component has to be created on the
 // fly keeping the selected collection in the closure.
-const createCollectionSelector = (collectionId) =>
+const createCollectionSelector = collectionId =>
   function CollectionSelector({ isOpen }) {
     const { t } = useTranslation('common')
 
@@ -170,7 +170,7 @@ export default function DPAuctions(props) {
   const { data: count } = useSWR(
     `/api/dp-auctions/collections/count`,
     fetchJson,
-    { initialData: initialCount, refreshInterval: ETH_BLOCK_TIME * 1000 }
+    { fallbackData: initialCount, refreshInterval: ETH_BLOCK_TIME * 1000 }
   )
 
   // The list of auctions in the collection is managed by SWR. It is set to
@@ -178,7 +178,7 @@ export default function DPAuctions(props) {
   const { data: auctions } = useSWR(
     `/api/dp-auctions/collections/${collectionId}`,
     fetchJson,
-    { initialData: initialAuctions, refreshInterval: ETH_BLOCK_TIME * 1000 }
+    { fallbackData: initialAuctions, refreshInterval: ETH_BLOCK_TIME * 1000 }
   )
 
   return (
@@ -218,7 +218,7 @@ export const getStaticProps = ({ params }) =>
       },
       revalidate: ETH_BLOCK_TIME
     }))
-    .catch((err) => ({
+    .catch(err => ({
       props: {
         collectionId: params.collectionId,
         error: err.message

@@ -25,7 +25,7 @@ const createPaymentStreams = function (web3, options = {}) {
     // .then((chainId) => (chainId === 1337 ? 1 : chainId)) // Ganache hack
     .then(function (chainId) {
       const contract = contracts.PaymentStreamFactory.find(
-        c => (c.chainId = chainId)
+        c => c.chainId === chainId
       )
       if (!contract) {
         throw new Error(`PaymentStreams not available in chain ${chainId}`)
@@ -255,7 +255,7 @@ const createPaymentStreams = function (web3, options = {}) {
     usdAmount,
     token,
     endTime,
-    transactionOptions
+    transactionOptions = {}
   ) {
     const _from = transactionOptions.from || from
 
