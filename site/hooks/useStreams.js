@@ -8,7 +8,7 @@ const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
 export const useStreams = function () {
   const { active, account } = useWeb3React()
-  const [secondsPast, setSecondsPast] = useState(0)
+  const [secondsPast, setSecondsPast] = useState(1)
   const [futureStreamValues, setFutureStreamValues] = useState({
     incoming: [],
     outgoing: []
@@ -21,7 +21,7 @@ export const useStreams = function () {
     () => getStreams(account),
     {
       refreshInterval: ETH_BLOCK_TIME * 1000,
-      onSuccess: () => setSecondsPast(0)
+      onSuccess: () => setSecondsPast(1)
     }
   )
 
