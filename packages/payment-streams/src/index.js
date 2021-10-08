@@ -286,9 +286,9 @@ const createPaymentStreams = function (web3, options = {}) {
           estimateGas: createStreamMethod.estimateGas,
           send(...args) {
             const promiEvent = createStreamMethod.send(...args)
-            streamAddressPromise = promiEvent
-              .then(receipt => receipt.events.StreamCreated.returnValues.id)
-              .then(id => psf.methods.getStream(id).call())
+            streamAddressPromise = promiEvent.then(
+              receipt => receipt.events.StreamCreated.returnValues.stream
+            )
             return promiEvent
           }
         }
@@ -351,7 +351,7 @@ const createPaymentStreams = function (web3, options = {}) {
       {
         method: ps.methods.claim(),
         suffix: 'claim',
-        gas: 900000 // FIXME
+        gas: 200000
       }
     ])
 
@@ -378,7 +378,7 @@ const createPaymentStreams = function (web3, options = {}) {
       {
         method: ps.methods.pauseStream(),
         suffix: 'pause-stream',
-        gas: 900000 // FIXME
+        gas: 48000
       }
     ])
 
@@ -405,7 +405,7 @@ const createPaymentStreams = function (web3, options = {}) {
       {
         method: ps.methods.unpauseStream(),
         suffix: 'unpause-stream',
-        gas: 900000 // FIXME
+        gas: 25000
       }
     ])
 
@@ -425,7 +425,6 @@ const createPaymentStreams = function (web3, options = {}) {
   }
 
   // Update the funding address
-  // TODO is [new] approval needed?
   const updateFundingAddress = function (id, address, transactionOptions) {
     debug('Updating funding address of %s to %s', id, address)
 
@@ -433,7 +432,7 @@ const createPaymentStreams = function (web3, options = {}) {
       {
         method: ps.methods.updateFundingAddress(address),
         suffix: 'update-funding-address',
-        gas: 900000 // FIXME
+        gas: 220000
       }
     ])
 
@@ -465,7 +464,7 @@ const createPaymentStreams = function (web3, options = {}) {
       {
         method: ps.methods.updateFundingRate(usdAmound, endTime),
         suffix: 'update-funding-rate',
-        gas: 900000 // FIXME
+        gas: 31000
       }
     ])
 
