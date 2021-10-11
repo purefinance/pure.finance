@@ -1,3 +1,5 @@
+/* eslint strict:off,no-console:off */
+
 'use strict'
 
 require('dotenv').config({ path: '.env.fork.local' })
@@ -17,21 +19,22 @@ const paymentStreamDeployer = '0xC2a8814258F0bb54F9CC1Ec6ACb7a6886097b994'
 const getServer = function () {
   // @ts-ignore ts(2351)
   const _web3 = new Web3(process.env.BASE_NODE_URL)
-  return _web3.eth.getChainId().then(function (chainId) {
-    /* eslint-disable camelcase */
-    // @ts-ignore ts(2339)
-    return ganache.server({
-      _chainIdRpc: chainId,
-      blockTime: 13,
-      fork: process.env.BASE_NODE_URL,
-      fork_block_number: paymentStreamBirthblock + 21,
-      logger: console,
-      mnemonic: process.env.MNEMONIC,
-      unlocked_accounts: [paymentStreamDeployer],
-      verbose: false // Set to log RPC calls and responses
-    })
+  /* eslint-disable camelcase */
+  // @ts-ignore ts(2339)
+  return _web3.eth.getChainId().then(
+    chainId =>
+      ganache.server({
+        _chainIdRpc: chainId,
+        blockTime: 13,
+        fork: process.env.BASE_NODE_URL,
+        fork_block_number: paymentStreamBirthblock + 21,
+        logger: console,
+        mnemonic: process.env.MNEMONIC,
+        unlocked_accounts: [paymentStreamDeployer],
+        verbose: false // Set to log RPC calls and responses
+      })
     /* eslint-enable camelcase */
-  })
+  )
 }
 
 const transferOwnership = function (provider, ps) {
@@ -47,9 +50,7 @@ const transferOwnership = function (provider, ps) {
         .transferOwnership(acc[0])
         .send({ from: paymentStreamDeployer })
     })
-    .then(
-      (receipt) => receipt.events.OwnershipTransferred.returnValues.newOwner
-    )
+    .then(receipt => receipt.events.OwnershipTransferred.returnValues.newOwner)
 }
 
 console.log('Initializing fork...')
