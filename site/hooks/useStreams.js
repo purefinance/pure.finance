@@ -33,20 +33,24 @@ export const useStreams = function () {
         return undefined
       }
       const timeoutId = setTimeout(() => {
-        const newIncoming = data.incoming.map(
-          ({ claimable, usdPerSec, ...stream }) => ({
-            usdPerSec,
-            ...stream,
-            claimable: Big(claimable).plus(Big(usdPerSec).times(secondsPast))
-          })
-        )
-        const newOutgoing = data.outgoing.map(
-          ({ claimable, usdPerSec, ...stream }) => ({
-            usdPerSec,
-            ...stream,
-            claimable: Big(claimable).plus(Big(usdPerSec).times(secondsPast))
-          })
-        )
+        const mapStream = ({
+          claimable,
+          usdPerSec,
+          tokenPerSec,
+          tokenClaimable,
+          ...stream
+        }) => ({
+          usdPerSec,
+          tokenPerSec,
+          ...stream,
+          claimable: Big(claimable).plus(Big(usdPerSec).times(secondsPast)),
+          tokenClaimable: Big(tokenClaimable).plus(
+            Big(tokenPerSec).times(secondsPast)
+          )
+        })
+        const newIncoming = data.incoming.map(mapStream)
+        const newOutgoing = data.outgoing.map(mapStream)
+
         setFutureStreamValues({ incoming: newIncoming, outgoing: newOutgoing })
         setSecondsPast(prevSeconds => prevSeconds + 1)
       }, 1000)

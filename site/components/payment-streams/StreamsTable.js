@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Big from 'big.js'
 import { useWeb3React } from '@web3-react/core'
 import useTranslation from 'next-translate/useTranslation'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useStreams } from '../../hooks/useStreams'
 import { bigToCrypto, fromUnit } from '../../utils'
 import Button from '../../components/Button'
@@ -29,14 +29,58 @@ const StreamsTable = function () {
   const { t } = useTranslation('payment-streams')
   const connected = !!(active && account)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
-  const { addTransactionStatus } = useContext(TransactionsContext)
+  const { addTransactionStatus, currentTransactions } =
+    useContext(TransactionsContext)
   const [streamsView, setStreamsView] = useState('incoming')
+  const [claimingId, setClaimingId] = useState(undefined)
   const {
     streams = { incoming: [], outgoing: [] },
     futureStreamValues,
     isLoading,
     mutate
   } = useStreams()
+
+  const futureStreamClaimable = futureStreamValues?.[streamsView]?.find(
+    futureStream => futureStream.id === claimingId
+  )?.tokenClaimable
+  const claimingStream = streams[streamsView].find(s => s.id === claimingId)
+
+  // This effect runs only while the tx modal is shown when claiming. It will update the
+  // estimation of tokens to be received once per second.
+  useEffect(
+    function () {
+      const lastTransactionStatus =
+        currentTransactions[currentTransactions.length - 1]
+      if (!claimingStream || !lastTransactionStatus) {
+        return
+      }
+      const newClaimableValue = bigToCrypto(
+        fromUnit(futureStreamClaimable, claimingStream.token.decimals)
+      )
+      // assumption here: You can only stream one token
+      if (
+        Big(newClaimableValue).eq(Big(lastTransactionStatus.received[0].value))
+      ) {
+        return
+      }
+      // take the last transaction status, and clone it, but using the new updated estimation.
+      addTransactionStatus({
+        ...lastTransactionStatus,
+        received: [
+          {
+            value: newClaimableValue,
+            symbol: claimingStream.token.symbol
+          }
+        ]
+      })
+    },
+    [
+      claimingStream,
+      addTransactionStatus,
+      currentTransactions,
+      futureStreamClaimable
+    ]
+  )
 
   if (!connected) {
     return <p>{t('connect-your-wallet')}</p>
@@ -203,6 +247,7 @@ const StreamsTable = function () {
         })
       })
       .on('result', function ({ result, fees, status }) {
+        setClaimingId(undefined)
         addTransactionStatus({
           actualFee: fromUnit(fees),
           opId: now,
@@ -221,12 +266,14 @@ const StreamsTable = function () {
         mutate()
       })
       .on('error', function (err) {
+        setClaimingId(undefined)
         addTransactionStatus({
           message: err.message,
           opId: now,
           transactionStatus: 'error'
         })
       })
+    setClaimingId(id)
   }
 
   const canClaim = function (id) {
