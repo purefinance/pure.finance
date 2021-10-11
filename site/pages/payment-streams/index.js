@@ -6,7 +6,7 @@ import Transactions from '../../components/Transactions'
 import CreateStream from '../../components/payment-streams/CreateStream'
 import StreamsTable from '../../components/payment-streams/StreamsTable'
 
-import { PaymentStreamsLibContextProvider } from '../../components/payment-streams/paymentStreamsLib'
+import { PaymentStreamsLibContextProvider } from '../../components/payment-streams/PaymentStreamsLib'
 import { TransactionsContextProvider } from '../../components/context/Transactions'
 import { useRouter } from 'next/router'
 

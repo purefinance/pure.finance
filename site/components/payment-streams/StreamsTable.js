@@ -8,7 +8,7 @@ import { bigToCrypto, fromUnit } from '../../utils'
 import Button from '../../components/Button'
 import WithTooltip from '../../components/WithTooltip'
 import { EtherscanLink } from '../../components/EtherscanLink'
-import PaymentStreamsLibContext from './paymentStreamsLib'
+import PaymentStreamsLibContext from './PaymentStreamsLib'
 import TransactionsContext from '../context/Transactions'
 
 const QuestionmarkIcon = () => (
