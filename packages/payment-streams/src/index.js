@@ -135,7 +135,8 @@ const createPaymentStreams = function (web3, options = {}) {
           token.methods.balanceOf(stream.fundingAddress).call(),
           psf.methods.usdToTokenAmount(stream.token, stream.claimable).call(),
           psf.methods.usdToTokenAmount(stream.token, stream.claimed).call(),
-          psf.methods.usdToTokenAmount(stream.token, stream.usdAmount).call()
+          psf.methods.usdToTokenAmount(stream.token, stream.usdAmount).call(),
+          psf.methods.usdToTokenAmount(stream.token, stream.usdPerSec).call()
         ])
       })
       .then(
@@ -147,7 +148,8 @@ const createPaymentStreams = function (web3, options = {}) {
           tokenBalance,
           tokenClaimable,
           tokenClaimed,
-          tokenUsdAmount
+          tokenUsdAmount,
+          tokenPerSec
         ]) => ({
           id,
           address,
@@ -157,7 +159,8 @@ const createPaymentStreams = function (web3, options = {}) {
           tokenBalance,
           tokenClaimable,
           tokenClaimed,
-          tokenUsdAmount
+          tokenUsdAmount,
+          tokenPerSec
         })
       )
       .then(
