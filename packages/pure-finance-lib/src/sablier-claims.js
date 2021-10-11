@@ -29,7 +29,7 @@ const createSablierClaims = function (web3, options) {
       })
       .then(function ([stream, balance, token]) {
         const { recipient, sender, startTime } = stream
-        const allowedCallers = [recipient, sender].map((a) => a.toLowerCase())
+        const allowedCallers = [recipient, sender].map(a => a.toLowerCase())
         if (!allowedCallers.includes(from.toLowerCase())) {
           throw new Error('Account is not the sender or recipient')
         }
@@ -51,9 +51,9 @@ const createSablierClaims = function (web3, options) {
   const withdrawFromStream = function (streamId, amount) {
     debug('Starting to claim from stream %s', streamId)
     return Promise.resolve(amount || sablier.getBalance(streamId))
-      .then(function (amountToWithdraw) {
-        return sablier.withdrawFromStream(streamId, amountToWithdraw)
-      })
+      .then(amountToWithdraw =>
+        sablier.withdrawFromStream(streamId, amountToWithdraw)
+      )
       .catch(tryParseEvmError)
   }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const QuestionmarkIcon = (props) => (
+const QuestionmarkIcon = props => (
   <svg
     fill="rgba(63, 200, 216)"
     height="20"

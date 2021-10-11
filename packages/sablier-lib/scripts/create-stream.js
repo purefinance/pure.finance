@@ -30,7 +30,7 @@ const from = provider.getAddress(0)
 const web3 = new Web3(provider)
 const sablier = createSablier(web3, { from })
 
-const toTimestamp = (str) =>
+const toTimestamp = str =>
   /^[0-9]+$/.test(str)
     ? Number.parseInt(str)
     : Math.round(new Date(str).getTime() / 1000)

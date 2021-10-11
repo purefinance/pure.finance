@@ -1,4 +1,4 @@
-const MetamaskIcon = (props) => (
+const MetamaskIcon = props => (
   <svg
     id="Layer_1"
     version="1.1"

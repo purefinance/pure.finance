@@ -15,9 +15,9 @@ const wethAddr = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' // WETH:1
 const vspAddr = '0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421' // VSP:1
 
 // Receipt check helper
-const checkTxSuccess = function (receipt) {
-  receipt.should.have.property('status').that.is.true
-  return receipt
+const checkOpSuccess = function (opSummary) {
+  opSummary.should.have.property('status').that.is.true
+  return opSummary
 }
 
 describe('Payment Streams', function () {
@@ -92,7 +92,7 @@ describe('Payment Streams', function () {
     const from = acc[0]
     return ps
       .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from })
-      .promise.then(checkTxSuccess)
+      .promise.then(checkOpSuccess)
       .then(ps.getTokens)
       .then(function (tokens) {
         tokens.should.be.an('array').that.has.lengthOf(1)
@@ -100,19 +100,29 @@ describe('Payment Streams', function () {
       })
   })
 
-  it('should create a stream', function () {
+  it.only('should create a stream', function () {
     const from = acc[0]
     const usdAmount = '100000000000000000000' // 100 USD
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
 
     return ps
       .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from })
-      .promise.then(checkTxSuccess)
+      .promise.then(checkOpSuccess)
       .then(
         () =>
           ps.createStream(acc[1], usdAmount, vspAddr, endTime, { from }).promise
       )
-      .then(checkTxSuccess)
+      .then(checkOpSuccess)
+      .then(function ({ result }) {
+        result.should.have.a
+          .property('id')
+          .that.is.a('string')
+          .and.matches(/^\d$/)
+        result.should.have.a
+          .property('stream')
+          .that.is.a('string')
+          .and.matches(/^0x[0-9a-fA-F]{40}$/)
+      })
   })
 
   it('shoud list created streams', function () {
@@ -121,7 +131,7 @@ describe('Payment Streams', function () {
 
     return ps
       .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from: acc[0] })
-      .promise.then(checkTxSuccess)
+      .promise.then(checkOpSuccess)
       .then(() =>
         Promise.all([
           ps.createStream(acc[3], usdAmount, vspAddr, endTime, { from: acc[2] })
@@ -130,7 +140,7 @@ describe('Payment Streams', function () {
             .promise
         ])
       )
-      .then(receipts => receipts.map(checkTxSuccess))
+      .then(receipts => receipts.map(checkOpSuccess))
       .then(() => ps.getStreams(acc[2]))
       .then(function (streams) {
         streams.outgoing.length.should.equal(1)
@@ -145,4 +155,6 @@ describe('Payment Streams', function () {
         streams.incoming.length.should.equal(1)
       })
   })
+
+  it('should claim tokens from a stream')
 })

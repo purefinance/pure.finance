@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CheckmarkIcon = (props) => (
+const CheckmarkIcon = props => (
   <svg
     height="33"
     viewBox="3 3 16 16"

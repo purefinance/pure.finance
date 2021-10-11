@@ -21,25 +21,25 @@ function SablierClaims() {
   const { sablier } = useContext(PureContext)
 
   const clearFeedback = () => setFeedback({ color: 'text-black', message: '' })
-  const setErrorMessage = (message) =>
+  const setErrorMessage = message =>
     setFeedback({ color: 'text-red-600', message })
-  const setInfoMessage = (message) =>
+  const setInfoMessage = message =>
     setFeedback({ color: 'text-black', message })
-  const setSuccessMessage = (message) =>
+  const setSuccessMessage = message =>
     setFeedback({ color: 'text-green-600', message })
 
-  const getStream = (streamID) =>
+  const getStream = streamID =>
     streamID &&
     sablier
       .getStream(streamID)
-      .then((s) => {
+      .then(s => {
         setStream(s)
         clearFeedback()
       })
-      .catch((e) => setErrorMessage(e.message))
+      .catch(e => setErrorMessage(e.message))
 
   const delayedStreamID = useCallback(
-    debounce((sID) => getStream(sID), 500),
+    debounce(sID => getStream(sID), 500),
     [sablier]
   )
 
@@ -61,7 +61,7 @@ function SablierClaims() {
         setSuccessMessage(t('claim-succeeded'))
         setStreamID('')
       })
-      .catch((e) => setErrorMessage(e.message))
+      .catch(e => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
       .then(() => watchAsset({ account, token: stream.token }))
   }

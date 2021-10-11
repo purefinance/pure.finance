@@ -15,13 +15,13 @@ const createSablier = function (web3, options = {}) {
 
   const sablier = new web3.eth.Contract(abi, address)
 
-  const safeGas = (gas) => Math.ceil(gas * gasFactor)
+  const safeGas = gas => Math.ceil(gas * gasFactor)
 
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
       transactionOptions.gas ||
         method.estimateGas(transactionOptions).then(safeGas)
-    ).then((gas) => method.send({ ...transactionOptions, gas }))
+    ).then(gas => method.send({ ...transactionOptions, gas }))
 
   const getAddress = () => address
 

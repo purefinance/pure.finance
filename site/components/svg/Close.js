@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CloseIcon = (props) => (
+const CloseIcon = props => (
   <svg
     height="18"
     viewBox="0 0 18 18"

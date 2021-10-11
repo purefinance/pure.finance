@@ -105,7 +105,8 @@ const createDPAuctionsLib = function (web3, options = {}) {
 
   // Gets the auction data given the auction ID. If required, additional data
   // will be added.
-  const getAuction = (auctionId, moreData) => dpa.methods
+  const getAuction = (auctionId, moreData) =>
+    dpa.methods
       .getAuction(auctionId)
       .call()
       .then(auction =>

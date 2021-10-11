@@ -20,9 +20,9 @@ const getServer = function () {
   // @ts-ignore ts(2351)
   const _web3 = new Web3(process.env.BASE_NODE_URL)
   /* eslint-disable camelcase */
-  // @ts-ignore ts(2339)
   return _web3.eth.getChainId().then(
     chainId =>
+      // @ts-ignore ts(2339)
       ganache.server({
         _chainIdRpc: chainId,
         blockTime: 13,

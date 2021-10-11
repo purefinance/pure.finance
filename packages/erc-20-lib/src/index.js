@@ -14,20 +14,19 @@ const createErc20 = function (web3, address, options = {}) {
 
   const contract = new web3.eth.Contract(abi, address)
 
-  const safeGas = (gas) => Math.ceil(gas * gasFactor)
+  const safeGas = gas => Math.ceil(gas * gasFactor)
 
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
       transactionOptions.gas ||
         method.estimateGas(transactionOptions).then(safeGas)
-    ).then((gas) => method.send({ ...transactionOptions, gas }))
+    ).then(gas => method.send({ ...transactionOptions, gas }))
 
-  const approve = function (spender, value) {
-    return estimateGasAndSend(contract.methods.approve(spender, value), {
+  const approve = (spender, value) =>
+    estimateGasAndSend(contract.methods.approve(spender, value), {
       from,
       gasPrice
     })
-  }
 
   const totalSupply = () => contract.methods.totalSupply().call()
 
@@ -46,7 +45,7 @@ const createErc20 = function (web3, address, options = {}) {
         totalSupply
       })),
 
-    balanceOf: (address) => contract.methods.balanceOf(address || from).call(),
+    balanceOf: address => contract.methods.balanceOf(address || from).call(),
 
     allowance: (owner, spender) =>
       contract.methods.allowance(owner, spender).call(),
@@ -73,26 +72,26 @@ const createErc20 = function (web3, address, options = {}) {
 
     totalSupply,
 
-    wrapEther: (value) =>
+    wrapEther: value =>
       estimateGasAndSend(weth.getContract(web3).methods.deposit(), {
         from,
         gasPrice,
         value
       }),
 
-    unwrapEther: (value) =>
+    unwrapEther: value =>
       estimateGasAndSend(weth.getContract(web3).methods.withdraw(value), {
         from,
         gasPrice
       }),
 
-    wrappedEtherBalanceOf: (address) =>
+    wrappedEtherBalanceOf: address =>
       weth
         .getContract(web3)
         .methods.balanceOf(address || from)
         .call(),
 
-    swapEther: (value) =>
+    swapEther: value =>
       estimateGasAndSend(
         uniswap
           .getRouterContract(web3)
