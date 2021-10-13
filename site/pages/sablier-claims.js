@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
+import Big from 'big.js'
 import debounce from 'lodash.debounce'
 import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
@@ -101,6 +102,20 @@ function SablierClaims() {
           value={streamID}
         />
         <Input
+          caption={
+            stream.balance
+              ? `${new Intl.NumberFormat('default', {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2
+                }).format(
+                  new Big(stream.balance)
+                    .div(`1e${stream.token.decimals}`)
+                    .mul(stream.rate)
+                    .div('1e6')
+                    .toNumber()
+                )} USD`
+              : '-'
+          }
           disabled
           suffix={stream && stream.token && stream.token.symbol}
           title={`${t('balance')}:`}
