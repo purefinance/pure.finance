@@ -1,22 +1,39 @@
 import { useContext, useState } from 'react'
+import Big from 'big.js'
 import Link from 'next/link'
+import { isAddress } from 'web3-utils'
+import { useRouter } from 'next/router'
+import useSWR from 'swr'
 import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
-import Big from 'big.js'
-import Input from '../../components/Input'
-import Button from '../../components/Button'
-import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
-import EndTime from '../../components/payment-streams/EndTime'
-import { useTokenInput } from '../../hooks/useTokenInput'
-import { fromUnit, toUnit } from '../../utils'
+
 import * as timeUtils from '../../utils/time'
-import { isAddress } from 'web3-utils'
+import { fromUnit, toUnit } from '../../utils'
+import Button from '../../components/Button'
+import EndTime from '../../components/payment-streams/EndTime'
+import Input from '../../components/Input'
+import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
 import TransactionsContext from '../context/Transactions'
 import { useStreams } from '../../hooks/useStreams'
-import { useRouter } from 'next/router'
+import { useTokenInput } from '../../hooks/useTokenInput'
+
+const useApprovedTokens = function () {
+  const { active } = useWeb3React()
+  const paymentStreamsLib = useContext(PaymentStreamsLibContext)
+  const { data, error } = useSWR(active ? `approved-tokens` : null, () =>
+    paymentStreamsLib.getTokens()
+  )
+
+  return {
+    tokens: data,
+    error,
+    isLoading: data === undefined && error === undefined
+  }
+}
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
+// eslint-disable-next-line complexity
 const CreateStream = function () {
   const { active, account } = useWeb3React()
   const { t } = useTranslation('payment-streams')
@@ -25,12 +42,18 @@ const CreateStream = function () {
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)
   const { mutate } = useStreams()
+  const { tokens = [] } = useApprovedTokens()
   const [payee, setPayee] = useState('')
   const [usdAmount, setUsdAmount] = useState('')
   const [years, setYears] = useState(0)
   const [days, setDays] = useState(0)
   const [hours, setHours] = useState(0)
   const tokenInput = useTokenInput()
+
+  const isTokenAdded = token =>
+    tokens.some(
+      tokenAddress => tokenAddress.toLowerCase() === token.toLowerCase()
+    )
 
   const streamingTime =
     timeUtils.yearsToSeconds(years) +
@@ -42,10 +65,11 @@ const CreateStream = function () {
     account !== payee &&
     ZERO_ADDRESS !== payee &&
     usdAmount.length > 0 &&
-    !isNaN(usdAmount) &&
-    Big(usdAmount).gt('0') &&
+    !isNaN(Number.parseInt(usdAmount)) &&
+    new Big(usdAmount).gt('0') &&
     isAddress(tokenInput.value) &&
-    streamingTime > 0
+    streamingTime > 0 &&
+    isTokenAdded(tokenInput.value)
 
   const submit = function (e) {
     e.preventDefault()
@@ -56,7 +80,7 @@ const CreateStream = function () {
     const endTime = now + streamingTime
     const { emitter } = paymentStreamsLib.createStream(
       payee,
-      Big(toUnit(usdAmount, 18)).toFixed(0),
+      new Big(toUnit(usdAmount, 18)).toFixed(0),
       tokenInput.value,
       endTime
     )
@@ -109,6 +133,13 @@ const CreateStream = function () {
       })
   }
 
+  let captionColor = tokenInput.captionColor
+  let tokenInputCaption = tokenInput.caption
+  if (isAddress(tokenInput.value) && !isTokenAdded(tokenInput.value)) {
+    captionColor = 'text-red-600'
+    tokenInputCaption = t('token-not-approved-for-streams')
+  }
+
   return (
     <form
       className="flex flex-col items-center mx-auto w-full max-w-lg"
@@ -129,6 +160,8 @@ const CreateStream = function () {
         placeholder={tCommon('token-address-placeholder')}
         title={`${tCommon('token-address')}`}
         {...tokenInput}
+        caption={tokenInputCaption}
+        captionColor={captionColor}
       />
       <EndTime
         days={days}
