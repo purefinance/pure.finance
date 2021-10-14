@@ -40,7 +40,7 @@ const createPaymentStreams = function (web3, options = {}) {
     })
 
   // Gets the PaymentStreamFactory contract.
-  // const getFactoryContract = () => psfPromise
+  const getFactoryContract = () => psfPromise
 
   // Gets all the supported tokens.
   const getTokens = function () {
@@ -490,7 +490,7 @@ const createPaymentStreams = function (web3, options = {}) {
     addToken,
     claim,
     createStream,
-    // getFactoryContract,
+    getFactoryContract,
     getStreams,
     getTokens,
     pauseStream,

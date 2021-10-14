@@ -34,8 +34,8 @@ describe('Payment Streams', function () {
     }
 
     // Data needed to unlock the deployer/owner and add streaming tokens.
-    // const paymentStreamBirthblock = 12877534
-    // const paymentStreamDeployer = '0xC2a8814258F0bb54F9CC1Ec6ACb7a6886097b994'
+    const paymentStreamBirthblock = 13413233
+    const paymentStreamDeployer = '0x901a826f1254ed1d09295b938a6189e36efa9c33'
 
     let provider
 
@@ -48,10 +48,10 @@ describe('Payment Streams', function () {
         provider = ganache.provider({
           _chainIdRpc: chainId,
           fork: process.env.BASE_NODE_URL,
-          // fork_block_number: paymentStreamBirthblock + 21, // T + 5m
+          fork_block_number: paymentStreamBirthblock + 21, // T + 5m
           logger: console,
           mnemonic: process.env.MNEMONIC,
-          // unlocked_accounts: [paymentStreamDeployer],
+          unlocked_accounts: [paymentStreamDeployer],
           verbose: false // Log RPC calls and responses
         })
         /* eslint-enable camelcase */
@@ -79,13 +79,20 @@ describe('Payment Streams', function () {
       ps = createPaymentStreams(web3)
     }
 
-    // const transferOwnership = () =>
-    //   ps.getFactoryContract().then((psf) => psf.methods
-    //       .transferOwnership(acc[0])
-    //       .send({ from: paymentStreamDeployer }))
+    const transferOwnership = () =>
+      ps
+        .getFactoryContract()
+        .then(psf =>
+          psf.methods
+            .transferOwnership(acc[0])
+            .send({ from: paymentStreamDeployer })
+        )
 
-    return setProvider().then(setWeb3).then(setTestAccounts).then(setLibs)
-    // .then(transferOwnership)
+    return setProvider()
+      .then(setWeb3)
+      .then(setTestAccounts)
+      .then(setLibs)
+      .then(transferOwnership)
   })
 
   it('should get the list of supported tokens', function () {
@@ -100,7 +107,7 @@ describe('Payment Streams', function () {
       })
   })
 
-  it.only('should create a stream', function () {
+  it('should create a stream', function () {
     const from = acc[0]
     const usdAmount = '100000000000000000000' // 100 USD
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
