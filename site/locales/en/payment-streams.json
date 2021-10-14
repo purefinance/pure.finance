@@ -33,7 +33,7 @@
   "stream-is-paused": "Stream is paused",
   "streaming": "streaming",
   "token": "token",
-  "token-not-approved-for-streams": "This token address has not been approved to create Streams.",
+  "token-not-approved-for-streams": "This token address has not been approved to create streams",
   "update-funding-address": "Update Funding Address",
   "update-rate": "update rate",
   "usd-amount": "amount"
