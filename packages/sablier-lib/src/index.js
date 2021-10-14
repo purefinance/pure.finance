@@ -29,7 +29,7 @@ const createSablier = function (web3, options = {}) {
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
-  const getPath = (token) =>
+  const getPath = token =>
     token === wethAddress
       ? [token, usdcAddress]
       : [token, wethAddress, usdcAddress]
@@ -40,7 +40,7 @@ const createSablier = function (web3, options = {}) {
       : router.methods
           .getAmountsOut(amount, getPath(token))
           .call()
-          .then((amounts) => amounts.slice(-1)[0])
+          .then(amounts => amounts.slice(-1)[0])
 
   const getUsdcRate = function (token) {
     debug('Getting USDC rate')
@@ -57,7 +57,7 @@ const createSablier = function (web3, options = {}) {
     return sablier.methods
       .getStream(streamId)
       .call()
-      .then((stream) => Promise.all([stream, getUsdcRate(stream.tokenAddress)]))
+      .then(stream => Promise.all([stream, getUsdcRate(stream.tokenAddress)]))
       .then(([stream, rate]) => ({ ...stream, rate }))
   }
 

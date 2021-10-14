@@ -7,7 +7,7 @@ const allTokens = [].concat(defaultTokens, vTokens)
 
 const findToken = (address, chainId = 1) =>
   allTokens.find(
-    (token) => token.address === address && token.chainId === chainId
+    token => token.address === address && token.chainId === chainId
   )
 
 module.exports = { findToken }
