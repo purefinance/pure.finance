@@ -64,7 +64,7 @@ const createPaymentStreams = function (web3, options = {}) {
   const getStreamContract = function (id) {
     debug('Getting stream %s', id)
     return psfPromise
-      .then(pfs => pfs.methods.getStream(id).call())
+      .then(psf => psf.methods.getStream(id).call())
       .then(function (address) {
         debug('Stream %s address is %s', id, address)
         return new web3.eth.Contract(paymentStreamAbi, address)
@@ -266,13 +266,15 @@ const createPaymentStreams = function (web3, options = {}) {
 
     /* eslint-disable promise/no-nesting */
     const transactionsPromise = psfPromise
-      .then(pfs =>
+      .then(psf =>
         Promise.all([
-          pfs,
-          pfs.methods.usdToTokenAmount(token, usdAmount).call()
+          psf,
+          psf.methods.usdToTokenAmount(token, usdAmount).call()
         ])
       )
       .then(function ([psf, tokenUsdAmount]) {
+        debug('Stream token amount is %s', tokenUsdAmount)
+
         // Prepare a spied contract method to call createStream and capture the
         // id of the stream. Then use the id to then get the stream address.
         // Finally, store this address promise in a variable so it can later be
