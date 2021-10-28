@@ -3,12 +3,50 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_swapManager",
+        "name": "_feedRegistry",
         "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "tokenDenomination",
+        "type": "address"
+      }
+    ],
+    "name": "CustomFeedMappingUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousFeedRegistry",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newFeedRegistry",
+        "type": "address"
+      }
+    ],
+    "name": "FeedRegistryUpdated",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -67,58 +105,29 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
+    "inputs": [],
+    "name": "NAME",
+    "outputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousSwapManager",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newSwapManager",
-        "type": "address"
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
-    "name": "SwapManagerUpdated",
-    "type": "event"
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "anonymous": false,
-    "inputs": [
+    "inputs": [],
+    "name": "VERSION",
+    "outputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
-    "name": "TokenAdded",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_dex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_path",
-        "type": "address[]"
-      }
-    ],
-    "name": "addToken",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -158,6 +167,38 @@
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "customFeedMapping",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feedRegistry",
+    "outputs": [
+      {
+        "internalType": "contract FeedRegistryInterface",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -235,38 +276,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "supportedTokens",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "dex",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "swapManager",
-    "outputs": [
-      {
-        "internalType": "contract ISwapManager",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
@@ -282,9 +291,14 @@
         "internalType": "address",
         "name": "_token",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_denomination",
+        "type": "address"
       }
     ],
-    "name": "updateOracles",
+    "name": "updateCustomFeedMapping",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -297,7 +311,7 @@
         "type": "address"
       }
     ],
-    "name": "updateSwapManager",
+    "name": "updateFeedRegistry",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

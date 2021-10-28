@@ -42,24 +42,6 @@ const createPaymentStreams = function (web3, options = {}) {
   // Gets the PaymentStreamFactory contract.
   const getFactoryContract = () => psfPromise
 
-  // Gets all the supported tokens.
-  const getTokens = function () {
-    debug('Getting the supported tokens')
-    return psfPromise
-      .then(psf =>
-        psf.getPastEvents('TokenAdded', {
-          fromBlock: psf.options.birthblock
-        })
-      )
-      .then(events => events.map(e => e.returnValues.tokenAddress))
-      .then(
-        pTap(function (tokens) {
-          // @ts-ignore ts(2339)
-          debug('Got %s supported tokens', tokens.length)
-        })
-      )
-  }
-
   // Gets an PaymentStream contract instance
   const getStreamContract = function (id) {
     debug('Getting stream %s', id)
@@ -222,33 +204,6 @@ const createPaymentStreams = function (web3, options = {}) {
       getIncomingStreams(address),
       getOutgoingStreams(address)
     ]).then(([incoming, outgoing]) => ({ incoming, outgoing }))
-  }
-
-  // Adds a token so it can be used in streams.
-  const addToken = function (token, dex, path, transactionOptions) {
-    debug('Adding %s to valid tokens list', token)
-
-    const transactionsPromise = psfPromise.then(psf => [
-      {
-        method: psf.methods.addToken(token, dex, path),
-        suffix: 'add-token',
-        gas: 900000
-      }
-    ])
-
-    const parseResults = function ([{ receipt }]) {
-      const result = receipt.events.TokenAdded.returnValues
-
-      debug('Token %s added', result.tokenAddress)
-
-      return { result }
-    }
-
-    return execTransactions(
-      transactionsPromise,
-      parseResults,
-      transactionOptions
-    )
   }
 
   // Creates a stream.
@@ -489,12 +444,10 @@ const createPaymentStreams = function (web3, options = {}) {
   }
 
   return {
-    addToken,
     claim,
     createStream,
     getFactoryContract,
     getStreams,
-    getTokens,
     pauseStream,
     resumeStream,
     updateFundingAddress,

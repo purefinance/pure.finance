@@ -33,30 +33,24 @@ describe('Payment Streams', function () {
       return null
     }
 
-    // Data needed to unlock the deployer/owner and add streaming tokens.
-    const paymentStreamBirthblock = 13413233
-    const paymentStreamDeployer = '0x901a826f1254ed1d09295b938a6189e36efa9c33'
-
     let provider
 
+    /* eslint-disable camelcase */
     const setProvider = function () {
       // @ts-ignore ts(2351)
       const _web3 = new Web3(process.env.BASE_NODE_URL)
       return _web3.eth.getChainId().then(function (chainId) {
-        /* eslint-disable camelcase */
         // @ts-ignore ts(2339)
         provider = ganache.provider({
           _chainIdRpc: chainId,
           fork: process.env.BASE_NODE_URL,
-          fork_block_number: paymentStreamBirthblock + 21, // T + 5m
           logger: console,
           mnemonic: process.env.MNEMONIC,
-          unlocked_accounts: [paymentStreamDeployer],
           verbose: false // Log RPC calls and responses
         })
-        /* eslint-enable camelcase */
       })
     }
+    /* eslint-enable camelcase */
 
     const setWeb3 = function () {
       // @ts-ignore ts(2351)
@@ -79,26 +73,15 @@ describe('Payment Streams', function () {
       ps = createPaymentStreams(web3)
     }
 
-    const transferOwnership = () =>
-      ps
-        .getFactoryContract()
-        .then(psf =>
-          psf.methods
-            .transferOwnership(acc[0])
-            .send({ from: paymentStreamDeployer })
-        )
-
-    return setProvider()
-      .then(setWeb3)
-      .then(setTestAccounts)
-      .then(setLibs)
-      .then(transferOwnership)
+    return setProvider().then(setWeb3).then(setTestAccounts).then(setLibs)
   })
 
-  it('should get the list of supported tokens', function () {
+  it.skip('should get the list of supported tokens', function () {
     const from = acc[0]
     return ps
-      .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from })
+      .updateCustomFeedMapping(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], {
+        from
+      })
       .promise.then(checkOpSuccess)
       .then(ps.getTokens)
       .then(function (tokens) {
@@ -113,13 +96,8 @@ describe('Payment Streams', function () {
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
 
     return ps
-      .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from })
+      .createStream(acc[1], usdAmount, vspAddr, endTime, { from })
       .promise.then(checkOpSuccess)
-      .then(
-        () =>
-          ps.createStream(acc[1], usdAmount, vspAddr, endTime, { from }).promise
-      )
-      .then(checkOpSuccess)
       .then(function ({ result }) {
         result.should.have.a
           .property('id')
@@ -132,21 +110,16 @@ describe('Payment Streams', function () {
       })
   })
 
-  it('shoud list created streams', function () {
+  it.only('shoud list created streams', function () {
     const usdAmount = '100000000000000000000' // 100 USD
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
 
-    return ps
-      .addToken(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], { from: acc[0] })
-      .promise.then(checkOpSuccess)
-      .then(() =>
-        Promise.all([
+    return Promise.all([
           ps.createStream(acc[3], usdAmount, vspAddr, endTime, { from: acc[2] })
             .promise,
           ps.createStream(acc[4], usdAmount, vspAddr, endTime, { from: acc[3] })
             .promise
         ])
-      )
       .then(receipts => receipts.map(checkOpSuccess))
       .then(() => ps.getStreams(acc[2]))
       .then(function (streams) {

@@ -213,6 +213,32 @@
   },
   {
     "inputs": [],
+    "name": "NAME",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "claim",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -275,7 +301,7 @@
     "name": "factory",
     "outputs": [
       {
-        "internalType": "contract IPaymentStreamFactory",
+        "internalType": "contract IPaymentStreamFactoryMetadata",
         "name": "",
         "type": "address"
       }
