@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
 import watchAsset from 'wallet-watch-asset'
 
-import { fromUnit, toFixed, toUnit } from '../utils'
+import { fromUnit, sweepDust, toFixed, toUnit } from '../utils'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import Layout from '../components/Layout'
@@ -95,7 +95,7 @@ const WrapUnwrapEth = function () {
     }
 
     return erc20Service
-      .unwrapEther(valueInWei)
+      .unwrapEther(sweepDust(valueInWei, wEthBalance))
       .then(() => {
         setSuccessMessage(t('unwrap-weth-success', { value }))
         setValue('')
