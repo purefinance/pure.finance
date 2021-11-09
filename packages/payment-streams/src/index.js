@@ -288,8 +288,8 @@ const createPaymentStreams = function (web3, options = {}) {
           psf.methods.usdToTokenAmount(token, usdAmount).call()
         ])
       )
-      .then(function ([psf, tokenUsdAmount]) {
-        debug('Stream token amount is %s', tokenUsdAmount)
+      .then(function ([psf, tokenAmount]) {
+        debug('Stream token amount is %s', tokenAmount)
 
         // Prepare a spied contract method to call createStream and capture the
         // id of the stream. Then use the id to then get the stream address.
@@ -324,7 +324,7 @@ const createPaymentStreams = function (web3, options = {}) {
         let streamAddress
         const tokenContract = new web3.eth.Contract(erc20Abi, token)
         const approveMethodBuilder = address =>
-          tokenContract.methods.approve(address, tokenUsdAmount)
+          tokenContract.methods.approve(address, tokenAmount)
         const dynamicApproveMethod = {
           estimateGas: (...args) =>
             streamAddressPromise.then(function (address) {
@@ -379,7 +379,8 @@ const createPaymentStreams = function (web3, options = {}) {
     const parseResults = function ([{ receipt }]) {
       const result = receipt.events.Claimed.returnValues
 
-      debug('USD claimed was %s', result.usdAmount)
+      debug('Tokens claimed were %s', result.tokenAmount)
+      debug('USD equivalent was %s', result.usdAmount)
 
       return { result }
     }
