@@ -1,14 +1,19 @@
 'use strict'
 
+const Big = require('big.js').default
+const createErc20 = require('erc-20-lib')
 const debug = require('debug')('payment-streams')
-const pTap = require('p-tap').default
 const erc20Abi = require('erc-20-abi')
+const pTap = require('p-tap').default
 
 const { findToken } = require('./token-list')
 const contracts = require('./contracts.json')
 const createExecutor = require('eth-exec-txs')
 const paymentStreamAbi = require('./abis/PaymentStream.json')
 const paymentStreamFactoryAbi = require('./abis/PaymentStreamFactory.json')
+
+const fromUnit = (number, decimals = 18) =>
+  new Big(`${number}e-${decimals}`).toFixed()
 
 const createPaymentStreams = function (web3, options = {}) {
   debug('Creating Payment Streams library')
@@ -285,11 +290,16 @@ const createPaymentStreams = function (web3, options = {}) {
       .then(psf =>
         Promise.all([
           psf,
-          psf.methods.usdToTokenAmount(token, usdAmount).call()
+          psf.methods.usdToTokenAmount(token, usdAmount).call(),
+          createErc20(web3, token).getInfo()
         ])
       )
-      .then(function ([psf, tokenAmount]) {
-        debug('Stream token amount is %s', tokenAmount)
+      .then(function ([psf, tokenAmount, { decimals, symbol }]) {
+        debug(
+          'Stream token amount is %s %s',
+          fromUnit(tokenAmount, decimals),
+          symbol
+        )
 
         // Prepare a spied contract method to call createStream and capture the
         // id of the stream. Then use the id to then get the stream address.
@@ -379,10 +389,19 @@ const createPaymentStreams = function (web3, options = {}) {
     const parseResults = function ([{ receipt }]) {
       const result = receipt.events.Claimed.returnValues
 
-      debug('Tokens claimed were %s', result.tokenAmount)
-      debug('USD equivalent was %s', result.usdAmount)
+      return getStreamContract(id)
+        .then(ps => ps.methods.token().call())
+        .then(address => createErc20(web3, address).getInfo())
+        .then(function ({ address, decimals, symbol }) {
+          debug(
+            'Tokens claimed were %s %s',
+            fromUnit(result.tokenAmount, decimals),
+            symbol
+          )
+          debug('That was equivalent to %s USD', fromUnit(result.usdAmount))
 
-      return { result }
+          return { result: { token: address, ...result } }
+        })
     }
 
     return execTransactions(
@@ -480,7 +499,12 @@ const createPaymentStreams = function (web3, options = {}) {
     endTime,
     transactionOptions
   ) {
-    debug('Updating funding rate of %s to %s %s', usdAmound, endTime)
+    debug(
+      'Updating funding rate of %s to %s USD/sec ending at %s',
+      id,
+      fromUnit(usdAmound),
+      new Date(endTime * 1000).toISOString()
+    )
 
     const transactionsPromise = getStreamContract(id).then(ps => [
       {
