@@ -16,12 +16,20 @@ import PaymentStreamsLibContext from '../../components/payment-streams/PaymentSt
 import TransactionsContext from '../context/Transactions'
 import { useStreams } from '../../hooks/useStreams'
 import { useTokenInput } from '../../hooks/useTokenInput'
+import { findToken } from 'pf-payment-streams/src/token-list'
 
-const useApprovedTokens = function () {
-  const { active } = useWeb3React()
-  const paymentStreamsLib = useContext(PaymentStreamsLibContext)
-  const { data, error } = useSWR(active ? `approved-tokens` : null, () =>
-    paymentStreamsLib.getTokens()
+import fetchJson from '../../utils/fetch-json'
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+const useSupportedTokens = function () {
+  const { data, error } = useSWR('supported-tokens', () =>
+    fetchJson('https://cl-docs-addresses.web.app/addresses.json').then(
+      json =>
+        json?.['ethereum-addresses'].networks.find(
+          ({ name }) => name === 'Ethereum Mainnet'
+        )?.proxies ?? []
+    )
   )
 
   return {
@@ -30,8 +38,6 @@ const useApprovedTokens = function () {
     isLoading: data === undefined && error === undefined
   }
 }
-
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 // eslint-disable-next-line complexity
 const CreateStream = function () {
@@ -42,7 +48,7 @@ const CreateStream = function () {
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)
   const { mutate } = useStreams()
-  const { tokens = [] } = useApprovedTokens()
+  const { tokens = [] } = useSupportedTokens()
   const [payee, setPayee] = useState('')
   const [usdAmount, setUsdAmount] = useState('')
   const [years, setYears] = useState(0)
@@ -50,10 +56,17 @@ const CreateStream = function () {
   const [hours, setHours] = useState(0)
   const tokenInput = useTokenInput()
 
-  const isTokenAdded = token =>
-    tokens.some(
-      tokenAddress => tokenAddress.toLowerCase() === token.toLowerCase()
-    )
+  // tokens are in the list in the form of "<token> / [USD|ETH]"" pairs. For example: "UNI / USD"
+  // addresses are not available
+  const isTokenSupported = function (value) {
+    // vesper is registered as "Vesper Finance TVL" - see https://docs.chain.link/docs/ethereum-addresses/#Ethereum%20Mainnet
+    const symbol = findToken(value, 1)?.symbol.toLowerCase()
+    if (!symbol) {
+      return false
+    }
+    const name = symbol === 'vsp' ? 'vesper' : symbol
+    return tokens.some(({ pair }) => pair.toLowerCase().startsWith(name))
+  }
 
   const streamingTime =
     timeUtils.yearsToSeconds(years) +
@@ -69,7 +82,7 @@ const CreateStream = function () {
     new Big(usdAmount).gt('0') &&
     isAddress(tokenInput.value) &&
     streamingTime > 0 &&
-    isTokenAdded(tokenInput.value)
+    isTokenSupported(tokenInput.value)
 
   const submit = function (e) {
     e.preventDefault()
@@ -135,7 +148,7 @@ const CreateStream = function () {
 
   let captionColor = tokenInput.captionColor
   let tokenInputCaption = tokenInput.caption
-  if (isAddress(tokenInput.value) && !isTokenAdded(tokenInput.value)) {
+  if (isAddress(tokenInput.value) && !isTokenSupported(tokenInput.value)) {
     captionColor = 'text-red-600'
     tokenInputCaption = t('token-not-approved-for-streams')
   }
