@@ -44,9 +44,6 @@ const createPaymentStreams = function (web3, options = {}) {
       return instance
     })
 
-  // Gets the PaymentStreamFactory contract.
-  const getFactoryContract = () => psfPromise
-
   // Gets an PaymentStream contract instance.
   const getStreamContract = function (id, defaultBlock) {
     debug('Getting stream %s', id)
@@ -540,7 +537,6 @@ const createPaymentStreams = function (web3, options = {}) {
   return {
     claim,
     createStream,
-    getFactoryContract,
     getStream,
     getStreams,
     pauseStream,
