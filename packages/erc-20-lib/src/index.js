@@ -96,7 +96,7 @@ const createErc20 = function (web3, address, options = {}) {
         uniswap
           .getRouterContract(web3)
           .methods.swapExactETHForTokens(
-            1,
+            '1',
             [tokenAddress('WETH'), address],
             from,
             Math.round(Date.now() / 1000) + 60
