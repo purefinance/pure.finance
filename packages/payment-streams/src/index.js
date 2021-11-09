@@ -206,12 +206,12 @@ const createPaymentStreams = function (web3, options = {}) {
 
   // Gets all incoming streams by getting past StreamCreated events where the
   // payee is the given address.
-  const getIncomingStreams = function (address) {
+  const getIncomingStreams = function (address, fromBlock) {
     debug('Getting all incoming streams of %s', address)
     return psfPromise
       .then(psf =>
         getPastEventsInChunks(psf, 'StreamCreated', {
-          fromBlock: psf.options.birthblock,
+          fromBlock: fromBlock || psf.options.birthblock,
           filter: { payee: address }
         })
       )
@@ -233,12 +233,12 @@ const createPaymentStreams = function (web3, options = {}) {
 
   // Gets all outgoing streams by getting past StreamCreated events where the
   // payer is the given address.
-  const getOutgoingStreams = function (address) {
+  const getOutgoingStreams = function (address, fromBlock) {
     debug('Getting all outgoing streams of %s', address)
     return psfPromise
       .then(psf =>
         getPastEventsInChunks(psf, 'StreamCreated', {
-          fromBlock: psf.options.birthblock,
+          fromBlock: fromBlock || psf.options.birthblock,
           filter: { payer: address }
         })
       )
@@ -259,11 +259,11 @@ const createPaymentStreams = function (web3, options = {}) {
   }
 
   // Gets all the streams related to the given address: incoming and outgoing.
-  const getStreams = function (address) {
+  const getStreams = function (address, fromBlock) {
     debug('Getting all streams of %s', address)
     return Promise.all([
-      getIncomingStreams(address),
-      getOutgoingStreams(address)
+      getIncomingStreams(address, fromBlock),
+      getOutgoingStreams(address, fromBlock)
     ]).then(([incoming, outgoing]) => ({ incoming, outgoing }))
   }
 
