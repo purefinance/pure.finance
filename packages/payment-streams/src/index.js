@@ -232,7 +232,7 @@ const createPaymentStreams = function (web3, options = {}) {
           events
             .filter(e => !e.removed)
             .map(e => e.returnValues.id)
-            .map(getStream)
+            .map(id => getStream(id))
         )
       )
       .then(
@@ -259,7 +259,7 @@ const createPaymentStreams = function (web3, options = {}) {
           events
             .filter(e => !e.removed)
             .map(e => e.returnValues.id)
-            .map(getStream)
+            .map(id => getStream(id))
         )
       )
       .then(
@@ -367,7 +367,7 @@ const createPaymentStreams = function (web3, options = {}) {
     const parseResults = function ([{ receipt }]) {
       const result = receipt.events.StreamCreated.returnValues
 
-      debug('Stream %s created', result.id)
+      debug('Stream %s created at %s', result.id, result.stream)
 
       return { result }
     }
