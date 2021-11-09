@@ -7,15 +7,15 @@ const pSeries = require('p-series')
 const pTap = require('p-tap').default
 
 const fromUnit = (number, decimals = 18) =>
-  Big(`${Big(number).toFixed()}e-${decimals}`).toFixed()
+  new Big(`${number}e-${decimals}`).toFixed()
 
 const calculateFee = ({ transaction, receipt }) =>
-  Big(transaction.gasPrice).times(receipt.gasUsed).toFixed()
+  new Big(transaction.gasPrice).times(receipt.gasUsed).toFixed()
 
 const calculateTotalFee = transactionsData =>
   transactionsData
     .map(calculateFee)
-    .reduce((total, fee) => Big(total).plus(fee), Big(0))
+    .reduce((total, fee) => new Big(total).plus(fee), new Big(0))
     .toFixed()
 
 const createEstimateGasAndSend = (web3, emitter, overestimation = 1.25) =>
@@ -130,7 +130,7 @@ const createExecutor = ({ from, web3, overestimation }) =>
 
     const sendTransactions = function ({ txs, gasPrice }) {
       const expectedGas = txs.reduce((sum, { gas }) => sum + gas, 0)
-      const expectedFee = Big(gasPrice).times(expectedGas).toFixed()
+      const expectedFee = new Big(gasPrice).times(expectedGas).toFixed()
       debug(
         'Expected fee in %d transaction(s) is %s ETH',
         txs.length,
@@ -163,19 +163,20 @@ const createExecutor = ({ from, web3, overestimation }) =>
       )
     }
 
-    const getResult = function (transactionsData) {
-      const result = {
-        ...parseResults(transactionsData),
-        fees: calculateTotalFee(transactionsData),
-        raw: transactionsData,
-        status: transactionsData[transactionsData.length - 1].receipt.status
-      }
+    const getResult = transactionsData =>
+      Promise.resolve(parseResults(transactionsData)).then(function (parsed) {
+        const result = {
+          ...parsed,
+          fees: calculateTotalFee(transactionsData),
+          raw: transactionsData,
+          status: transactionsData[transactionsData.length - 1].receipt.status
+        }
 
-      debug('Total transaction fees paid %s ETH', fromUnit(result.fees))
+        debug('Total transaction fees paid %s ETH', fromUnit(result.fees))
 
-      emitter.emit('result', result)
-      return result
-    }
+        emitter.emit('result', result)
+        return result
+      })
 
     const promise = transactionsPromise
       .then(addGasPrice)
