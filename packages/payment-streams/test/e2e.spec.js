@@ -11,8 +11,6 @@ const Web3 = require('web3')
 const createPaymentStreams = require('..')
 
 // Some useful token addresses
-const usdcAddr = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' // USDC:1
-const wethAddr = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' // WETH:1
 const vspAddr = '0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421' // VSP:1
 
 // Receipt check helper
@@ -76,21 +74,6 @@ describe('Payment Streams', function () {
     }
 
     return setProvider().then(setWeb3).then(setTestAccounts).then(setLibs)
-  })
-
-  // TODO how do we get the list of tokens now???
-  it.skip('should get the list of supported tokens', function () {
-    const from = acc[0]
-    return ps
-      .updateCustomFeedMapping(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], {
-        from
-      })
-      .promise.then(checkSuccess)
-      .then(ps.getTokens)
-      .then(function (tokens) {
-        tokens.should.be.an('array').that.has.lengthOf(1)
-        tokens.should.deep.equal([vspAddr])
-      })
   })
 
   it('should create a stream', function () {
