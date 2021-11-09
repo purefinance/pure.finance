@@ -495,20 +495,20 @@ const createPaymentStreams = function (web3, options = {}) {
   // Update the funding rate
   const updateFundingRate = function (
     id,
-    usdAmound,
+    usdAmount,
     endTime,
     transactionOptions
   ) {
     debug(
       'Updating funding rate of %s to %s USD/sec ending at %s',
       id,
-      fromUnit(usdAmound),
+      fromUnit(usdAmount),
       new Date(endTime * 1000).toISOString()
     )
 
     const transactionsPromise = getStreamContract(id).then(ps => [
       {
-        method: ps.methods.updateFundingRate(usdAmound, endTime),
+        method: ps.methods.updateFundingRate(usdAmount, endTime),
         suffix: 'update-funding-rate',
         gas: 31000
       }
