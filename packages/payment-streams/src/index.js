@@ -47,11 +47,11 @@ const createPaymentStreams = function (web3, options = {}) {
   // Gets the PaymentStreamFactory contract.
   const getFactoryContract = () => psfPromise
 
-  // Gets an PaymentStream contract instance
-  const getStreamContract = function (id) {
+  // Gets an PaymentStream contract instance.
+  const getStreamContract = function (id, defaultBlock) {
     debug('Getting stream %s', id)
     return psfPromise
-      .then(psf => psf.methods.getStream(id).call())
+      .then(psf => psf.methods.getStream(id).call({}, defaultBlock))
       .then(function (address) {
         debug('Stream %s address is %s', id, address)
         return new web3.eth.Contract(paymentStreamAbi, address)
@@ -59,19 +59,19 @@ const createPaymentStreams = function (web3, options = {}) {
   }
 
   // Get all the data of a Stream contract.
-  const getStreamData = ps =>
+  const getStreamData = (ps, defaultBlock) =>
     Promise.all([
-      ps.methods.claimable().call(),
-      ps.methods.claimed().call(),
-      ps.methods.fundingAddress().call(),
-      ps.methods.paused().call(),
-      ps.methods.payee().call(),
-      ps.methods.payer().call(),
-      ps.methods.secs().call(),
-      ps.methods.startTime().call(),
-      ps.methods.token().call(),
-      ps.methods.usdAmount().call(),
-      ps.methods.usdPerSec().call()
+      ps.methods.claimable().call({}, defaultBlock),
+      ps.methods.claimed().call({}, defaultBlock),
+      ps.methods.fundingAddress().call({}, defaultBlock),
+      ps.methods.paused().call({}, defaultBlock),
+      ps.methods.payee().call({}, defaultBlock),
+      ps.methods.payer().call({}, defaultBlock),
+      ps.methods.secs().call({}, defaultBlock),
+      ps.methods.startTime().call({}, defaultBlock),
+      ps.methods.token().call({}, defaultBlock),
+      ps.methods.usdAmount().call({}, defaultBlock),
+      ps.methods.usdPerSec().call({}, defaultBlock)
     ]).then(
       ([
         claimable,
@@ -101,14 +101,14 @@ const createPaymentStreams = function (web3, options = {}) {
     )
 
   // Gets all the information of the given stream.
-  const getStream = function (id) {
+  const getStream = function (id, defaultBlock) {
     debug('Getting stream %s information', id)
     return getStreamContract(id)
       .then(ps =>
         Promise.all([
           ps.options.address,
           ps.options.chainId,
-          getStreamData(ps),
+          getStreamData(ps, defaultBlock),
           psfPromise
         ])
       )
@@ -118,12 +118,22 @@ const createPaymentStreams = function (web3, options = {}) {
           address,
           stream,
           findToken(stream.token, chainId),
-          token.methods.allowance(stream.fundingAddress, address).call(),
-          token.methods.balanceOf(stream.fundingAddress).call(),
-          psf.methods.usdToTokenAmount(stream.token, stream.claimable).call(),
-          psf.methods.usdToTokenAmount(stream.token, stream.claimed).call(),
-          psf.methods.usdToTokenAmount(stream.token, stream.usdAmount).call(),
-          psf.methods.usdToTokenAmount(stream.token, stream.usdPerSec).call()
+          token.methods
+            .allowance(stream.fundingAddress, address)
+            .call({}, defaultBlock),
+          token.methods.balanceOf(stream.fundingAddress).call({}, defaultBlock),
+          psf.methods
+            .usdToTokenAmount(stream.token, stream.claimable)
+            .call({}, defaultBlock),
+          psf.methods
+            .usdToTokenAmount(stream.token, stream.claimed)
+            .call({}, defaultBlock),
+          psf.methods
+            .usdToTokenAmount(stream.token, stream.usdAmount)
+            .call({}, defaultBlock),
+          psf.methods
+            .usdToTokenAmount(stream.token, stream.usdPerSec)
+            .call({}, defaultBlock)
         ])
       })
       .then(
@@ -285,7 +295,6 @@ const createPaymentStreams = function (web3, options = {}) {
 
     debug('Creating stream from %s to %s', _from, payee)
 
-    /* eslint-disable promise/no-nesting */
     const transactionsPromise = psfPromise
       .then(psf =>
         Promise.all([
@@ -357,7 +366,6 @@ const createPaymentStreams = function (web3, options = {}) {
           }
         ]
       })
-    /* eslint-enable promise/no-nesting */
 
     const parseResults = function ([{ receipt }]) {
       const result = receipt.events.StreamCreated.returnValues
@@ -374,7 +382,7 @@ const createPaymentStreams = function (web3, options = {}) {
     )
   }
 
-  // Claim tokens available in a streams.
+  // Claims tokens available in a streams.
   const claim = function (id, transactionOptions) {
     debug('Claiming tokens from stream %s', id)
 
@@ -411,7 +419,7 @@ const createPaymentStreams = function (web3, options = {}) {
     )
   }
 
-  // Pause a stream.
+  // Pauses a stream.
   const pauseStream = function (id, transactionOptions) {
     debug('Pausing stream %s', id)
 
@@ -438,7 +446,7 @@ const createPaymentStreams = function (web3, options = {}) {
     )
   }
 
-  // Resume a stream.
+  // Resumes a stream.
   const resumeStream = function (id, transactionOptions) {
     debug('Resuming stream %s', id)
 
@@ -465,7 +473,7 @@ const createPaymentStreams = function (web3, options = {}) {
     )
   }
 
-  // Update the funding address
+  // Updates the funding address.
   const updateFundingAddress = function (id, address, transactionOptions) {
     debug('Updating funding address of %s to %s', id, address)
 
@@ -492,7 +500,7 @@ const createPaymentStreams = function (web3, options = {}) {
     )
   }
 
-  // Update the funding rate
+  // Updates the funding rate.
   const updateFundingRate = function (
     id,
     usdAmount,
@@ -533,6 +541,7 @@ const createPaymentStreams = function (web3, options = {}) {
     claim,
     createStream,
     getFactoryContract,
+    getStream,
     getStreams,
     pauseStream,
     resumeStream,
