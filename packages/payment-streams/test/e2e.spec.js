@@ -9,6 +9,7 @@ const ganache = require('ganache-core')
 const Web3 = require('web3')
 
 const createPaymentStreams = require('..')
+const pTap = require('p-tap')
 
 // Some useful token addresses
 const vspAddr = '0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421' // VSP:1
@@ -21,7 +22,6 @@ const checkSuccess = function (objWithStatus) {
 
 describe('Payment Streams', function () {
   this.timeout(0)
-  // this.timeout(120000) // 2m
 
   let web3
   let acc
@@ -107,16 +107,19 @@ describe('Payment Streams', function () {
         .promise
     ])
       .then(ops => ops.map(checkSuccess))
-      .then(() => ps.getStreams(acc[2]))
+      .then(() => web3.eth.getBlockNumber())
+      .then(fromBlock => ps.getStreams(acc[2], fromBlock - 10))
       .then(function (streams) {
         streams.outgoing.length.should.equal(1)
       })
-      .then(() => ps.getStreams(acc[3]))
+      .then(() => web3.eth.getBlockNumber())
+      .then(fromBlock => ps.getStreams(acc[3], fromBlock - 10))
       .then(function (streams) {
         streams.incoming.length.should.equal(1)
         streams.outgoing.length.should.equal(1)
       })
-      .then(() => ps.getStreams(acc[4]))
+      .then(() => web3.eth.getBlockNumber())
+      .then(fromBlock => ps.getStreams(acc[4], fromBlock - 10))
       .then(function (streams) {
         streams.incoming.length.should.equal(1)
       })
@@ -139,6 +142,16 @@ describe('Payment Streams', function () {
           }).promise
       )
       .then(checkSuccess)
+      .then(
+        pTap(() =>
+          promisify(web3.currentProvider.sendAsync)({
+            id: 'test',
+            jsonrpc: '2.0',
+            method: 'evm_increaseTime',
+            params: [30]
+          })
+        )
+      )
       .then(({ result }) => ps.claim(result.id, { from: bob }).promise)
       .then(checkSuccess)
       .then(function ({ result }) {
@@ -146,6 +159,7 @@ describe('Payment Streams', function () {
           .property('usdAmount')
           .that.is.a('string')
           .and.matches(/^\d+$/)
+        Number.parseFloat(`${result.usdAmount}e-18`).should.be.within(9.5, 10.5)
         result.should.have
           .property('tokenAmount')
           .that.is.a('string')
