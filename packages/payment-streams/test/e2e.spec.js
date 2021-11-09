@@ -4,6 +4,7 @@ require('chai').should()
 require('dotenv').config()
 
 const { promisify } = require('util')
+const createErc20 = require('erc-20-lib')
 const ganache = require('ganache-core')
 const Web3 = require('web3')
 
@@ -15,13 +16,14 @@ const wethAddr = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' // WETH:1
 const vspAddr = '0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421' // VSP:1
 
 // Receipt check helper
-const checkOpSuccess = function (opSummary) {
-  opSummary.should.have.property('status').that.is.true
-  return opSummary
+const checkSuccess = function (objWithStatus) {
+  objWithStatus.should.have.property('status').that.is.true
+  return objWithStatus
 }
 
 describe('Payment Streams', function () {
-  this.timeout(120000) // 2m
+  this.timeout(0)
+  // this.timeout(120000) // 2m
 
   let web3
   let acc
@@ -76,13 +78,14 @@ describe('Payment Streams', function () {
     return setProvider().then(setWeb3).then(setTestAccounts).then(setLibs)
   })
 
+  // TODO how do we get the list of tokens now???
   it.skip('should get the list of supported tokens', function () {
     const from = acc[0]
     return ps
       .updateCustomFeedMapping(vspAddr, 0, [usdcAddr, wethAddr, vspAddr], {
         from
       })
-      .promise.then(checkOpSuccess)
+      .promise.then(checkSuccess)
       .then(ps.getTokens)
       .then(function (tokens) {
         tokens.should.be.an('array').that.has.lengthOf(1)
@@ -97,12 +100,12 @@ describe('Payment Streams', function () {
 
     return ps
       .createStream(acc[1], usdAmount, vspAddr, endTime, { from })
-      .promise.then(checkOpSuccess)
+      .promise.then(checkSuccess)
       .then(function ({ result }) {
         result.should.have.a
           .property('id')
           .that.is.a('string')
-          .and.matches(/^\d$/)
+          .and.matches(/^\d+$/)
         result.should.have.a
           .property('stream')
           .that.is.a('string')
@@ -110,17 +113,17 @@ describe('Payment Streams', function () {
       })
   })
 
-  it.only('shoud list created streams', function () {
+  it('shoud list created streams', function () {
     const usdAmount = '100000000000000000000' // 100 USD
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
 
     return Promise.all([
-          ps.createStream(acc[3], usdAmount, vspAddr, endTime, { from: acc[2] })
-            .promise,
-          ps.createStream(acc[4], usdAmount, vspAddr, endTime, { from: acc[3] })
-            .promise
-        ])
-      .then(receipts => receipts.map(checkOpSuccess))
+      ps.createStream(acc[3], usdAmount, vspAddr, endTime, { from: acc[2] })
+        .promise,
+      ps.createStream(acc[4], usdAmount, vspAddr, endTime, { from: acc[3] })
+        .promise
+    ])
+      .then(ops => ops.map(checkSuccess))
       .then(() => ps.getStreams(acc[2]))
       .then(function (streams) {
         streams.outgoing.length.should.equal(1)
@@ -136,5 +139,34 @@ describe('Payment Streams', function () {
       })
   })
 
-  it('should claim tokens from a stream')
+  it('should claim tokens from a stream', function () {
+    const alice = acc[0]
+    const bob = acc[1]
+    const ethAmount = '10000000000000000' // 0.01 ETH
+    const usdAmount = '100000000000000000000' // 100 USD
+    const endTime = Math.round(Date.now() / 1000) + 300 // Now + 5m
+
+    return createErc20(web3, vspAddr, { from: alice })
+      .swapEther(ethAmount)
+      .then(checkSuccess)
+      .then(
+        () =>
+          ps.createStream(bob, usdAmount, vspAddr, endTime, {
+            from: alice
+          }).promise
+      )
+      .then(checkSuccess)
+      .then(({ result }) => ps.claim(result.id, { from: bob }).promise)
+      .then(checkSuccess)
+      .then(function ({ result }) {
+        result.should.have
+          .property('usdAmount')
+          .that.is.a('string')
+          .and.matches(/^\d+$/)
+        result.should.have
+          .property('tokenAmount')
+          .that.is.a('string')
+          .and.matches(/^\d+$/)
+      })
+  })
 })

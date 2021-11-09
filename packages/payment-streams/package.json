@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
+    "erc-20-lib": "1.0.0",
     "ganache-core": "^2.13.2",
     "patch-package": "^6.4.7",
     "web3": "^1.5.1"
