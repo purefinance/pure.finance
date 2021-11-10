@@ -6,6 +6,7 @@ import { useStreams } from '../../hooks/useStreams'
 import Input from '../Input'
 import Button from '../Button'
 import { fromUnit, toUnit } from '../../utils'
+import { updateStreamInfo } from '../../utils/streams'
 import * as timeUtils from '../../utils/time'
 import PaymentStreamsLibContext from './PaymentStreamsLib'
 import EndTime from './EndTime'
@@ -16,7 +17,7 @@ import TransactionsContext from '../context/Transactions'
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const EditRate = function ({ stream }) {
-  const { active } = useWeb3React()
+  const { active, account } = useWeb3React()
   const router = useRouter()
   const { t } = useTranslation('payment-streams')
   const { t: tCommon } = useTranslation('common')
@@ -100,7 +101,14 @@ const EditRate = function ({ stream }) {
           opId: now,
           transactionStatus: status ? 'confirmed' : 'canceled'
         })
-        mutate()
+        updateStreamInfo({
+          id: streamId,
+          lib: paymentStreamsLib,
+          account,
+          streamsView: 'outgoing'
+        })
+          .then(() => mutate())
+          .catch(console.error)
         router.push('/payment-streams')
       })
       .on('error', function (err) {
@@ -141,7 +149,7 @@ const EditRate = function ({ stream }) {
 }
 
 const EditFundingAddress = function ({ stream }) {
-  const { active } = useWeb3React()
+  const { active, account } = useWeb3React()
   const { t } = useTranslation('payment-streams')
   const { addTransactionStatus } = useContext(TransactionsContext)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
@@ -207,7 +215,13 @@ const EditFundingAddress = function ({ stream }) {
           opId: now,
           transactionStatus: status ? 'confirmed' : 'canceled'
         })
-        mutate()
+        // eslint-disable-next-line promise/catch-or-return
+        updateStreamInfo({
+          id: streamId,
+          lib: paymentStreamsLib,
+          account,
+          streamsView: 'outgoing'
+        }).then(() => mutate())
         router.push('/payment-streams')
       })
       .on('error', function (err) {

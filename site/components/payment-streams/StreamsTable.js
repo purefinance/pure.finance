@@ -5,6 +5,7 @@ import useTranslation from 'next-translate/useTranslation'
 import { useContext, useEffect, useState } from 'react'
 import { useStreams } from '../../hooks/useStreams'
 import { bigToCrypto, fromUnit } from '../../utils'
+import { updateStreamInfo } from '../../utils/streams'
 import Button from '../../components/Button'
 import WithTooltip from '../../components/WithTooltip'
 import { EtherscanLink } from '../../components/EtherscanLink'
@@ -139,7 +140,13 @@ const StreamsTable = function () {
           opId: now,
           transactionStatus: status ? 'confirmed' : 'canceled'
         })
-        mutate()
+        // eslint-disable-next-line promise/catch-or-return
+        updateStreamInfo({
+          id,
+          lib: paymentStreamsLib,
+          account,
+          streamsView
+        }).then(() => mutate())
       })
       .on('error', function (err) {
         addTransactionStatus({
@@ -189,7 +196,13 @@ const StreamsTable = function () {
           opId: now,
           transactionStatus: status ? 'confirmed' : 'canceled'
         })
-        mutate()
+        // eslint-disable-next-line promise/catch-or-return
+        updateStreamInfo({
+          id,
+          lib: paymentStreamsLib,
+          account,
+          streamsView
+        }).then(() => mutate())
       })
       .on('error', function (err) {
         addTransactionStatus({
@@ -263,7 +276,13 @@ const StreamsTable = function () {
               ]
             : []
         })
-        mutate()
+        // eslint-disable-next-line promise/catch-or-return
+        updateStreamInfo({
+          id,
+          lib: paymentStreamsLib,
+          account,
+          streamsView
+        }).then(() => mutate())
       })
       .on('error', function (err) {
         setClaimingId(undefined)

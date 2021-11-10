@@ -54,6 +54,7 @@ const CreateStream = function () {
   const [years, setYears] = useState(0)
   const [days, setDays] = useState(0)
   const [hours, setHours] = useState(0)
+  const [isCreating, setIsCreating] = useState(false)
   const tokenInput = useTokenInput()
 
   // tokens are in the list in the form of "<token> / [USD|ETH]"" pairs. For example: "UNI / USD"
@@ -82,13 +83,15 @@ const CreateStream = function () {
     new Big(usdAmount).gt('0') &&
     isAddress(tokenInput.value) &&
     streamingTime > 0 &&
-    isTokenSupported(tokenInput.value)
+    isTokenSupported(tokenInput.value) &&
+    !isCreating
 
   const submit = function (e) {
     e.preventDefault()
     if (!canSubmit) {
       return
     }
+    setIsCreating(true)
     const now = Math.floor(new Date().getTime() / 1000)
     const endTime = now + streamingTime
     const { emitter } = paymentStreamsLib.createStream(
@@ -134,10 +137,12 @@ const CreateStream = function () {
           opId: now,
           transactionStatus: status ? 'confirmed' : 'canceled'
         })
+        setIsCreating(false)
         mutate()
         router.push('/payment-streams')
       })
       .on('error', function (err) {
+        setIsCreating(false)
         addTransactionStatus({
           message: err.message,
           opId: now,
