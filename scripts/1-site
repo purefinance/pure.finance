@@ -61,21 +61,43 @@ function eb-deploy() {
   eb setenv $(echo "$2" | tr "," " ") \
     --environment "$1" \
     --region "$REGION" \
-    --timeout 15 &
+    --timeout 20 &
+  PID=$!
 
-  sleep 60
+  RC=0
+  while [ $RC -eq 0 ]; do
+    echo "Waiting for eb setenv to return..."
+    sleep 60
+    kill -0 $PID 2>/dev/null && RC=$? || RC=$?
+  done
+  wait $PID && RC=$? || RC=$?
+  if [ ! $RC -eq 0 ]; then
+    exit $RC
+  fi
+
   while [ -z "$(eb-status "$1")" ]; do
-    echo "Waiting for $1 to be ready..."
+    echo "Waiting for $1 to be ready after setenv..."
     sleep 60
   done
 
   eb deploy "$1" \
     --region "$REGION" \
     --timeout 20 &
+  PID=$!
 
-  sleep 60
+  RC=0
+  while [ $RC -eq 0 ]; do
+    echo "Waiting for eb deploy to return..."
+    sleep 60
+    kill -0 $PID 2>/dev/null && RC=$? || RC=$?
+  done
+  wait $PID && RC=$? || RC=$?
+  if [ ! $RC -eq 0 ]; then
+    exit $RC
+  fi
+
   while [ -z "$(eb-status "$1")" ]; do
-    echo "Waiting for $1 to be ready..."
+    echo "Waiting for $1 to be ready after deploy..."
     sleep 60
   done
 }
@@ -107,7 +129,7 @@ if [ -n "$(echo "$CHANGED" | { grep pure-finance-site || true; })" ]; then
 
   echo "Deploying web server"
   SITE_EB_ENV_NAME=$SITE_EB_APP_NAME-$STAGE
-  SITE_EB_ENV_VARS="NEXT_PUBLIC_ANALYTICS_ID=$NEXT_PUBLIC_ANALYTICS_ID,NEXT_PUBLIC_NODE_URL=$NEXT_PUBLIC_NODE_URL,NODE_ENV=$NODE_ENV,NODE_URL=$NODE_URL,VERSION=$VERSION"
+  SITE_EB_ENV_VARS="NODE_ENV=$NODE_ENV,NODE_URL=$NODE_URL,VERSION=$VERSION"
 
   ENVIRONMENT=$(eb-list "$SITE_EB_ENV_NAME")
   if [ -z "$ENVIRONMENT" ]; then
