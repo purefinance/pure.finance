@@ -1,8 +1,8 @@
 import React from 'react'
 
-const QuestionmarkIcon = props => (
+const QuestionmarkIcon = ({ fill = 'rgba(63, 200, 216)', ...props }) => (
   <svg
-    fill="rgba(63, 200, 216)"
+    fill={fill}
     height="20"
     viewBox="0 0 26 20"
     width="20"
