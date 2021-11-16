@@ -3,15 +3,15 @@
 const { MerkleTree } = require('merkletreejs')
 const utils = require('web3-utils')
 
-const hexToBuffer = (hex) => Buffer.from(hex.substr(2), 'hex')
-const bufferToHex = (buffer) => `0x${buffer.toString('hex')}`
+const hexToBuffer = hex => Buffer.from(hex.substr(2), 'hex')
+const bufferToHex = buffer => `0x${buffer.toString('hex')}`
 
-const keccak256 = (buffer) => hexToBuffer(utils.keccak256(bufferToHex(buffer)))
+const keccak256 = buffer => hexToBuffer(utils.keccak256(bufferToHex(buffer)))
 
 const hashRecipient = ({ account, amount }) =>
   utils.soliditySha3({ t: 'address', v: account }, { t: 'uint256', v: amount })
 
-const addMerkleProofs = (tree) =>
+const addMerkleProofs = tree =>
   function (recipient) {
     const proof = tree
       .getProof(hashRecipient(recipient))
@@ -24,7 +24,7 @@ const calcMerkleTree = function (recipients) {
   return new MerkleTree(leaves, keccak256, { sort: true })
 }
 
-const calcDataset = (recipients) =>
+const calcDataset = recipients =>
   recipients.map(addMerkleProofs(calcMerkleTree(recipients)))
 
 module.exports = {

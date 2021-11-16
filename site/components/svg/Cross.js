@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CrossIcon = (props) => (
+const CrossIcon = props => (
   <svg
     height="33"
     viewBox="0 0 1024.000000 1024.000000"

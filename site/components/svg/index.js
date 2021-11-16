@@ -5,6 +5,7 @@ import coinbasewallet from './CoinbaseWallet'
 import cross from './Cross'
 import loading from './Loading'
 import metamask from './Metamask'
+import questionmark from './Questionmark'
 import walletconnect from './WalletConnect'
 
 const icons = {
@@ -15,6 +16,7 @@ const icons = {
   cross,
   loading,
   metamask,
+  questionmark,
   walletconnect
 }
 

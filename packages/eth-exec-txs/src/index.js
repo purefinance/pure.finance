@@ -7,20 +7,20 @@ const pSeries = require('p-series')
 const pTap = require('p-tap').default
 
 const fromUnit = (number, decimals = 18) =>
-  Big(`${Big(number).toFixed()}e-${decimals}`).toFixed()
+  new Big(`${number}e-${decimals}`).toFixed()
 
 const calculateFee = ({ transaction, receipt }) =>
-  Big(transaction.gasPrice).times(receipt.gasUsed).toFixed()
+  new Big(transaction.gasPrice).times(receipt.gasUsed).toFixed()
 
-const calculateTotalFee = (transactionsData) =>
+const calculateTotalFee = transactionsData =>
   transactionsData
     .map(calculateFee)
-    .reduce((total, fee) => Big(total).plus(fee), Big(0))
+    .reduce((total, fee) => new Big(total).plus(fee), new Big(0))
     .toFixed()
 
 const createEstimateGasAndSend = (web3, emitter, overestimation = 1.25) =>
   function (method, transactionOptions, suffix) {
-    const suffixed = (event) => `${event}${suffix ? `-${suffix}` : ''}`
+    const suffixed = event => `${event}${suffix ? `-${suffix}` : ''}`
 
     let hash
     let transactionPromise
@@ -35,7 +35,7 @@ const createEstimateGasAndSend = (web3, emitter, overestimation = 1.25) =>
             debug('Gas needed is %d (x%s)', gas, overestimation.toFixed(2))
           })
         )
-        .then((gas) => Math.ceil(gas * overestimation))
+        .then(gas => Math.ceil(gas * overestimation))
         .then(function (gas) {
           // Emit the result
           emitter.emit(suffixed('estimatedGas'), gas)
@@ -96,8 +96,8 @@ const createEstimateGasAndSend = (web3, emitter, overestimation = 1.25) =>
         })
 
         // Return the Web3 PromiEvent that will be casted to Promise
-        return promiEvent.then((receipt) =>
-          getTransaction().then((transaction) => ({ transaction, receipt }))
+        return promiEvent.then(receipt =>
+          getTransaction().then(transaction => ({ transaction, receipt }))
         )
       }
     )
@@ -114,8 +114,8 @@ const createEstimateGasAndSend = (web3, emitter, overestimation = 1.25) =>
  * @param {object} [params.overestimation] The gas overestimation factor.
  * @returns {function} The transaction executor.
  */
-const createExecutor = function ({ from, web3, overestimation }) {
-  return function (transactionsPromise, parseResults, transactionOptions = {}) {
+const createExecutor = ({ from, web3, overestimation }) =>
+  function (transactionsPromise, parseResults, transactionOptions = {}) {
     const _from = transactionOptions.from || from
 
     const emitter = new EventEmitter()
@@ -125,12 +125,12 @@ const createExecutor = function ({ from, web3, overestimation }) {
       overestimation
     )
 
-    const addGasPrice = (txs) =>
-      web3.eth.getGasPrice().then((gasPrice) => ({ txs, gasPrice }))
+    const addGasPrice = txs =>
+      web3.eth.getGasPrice().then(gasPrice => ({ txs, gasPrice }))
 
     const sendTransactions = function ({ txs, gasPrice }) {
       const expectedGas = txs.reduce((sum, { gas }) => sum + gas, 0)
-      const expectedFee = Big(gasPrice).times(expectedGas).toFixed()
+      const expectedFee = new Big(gasPrice).times(expectedGas).toFixed()
       debug(
         'Expected fee in %d transaction(s) is %s ETH',
         txs.length,
@@ -148,7 +148,7 @@ const createExecutor = function ({ from, web3, overestimation }) {
         txs.map(({ suffix }) => suffix).join(', ')
       )
 
-      return web3.eth.getTransactionCount(_from, 'pending').then((count) =>
+      return web3.eth.getTransactionCount(_from, 'pending').then(count =>
         pSeries(
           txs.map(
             ({ method, suffix, value }, i) =>
@@ -163,19 +163,20 @@ const createExecutor = function ({ from, web3, overestimation }) {
       )
     }
 
-    const getResult = function (transactionsData) {
-      const result = {
-        ...parseResults(transactionsData),
-        fees: calculateTotalFee(transactionsData),
-        raw: transactionsData,
-        status: transactionsData[transactionsData.length - 1].receipt.status
-      }
+    const getResult = transactionsData =>
+      Promise.resolve(parseResults(transactionsData)).then(function (parsed) {
+        const result = {
+          ...parsed,
+          fees: calculateTotalFee(transactionsData),
+          raw: transactionsData,
+          status: transactionsData[transactionsData.length - 1].receipt.status
+        }
 
-      debug('Total transaction fees paid %s ETH', fromUnit(result.fees))
+        debug('Total transaction fees paid %s ETH', fromUnit(result.fees))
 
-      emitter.emit('result', result)
-      return result
-    }
+        emitter.emit('result', result)
+        return result
+      })
 
     const promise = transactionsPromise
       .then(addGasPrice)
@@ -197,6 +198,5 @@ const createExecutor = function ({ from, web3, overestimation }) {
       promise
     }
   }
-}
 
 module.exports = createExecutor

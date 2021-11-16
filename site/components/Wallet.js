@@ -9,7 +9,7 @@ import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'
 const persistLastConnectorKey = 'lastConnector'
 
-const persistLastConnector = (connectorName) =>
+const persistLastConnector = connectorName =>
   window.localStorage.setItem(persistLastConnectorKey, connectorName)
 const getLastConnector = () =>
   window.localStorage.getItem(persistLastConnectorKey)
@@ -141,7 +141,7 @@ const Wallet = function () {
   ]
 
   const deactivateConnector = function () {
-    wallets.find((w) => w.connector === connector).handleDisconnection()
+    wallets.find(w => w.connector === connector).handleDisconnection()
   }
 
   return (

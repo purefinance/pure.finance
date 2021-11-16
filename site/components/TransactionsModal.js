@@ -6,28 +6,26 @@ import Modal from './Modal'
 import SvgContainer from './svg/SvgContainer'
 import { useNumberFormat } from '../hooks/useNumberFormat'
 
-const TransactionModalRow = function ({ text, value, tipLink = '' }) {
-  return (
-    <JustifiedBetweenRow
-      keyComponent={
-        tipLink ? (
-          <a
-            className={'text-gray-350 text-sm flex justify-between'}
-            href={tipLink}
-            rel="noreferrer"
-            target={'_blank'}
-          >
-            {text}
-            <SvgContainer className="ml-1" name="questionmark" />
-          </a>
-        ) : (
-          <p className={'text-gray-350 text-sm'}>{text}</p>
-        )
-      }
-      valueComponent={<p className="text-sm font-semibold">{value}</p>}
-    />
-  )
-}
+const TransactionModalRow = ({ text, value, tipLink = '' }) => (
+  <JustifiedBetweenRow
+    keyComponent={
+      tipLink ? (
+        <a
+          className={'text-gray-350 text-sm flex justify-between'}
+          href={tipLink}
+          rel="noreferrer"
+          target={'_blank'}
+        >
+          {text}
+          <SvgContainer className="ml-1" name="questionmark" />
+        </a>
+      ) : (
+        <p className={'text-gray-350 text-sm'}>{text}</p>
+      )
+    }
+    valueComponent={<p className="text-sm font-semibold">{value}</p>}
+  />
+)
 
 // eslint-disable-next-line complexity
 const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
@@ -70,6 +68,16 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
               </div>
             </div>
           )}
+          {!transaction.sent &&
+            (transaction.received || []).map(({ symbol, value }) => (
+              <div
+                className="flex items-center justify-between pb-2 text-lg font-bold border-b border-gray-300"
+                key={symbol}
+              >
+                <div className="w-2/5 text-left">{symbol}</div>
+                <div className="w-3/5 text-right">{formatNumber(value)}</div>
+              </div>
+            ))}
 
           {/* General operation information: total txs, fees, status */}
           <div className="py-4">

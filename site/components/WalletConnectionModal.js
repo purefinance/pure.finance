@@ -18,7 +18,7 @@ const WalletConnectionModal = function ({
         {t('connect-wallet')}
       </h1>
       <div className="flex flex-wrap justify-center pb-10 lg:px-20">
-        {wallets.map((w) => (
+        {wallets.map(w => (
           <div className="p-4" key={w.name}>
             <button
               className="flex items-center justify-center px-4 py-2 w-60 font-semibold border rounded focus:outline-none focus:ring"

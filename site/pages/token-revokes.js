@@ -27,7 +27,7 @@ const useLastBlockNumber = function () {
   )
 }
 
-const parseLogs = (logs) =>
+const parseLogs = logs =>
   logs.map(({ address, blockNumber, data, transactionHash, topics }) => ({
     address,
     blockNumber,
@@ -36,7 +36,7 @@ const parseLogs = (logs) =>
     spender: topics[2]
   }))
 
-const unpad = (string) => string.replace(/0{24}/, '')
+const unpad = string => string.replace(/0{24}/, '')
 
 const SyncStatus = {
   Error: 0,
@@ -54,14 +54,12 @@ const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
       const [address, spender] = string.split('-')
       const allOperations = tokenApprovals
         .filter(
-          (tokenApproval) =>
+          tokenApproval =>
             tokenApproval.spender === spender &&
             tokenApproval.address === address
         )
         .concat(
-          logs.filter(
-            (log) => log.spender === spender && log.address === address
-          )
+          logs.filter(log => log.spender === spender && log.address === address)
         )
         .sort((a, b) => b.blockNumber - a.blockNumber)
 
@@ -124,7 +122,7 @@ function useTokenApprovals() {
         return
       }
 
-      setSyncBlock((prev) => ({
+      setSyncBlock(prev => ({
         ...prev,
         chunkIndex,
         toBlock,
@@ -174,7 +172,7 @@ function useTokenApprovals() {
             setSyncStatus(SyncStatus.Finished)
           }
 
-          setSyncBlock((prev) => {
+          setSyncBlock(prev => {
             const newTokenApprovals = getNewestApprovals({
               logs: parseLogs(logs),
               tokenApprovals: prev.tokenApprovals,
@@ -234,7 +232,7 @@ function useTokenApprovals() {
       })
 
       subscription.on('data', function (log) {
-        setSyncBlock((prev) => ({
+        setSyncBlock(prev => ({
           ...prev,
           tokenApprovals: getNewestApprovals({
             library,

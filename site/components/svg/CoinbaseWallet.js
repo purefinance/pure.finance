@@ -1,4 +1,4 @@
-const CoinbaseWalletIcon = (props) => (
+const CoinbaseWalletIcon = props => (
   <svg viewBox="0 0 150 150" x="0px" y="0px" {...props}>
     <g id="Layer_1"> </g>{' '}
     <g id="Layer_5">

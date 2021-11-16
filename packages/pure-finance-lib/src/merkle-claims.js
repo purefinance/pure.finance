@@ -13,8 +13,8 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const getClaimData = function (uri, account) {
   debug('Getting claim data from %s', uri)
   return fetch(uri)
-    .then((res) => res.json())
-    .then((res) => res.find((recipient) => recipient.account === account))
+    .then(res => res.json())
+    .then(res => res.find(recipient => recipient.account === account))
 }
 
 const createMerkleClaims = function (web3, options) {
@@ -70,8 +70,8 @@ const createMerkleClaims = function (web3, options) {
       .catch(tryParseEvmError)
   }
 
-  const claim = function (claimGroupId, amount, proof) {
-    return merkleBox
+  const claim = (claimGroupId, amount, proof) =>
+    merkleBox
       .getHolding(claimGroupId)
       .then(function ({ owner }) {
         if (owner === ZERO_ADDRESS) {
@@ -86,7 +86,6 @@ const createMerkleClaims = function (web3, options) {
         return merkleBox.claim(claimGroupId, from, amount, proof)
       })
       .catch(tryParseEvmError)
-  }
 
   return {
     getHolding,

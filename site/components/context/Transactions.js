@@ -47,7 +47,7 @@ export function TransactionsContextProvider({ children }) {
 
   const addTransactionStatus = useCallback(
     function (newTransaction) {
-      setTransactions((previousTransactions) => [
+      setTransactions(previousTransactions => [
         ...previousTransactions,
         newTransaction
       ])

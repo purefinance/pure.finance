@@ -26,6 +26,6 @@
     "vesper-metadata": "^2.12.0"
   },
   "engines": {
-    "node": "12"
+    "node": ">=12"
   }
 }

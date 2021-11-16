@@ -1,25 +1,18 @@
 'use strict'
 
 const { getRouterContract } = require('erc-20-lib/src/uniswap')
-const { tokens: defaultTokens } = require('@uniswap/default-token-list')
-const { tokens: vTokens } = require('vesper-metadata/src/vesper.tokenlist.json')
 const createExecutor = require('eth-exec-txs')
 const debug = require('debug')('dpa')
 const erc20Abi = require('erc-20-abi')
 const pTap = require('p-tap').default
 
+const { findToken } = require('./token-list')
 const dpaAbi = require('./abi.json')
 
 const DPA_ADDRESS = '0x164D41ceB60489D2e054394Fc05ED1894Db3898a' // Chain ID 1
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const UNLIMITED = (2n ** 256n - 1n).toString()
-
-const tokens = [].concat(defaultTokens, vTokens)
-const tokenInfo = (tokenAddress, chainId = 1) =>
-  tokens.find(
-    (token) => token.address === tokenAddress && token.chainId === chainId
-  )
 
 const createDPAuctionsLib = function (web3, options = {}) {
   const { gasFactor = 2 } = options
@@ -33,23 +26,23 @@ const createDPAuctionsLib = function (web3, options = {}) {
 
   // Add value information to a token contained in the auction. The value is
   // measured in the payment token.
-  const addTokenValue = (paymentToken) => (token) =>
+  const addTokenValue = paymentToken => token =>
     router.methods
       .getAmountsOut(token.amount, [token.address, paymentToken])
       .call()
-      .then((amounts) => ({
+      .then(amounts => ({
         ...token,
         value: amounts.slice(-1)[0]
       }))
 
   // Using the `tokens` and `tokenAmounts` information, build a more useful
   // array containing details of the tokens.
-  const getAuctionTokensData = (auction) =>
+  const getAuctionTokensData = auction =>
     Promise.all(
       auction.tokens
         .map((token, i) => ({
           amount: auction.tokenAmounts[i],
-          ...tokenInfo(token) // TODO specify the chainId
+          ...findToken(token) // TODO specify the chainId
         }))
         .map(addTokenValue(auction.paymentToken))
     )
@@ -57,7 +50,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
   // If the auction is stopped, get the stopping price and stopping block. To do
   // so, look for the `AuctionStopped` event, get the block number and get the
   // current price at that block.
-  const getStoppingData = (auction) =>
+  const getStoppingData = auction =>
     auction.stopped && auction.winner === ZERO_ADDRESS
       ? dpa
           .getPastEvents('AuctionStopped', {
@@ -90,7 +83,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
 
   // Add useful information to the auction object such as details on the tokens
   // contained, the payment token, the current price, etc.
-  const augmentAuctionData = (auction) =>
+  const augmentAuctionData = auction =>
     Promise.all([
       getAuctionTokensData(auction),
       dpa.methods.getCurrentPrice(auction.id).call(),
@@ -100,7 +93,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
       ...auction,
       tokens: tokensData,
       tokenAmounts: null,
-      paymentToken: tokenInfo(auction.paymentToken), // TODO specify the chainId
+      paymentToken: findToken(auction.paymentToken), // TODO specify the chainId
       currentValue: tokensData
         .reduce((sum, token) => sum + BigInt(token.value), BigInt(0))
         .toString(),
@@ -112,11 +105,11 @@ const createDPAuctionsLib = function (web3, options = {}) {
 
   // Gets the auction data given the auction ID. If required, additional data
   // will be added.
-  const getAuction = function (auctionId, moreData) {
-    return dpa.methods
+  const getAuction = (auctionId, moreData) =>
+    dpa.methods
       .getAuction(auctionId)
       .call()
-      .then((auction) =>
+      .then(auction =>
         moreData ? augmentAuctionData(auction) : { ...auction }
       )
       .catch(function (err) {
@@ -125,7 +118,6 @@ const createDPAuctionsLib = function (web3, options = {}) {
         }
         throw err
       })
-  }
 
   // Get the list of auctions of a collection. In addition to the data returned
   // by the contract, additional data is added for easier display in the UI.
@@ -148,8 +140,8 @@ const createDPAuctionsLib = function (web3, options = {}) {
             )
         )
       })
-      .then((auctionIds) =>
-        Promise.all(auctionIds.map((auctionId) => getAuction(auctionId, true)))
+      .then(auctionIds =>
+        Promise.all(auctionIds.map(auctionId => getAuction(auctionId, true)))
       )
   }
 
@@ -162,7 +154,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
     return dpa.methods
       .totalCollections()
       .call()
-      .then((count) => Number.parseInt(count) + 1)
+      .then(count => Number.parseInt(count) + 1)
       .then(
         pTap(function (count) {
           debug('There are %s collection%s', count, count === 1 ? '' : 's')
@@ -187,7 +179,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
         return token.methods
           .balanceOf(account)
           .call()
-          .then((balance) => BigInt(balance) >= BigInt(currentPrice))
+          .then(balance => BigInt(balance) >= BigInt(currentPrice))
       })
       .then(
         pTap(function (canBid) {
@@ -236,7 +228,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
         suffix: 'create-auction',
         gas: 600000
       })
-      return txs.filter((tx) => !!tx)
+      return txs.filter(tx => !!tx)
     })
 
     const parseResults = function (transactionsData) {

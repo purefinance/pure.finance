@@ -121,7 +121,7 @@ const DPAuctionPriceChart = function ({ auction }) {
             axisLabel: { padding: 40 },
             ticks: { stroke: 'black', size: 5 }
           }}
-          tickFormat={(tick) => tick.toString()}
+          tickFormat={tick => tick.toString()}
           tickValues={xTickValues}
         />
         <VictoryAxis
@@ -179,18 +179,16 @@ const DPAuctionPriceChart = function ({ auction }) {
   )
 }
 
-const DPAuctionContentsRow = function ({ paymentToken, token }) {
-  return (
-    <tr>
-      <td className="border-2">
-        <TokenAmount {...token} />
-      </td>
-      <td className="border-2">
-        <TokenAmount {...paymentToken} amount={token.value} />
-      </td>
-    </tr>
-  )
-}
+const DPAuctionContentsRow = ({ paymentToken, token }) => (
+  <tr>
+    <td className="border-2">
+      <TokenAmount {...token} />
+    </td>
+    <td className="border-2">
+      <TokenAmount {...paymentToken} amount={token.value} />
+    </td>
+  </tr>
+)
 
 const DPAuctionTokens = function ({ auction }) {
   const { t } = useTranslation('common')
@@ -204,7 +202,7 @@ const DPAuctionTokens = function ({ auction }) {
         </tr>
       </thead>
       <tbody>
-        {auction.tokens.map((token) => (
+        {auction.tokens.map(token => (
           <DPAuctionContentsRow
             key={token.address}
             paymentToken={auction.paymentToken}
@@ -270,7 +268,7 @@ const DPAuctionBuyControl = function ({ auction }) {
           expectedFee: fromUnit(transactions.expectedFee),
           operation: 'bid',
           opId,
-          received: auction.tokens.map((token) => ({
+          received: auction.tokens.map(token => ({
             value: fromUnit(token.amount, token.decilams),
             symbol: token.symbol
           })),
@@ -410,7 +408,7 @@ export default function DPAuctionsDetails({ auctionId, initialData, error }) {
   const { data: auction } = useSWR(
     `/api/dp-auctions/auctions/${auctionId}`,
     fetchJson,
-    { initialData, refreshInterval: ETH_BLOCK_TIME * 1000 }
+    { fallbackData: initialData, refreshInterval: ETH_BLOCK_TIME * 1000 }
   )
 
   return (
@@ -441,7 +439,7 @@ export default function DPAuctionsDetails({ auctionId, initialData, error }) {
 export const getStaticProps = ({ params }) =>
   ssDpa
     .getAuction(params.auctionId, true)
-    .then((initialData) => ({
+    .then(initialData => ({
       notFound: !initialData,
       props: {
         auctionId: params.auctionId,
@@ -449,7 +447,7 @@ export const getStaticProps = ({ params }) =>
       },
       revalidate: ETH_BLOCK_TIME
     }))
-    .catch((err) => ({
+    .catch(err => ({
       props: {
         auctionId: params.auctionId,
         error: err.message

@@ -1,4 +1,4 @@
-const WalletConnectIcon = (props) => (
+const WalletConnectIcon = props => (
   <svg
     height="185px"
     version="1.1"

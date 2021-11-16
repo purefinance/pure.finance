@@ -13,37 +13,31 @@ const createMerkleBox = function (web3, address, options = {}) {
 
   const merkleBox = new web3.eth.Contract(abi, address)
 
-  const safeGas = (gas) => Math.ceil(gas * gasFactor)
+  const safeGas = gas => Math.ceil(gas * gasFactor)
 
   const estimateGasAndSend = (method, transactionOptions) =>
     Promise.resolve(
       transactionOptions.gas ||
         method.estimateGas(transactionOptions).then(safeGas)
-    ).then((gas) => method.send({ ...transactionOptions, gas }))
+    ).then(gas => method.send({ ...transactionOptions, gas }))
 
-  const getHolding = function (claimGroupId) {
-    return merkleBox.methods.holdings(claimGroupId).call()
-  }
+  const getHolding = claimGroupId =>
+    merkleBox.methods.holdings(claimGroupId).call()
 
-  const isClaimable = function (claimGroupId, account, amount, proof) {
-    return merkleBox.methods
-      .isClaimable(claimGroupId, account, amount, proof)
-      .call()
-  }
+  const isClaimable = (claimGroupId, account, amount, proof) =>
+    merkleBox.methods.isClaimable(claimGroupId, account, amount, proof).call()
 
-  const newClaimsGroup = function (erc20, amount, root, unlock, memo, txOps) {
-    return estimateGasAndSend(
+  const newClaimsGroup = (erc20, amount, root, unlock, memo, txOps) =>
+    estimateGasAndSend(
       merkleBox.methods.newClaimsGroup(erc20, amount, root, unlock, memo),
       { from, ...txOps }
     )
-  }
 
-  const claim = function (claimGroupId, account, amount, proof, txOps) {
-    return estimateGasAndSend(
+  const claim = (claimGroupId, account, amount, proof, txOps) =>
+    estimateGasAndSend(
       merkleBox.methods.claim(claimGroupId, account, amount, proof),
       { from, ...txOps }
     )
-  }
 
   return {
     getHolding,

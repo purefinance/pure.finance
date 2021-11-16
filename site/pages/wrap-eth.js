@@ -74,7 +74,7 @@ const WrapUnwrapEth = function () {
     // Work around chain id issues with Ganache. Then find WETH token info.
     const _chainId = chainId === 1337 ? 1 : chainId
     const weth = tokens.find(
-      (token) => token.symbol === 'WETH' && token.chainId === _chainId
+      token => token.symbol === 'WETH' && token.chainId === _chainId
     )
 
     if (isWrapping) {
@@ -91,7 +91,7 @@ const WrapUnwrapEth = function () {
             reloadWethBalance()
           ])
         )
-        .catch((err) => setErrorMessage(err.message))
+        .catch(err => setErrorMessage(err.message))
     }
 
     return erc20Service
@@ -101,7 +101,7 @@ const WrapUnwrapEth = function () {
         setValue('')
         return Promise.all([reloadEthBalance(), reloadWethBalance()])
       })
-      .catch((err) => setErrorMessage(err.message))
+      .catch(err => setErrorMessage(err.message))
   }
 
   const getBalanceCaption = function ({ balance = '0', isLoading, symbol }) {
@@ -148,7 +148,7 @@ const WrapUnwrapEth = function () {
             className={`w-full capitalize h-10 border-b ${
               isWrapDisabled
                 ? 'bg-gray-800 text-white cursor-not-allowed'
-                : 'hover:bg-gray-800 hover:text-white'
+                : 'hover:bg-gray-200 hover:text-white'
             }`}
             disabled={isWrapDisabled}
             onClick={() => setOperation(Operation.Wrap)}
@@ -159,7 +159,7 @@ const WrapUnwrapEth = function () {
             className={`w-full capitalize h-10 border-b ${
               isUnwrapDisabled
                 ? 'bg-gray-800 text-white cursor-not-allowed'
-                : 'hover:bg-gray-800 hover:text-white'
+                : 'hover:bg-gray-200 hover:text-white'
             }`}
             disabled={isUnwrapDisabled}
             onClick={() => setOperation(Operation.Unwrap)}
@@ -172,7 +172,7 @@ const WrapUnwrapEth = function () {
             caption={getBalanceCaption(
               isWrapping ? wrapCaption : unwrapCaption
             )}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={e => setValue(e.target.value)}
             placeholder={t('enter-amount-here')}
             suffix={originToken}
             value={value}

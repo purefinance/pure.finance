@@ -1,6 +1,6 @@
 import React from 'react'
 
-const LoadingIcon = (props) => (
+const LoadingIcon = props => (
   <svg
     height="33"
     viewBox="0 0 100 100"

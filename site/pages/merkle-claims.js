@@ -20,18 +20,18 @@ function MerkleClaims() {
   const { merkle } = useContext(PureContext)
 
   const clearFeedback = () => setFeedback({ color: 'text-black', message: '' })
-  const setErrorMessage = (message) =>
+  const setErrorMessage = message =>
     setFeedback({ color: 'text-red-600', message })
-  const setInfoMessage = (message) =>
+  const setInfoMessage = message =>
     setFeedback({ color: 'text-black', message })
-  const setSuccessMessage = (message) =>
+  const setSuccessMessage = message =>
     setFeedback({ color: 'text-green-600', message })
 
-  const getHolding = (claimID) =>
+  const getHolding = claimID =>
     claimID &&
     merkle
       .getHolding(claimID)
-      .then((h) => {
+      .then(h => {
         if (h.isClaimable) {
           clearFeedback()
         } else {
@@ -39,10 +39,10 @@ function MerkleClaims() {
         }
         setHolding(h)
       })
-      .catch((e) => setErrorMessage(e.message))
+      .catch(e => setErrorMessage(e.message))
 
   const delayedClaimID = useCallback(
-    debounce((cID) => getHolding(cID), 500),
+    debounce(cID => getHolding(cID), 500),
     [merkle]
   )
 
@@ -64,7 +64,7 @@ function MerkleClaims() {
         setSuccessMessage(t('claim-succeeded'))
         setClaimID('')
       })
-      .catch((e) => setErrorMessage(e.message))
+      .catch(e => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
       .then(() => watchAsset({ account, token: holding.token }))
   }

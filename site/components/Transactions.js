@@ -11,7 +11,7 @@ function Transactions() {
     return null
   }
 
-  const transaction = currentTransactions.find((t) => t.opId === openedOpId)
+  const transaction = currentTransactions.find(t => t.opId === openedOpId)
   if (!transaction) {
     return null
   }

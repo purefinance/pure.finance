@@ -26,7 +26,7 @@ export const PureContextProvider = function ({ children }) {
         setSablier(createSablier(library, { from: account }))
         setTokenApprovals(createTokenApprovals(library, { from: account }))
         setErc20(
-          () => (address) => createErc20(library, address, { from: account })
+          () => address => createErc20(library, address, { from: account })
         )
       }
     },

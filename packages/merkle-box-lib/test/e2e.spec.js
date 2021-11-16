@@ -90,8 +90,8 @@ describe('End-to-end', function () {
       return erc20.approve(merkleBoxAddress, amount)
     }
 
-    const hexToBuffer = (hex) => Buffer.from(hex.substr(2), 'hex')
-    const bufferToHex = (buffer) => `0x${buffer.toString('hex')}`
+    const hexToBuffer = hex => Buffer.from(hex.substr(2), 'hex')
+    const bufferToHex = buffer => `0x${buffer.toString('hex')}`
 
     const hashRecipient = ({ account, amount }) =>
       web3.utils.soliditySha3(
@@ -99,7 +99,7 @@ describe('End-to-end', function () {
         { t: 'uint256', v: amount }
       )
 
-    const keccak256 = (buffer) =>
+    const keccak256 = buffer =>
       hexToBuffer(web3.utils.keccak256(bufferToHex(buffer)))
 
     const getMerkleTree = function (recipients) {
@@ -107,7 +107,7 @@ describe('End-to-end', function () {
       return new MerkleTree(leaves, keccak256)
     }
 
-    const addMerkleProofs = (tree) =>
+    const addMerkleProofs = tree =>
       function (recipient) {
         const proof = tree
           .getProof(hashRecipient(recipient))

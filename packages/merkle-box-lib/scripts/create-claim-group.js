@@ -36,13 +36,13 @@ const tokenAddress = token.startsWith('0x')
 
 const memo = `datasetUri=${datasetUrl}`
 
-const toTimestamp = (str) =>
+const toTimestamp = str =>
   /^[0-9]+$/.test(str)
     ? Number.parseInt(str)
     : Math.round(new Date(str).getTime() / 1000)
 
 return fetch(datasetUrl)
-  .then((res) => res.json())
+  .then(res => res.json())
   .then(function (recipients) {
     const total = recipients
       .reduce((sum, recipient) => sum + BigInt(recipient.amount), BigInt(0))
