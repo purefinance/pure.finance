@@ -1,5 +1,9 @@
 os: linux
 dist: focal
+addons:
+  apt:
+    packages:
+      - python3-pip
 
 language: node_js
 node_js:
@@ -20,7 +24,7 @@ jobs:
       script: skip
 
       before_deploy:
-        - pip install awscli awsebcli --upgrade --user
+        - pip3 install awscli awsebcli --upgrade --user
         - npm ci
 
       deploy:
