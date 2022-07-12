@@ -49,15 +49,16 @@ const SignMessageForm = function () {
   const signButton = {
     disabled: !active || !message,
     onClick() {
-      web3.eth.sign(message, account, function (err, _signature) {
-        if (err) {
+      web3.eth.personal
+        .sign(message, account)
+        .then(function (_signature) {
+          setSignature(_signature)
+          setFeedback('success', 'Signed successfully')
+        })
+        .catch(function (err) {
           setSignature()
           setFeedback('error', err.message)
-          return
-        }
-        setSignature(_signature)
-        setFeedback('success', 'Signed successfully')
-      })
+        })
     }
   }
 
