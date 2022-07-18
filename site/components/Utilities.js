@@ -44,6 +44,7 @@ const Utilities = function () {
         buttonHref="/payment-streams"
         buttonText={t('payment-streams')}
       />
+      <UtilityBox buttonHref="/sign-message" buttonText={t('sign-message')} />
     </div>
   )
 }
