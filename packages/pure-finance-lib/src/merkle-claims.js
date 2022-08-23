@@ -14,7 +14,11 @@ const getClaimData = function (uri, account) {
   debug('Getting claim data from %s', uri)
   return fetch(uri)
     .then(res => res.json())
-    .then(res => res.find(recipient => recipient.account === account))
+    .then(res =>
+      res.find(
+        recipient => recipient.account.toLowerCase() === account.toLowerCase()
+      )
+    )
 }
 
 const createMerkleClaims = function (web3, options) {
