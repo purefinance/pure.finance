@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import debounce from 'lodash.debounce'
+import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
 import watchAsset from 'wallet-watch-asset'
@@ -13,6 +14,7 @@ import PureContext from '../components/context/Pure'
 function MerkleClaims() {
   const { t } = useTranslation('common')
   const { active, account } = useWeb3React()
+  const { query } = useRouter()
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
@@ -27,10 +29,11 @@ function MerkleClaims() {
   const setSuccessMessage = message =>
     setFeedback({ color: 'text-green-600', message })
 
-  const getHolding = claimID =>
-    claimID &&
+  const getHolding = cID =>
+    cID &&
+    merkle.getHolding &&
     merkle
-      .getHolding(claimID)
+      .getHolding(cID)
       .then(h => {
         if (h.isClaimable) {
           clearFeedback()
@@ -75,6 +78,13 @@ function MerkleClaims() {
   }, [active, account])
 
   useEffect(() => setHolding({ amount: '', isClaimable: false }), [claimID])
+
+  useEffect(
+    function setClaimIdFromQueryOnLoad() {
+      handleClaimIDChange({ target: { value: query.id } })
+    },
+    [merkle, query]
+  )
 
   return (
     <Layout title={t('merkle-claims')} walletConnection>
