@@ -86,6 +86,24 @@ const SignMessageForm = function () {
       <p className={`text-center text-sm mt-6 ${feedback.color}`}>
         {feedback.message}
       </p>
+      <div className="flex justify-between mx-auto w-full max-w-lg">
+        <a
+          className="hover:text-black text-gray-400 focus:outline-none"
+          href="https://github.com/purefinance/pure.finance/blob/master/site/pages/sign-message.js"
+          rel="noreferrer"
+          target="_blank"
+        >
+          {t('view-source-code')}
+        </a>
+        <a
+          className="hover:text-black text-gray-400 focus:outline-none"
+          href="https://etherscan.io/verifiedSignatures"
+          rel="noreferrer"
+          target="_blank"
+        >
+          {t('verify-signature-etherscan')}
+        </a>
+      </div>
     </>
   )
 }
