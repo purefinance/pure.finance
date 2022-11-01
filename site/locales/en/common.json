@@ -104,6 +104,8 @@
   "unwrap": "unwrap",
   "utilties": "Utilities",
   "value": "Value",
+  "verify-signature-etherscan": "Verify signature on Etherscan",
+  "view-source-code": "View source code",
   "winning-price": "Winning price",
   "won-by": "Won by",
   "won": "Won",
