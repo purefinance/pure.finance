@@ -24,7 +24,7 @@ jobs:
       script: skip
 
       before_deploy:
-        - pip3 install awscli awsebcli --upgrade --user
+        - pip3 install awsebcli --upgrade --user
         - npm ci
 
       deploy:
