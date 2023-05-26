@@ -33,10 +33,8 @@ const parseLogs = logs =>
     blockNumber,
     allowance: data,
     transactionHash,
-    spender: topics[2]
+    spender: topics[2].replace(/0{24}/, '')
   }))
-
-const unpad = string => string.replace(/0{24}/, '')
 
 const SyncStatus = {
   Error: 0,
@@ -65,8 +63,7 @@ const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
 
       const newestOperation = allOperations[0]
       if (library.utils.hexToNumberString(newestOperation.allowance) === '0') {
-        // last operation was a revoke, so we return nothing
-        return
+        return null
       }
       return newestOperation
     })
@@ -89,10 +86,10 @@ function useTokenApprovals() {
 
   const { data: lastBlockNumber } = useLastBlockNumber()
   const localStorageKey =
-    chainId && account ? `pf-token-approvals-sync-${chainId}-${account}` : null
+    chainId && account ? `pf-token-revokes-${chainId}-${account}` : null
 
   // this effect takes care of loading the restore point of sync process
-  // or seting the initial data if syncing for the first time
+  // or setting the initial data if syncing for the first time
   useEffect(
     function () {
       if (!localStorageKey) {
@@ -154,6 +151,7 @@ function useTokenApprovals() {
       if (to < from) {
         return
       }
+      // eslint-disable-next-line no-console
       console.log(`syncing from blockNumber ${from} to blockNumber ${to}`)
 
       library.eth
@@ -172,6 +170,7 @@ function useTokenApprovals() {
             setSyncStatus(SyncStatus.Finished)
           }
 
+          // @ts-ignore
           setSyncBlock(prev => {
             const newTokenApprovals = getNewestApprovals({
               logs: parseLogs(logs),
@@ -201,6 +200,7 @@ function useTokenApprovals() {
           })
         })
         .catch(function (err) {
+          // eslint-disable-next-line no-console
           console.warn('Syncing failed:', err.message)
         })
     },
@@ -220,7 +220,7 @@ function useTokenApprovals() {
   // though they won't be added to the sync process
   useEffect(
     function () {
-      if (!active) {
+      if (!active || !account) {
         return null
       }
 
@@ -361,7 +361,7 @@ const TokenRevokes = function () {
                 <React.Fragment key={transactionHash}>
                   <Token address={address} />
                   <div className="hidden my-auto md:block">
-                    <Token address={unpad(spender)} />
+                    <Token address={spender} />
                   </div>
                   <div className="my-auto">
                     <Allowance address={address} data={allowance} />
@@ -371,7 +371,7 @@ const TokenRevokes = function () {
                   <Button
                     className="hidden md:block"
                     disabled={!active}
-                    onClick={() => handleRevoke(address, unpad(spender))}
+                    onClick={() => handleRevoke(address, spender)}
                     width="w-28"
                   >
                     {t('revoke')}
@@ -379,7 +379,7 @@ const TokenRevokes = function () {
                   <Button
                     className="flex justify-center mx-auto md:hidden"
                     disabled={!active}
-                    onClick={() => handleRevoke(address, unpad(spender))}
+                    onClick={() => handleRevoke(address, spender)}
                     width="w-10"
                   >
                     <svg
