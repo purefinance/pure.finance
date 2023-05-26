@@ -287,7 +287,7 @@ const Allowance = function ({ address, data }) {
   const { decimals, totalSupply } = token
   const allowanceInWei = library.utils.hexToNumberString(data)
   const value = new Big(fromUnit(allowanceInWei, decimals)).toNumber()
-  const isUnlimited = new Big(totalSupply).times(10).lt(allowanceInWei)
+  const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
     <span
       className="m-auto w-full whitespace-nowrap overflow-hidden overflow-ellipsis"
@@ -351,7 +351,7 @@ const TokenRevokes = function () {
               {t('spender-address')}
             </span>
             <span className="m-auto text-gray-600 font-bold">
-              {t('allowance')}
+              {t('allowance')} / {t('balance')}
             </span>
             <span className="m-auto text-gray-600 font-bold">
               {t('actions')}
@@ -363,9 +363,9 @@ const TokenRevokes = function () {
                   <div className="hidden my-auto md:block">
                     <Token address={unpad(spender)} />
                   </div>
-                  <div>
+                  <div className="my-auto">
                     <Allowance address={address} data={allowance} />
-                    <span> of </span>
+                    <span> / </span>
                     <Balance address={address} />
                   </div>
                   <Button
