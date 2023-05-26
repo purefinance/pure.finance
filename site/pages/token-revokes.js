@@ -162,7 +162,7 @@ function useTokenApprovals() {
           toBlock: to,
           topics: [
             APPROVAL_TOPIC,
-            library.utils.padLeft(account.toLowerCase(), 64)
+            library.utils.padLeft(account?.toLowerCase(), 64)
           ]
         })
         .then(function (logs) {
@@ -221,7 +221,7 @@ function useTokenApprovals() {
   useEffect(
     function () {
       if (!active) {
-        return
+        return null
       }
 
       const subscription = library.eth.subscribe('logs', {
@@ -253,16 +253,27 @@ function useTokenApprovals() {
 }
 
 const useErc20Token = function (address) {
-  const { active, library } = useWeb3React()
-  return useSWR(active ? address : null, function () {
+  const { account, active, library } = useWeb3React()
+  return useSWR(active ? `${account}:${address}` : null, function () {
     const erc20Service = createErc20(library, address)
     return Promise.all([
       erc20Service.symbol(),
       erc20Service.decimals(),
-      erc20Service.totalSupply()
-    ])
+      erc20Service.totalSupply(),
+      erc20Service.balanceOf(account)
+    ]).then(([symbol, decimals, totalSupply, balance]) => ({
+      symbol,
+      decimals,
+      totalSupply,
+      balance
+    }))
   })
 }
+
+const formatter = new Intl.NumberFormat('default', {
+  maximumFractionDigits: 9,
+  minimumFractionDigits: 6
+})
 
 const Allowance = function ({ address, data }) {
   const { library } = useWeb3React()
@@ -273,14 +284,10 @@ const Allowance = function ({ address, data }) {
   if (!token) {
     return <span className="m-auto"></span>
   }
-  const [, decimals, totalSupply] = token
+  const { decimals, totalSupply } = token
   const allowanceInWei = library.utils.hexToNumberString(data)
-  const value = Big(fromUnit(allowanceInWei, decimals), 6).toNumber()
-  const isUnlimited = Big(totalSupply).times(10).lt(allowanceInWei)
-  const formatter = new Intl.NumberFormat('default', {
-    maximumFractionDigits: 9,
-    minimumFractionDigits: 6
-  })
+  const value = new Big(fromUnit(allowanceInWei, decimals)).toNumber()
+  const isUnlimited = new Big(totalSupply).times(10).lt(allowanceInWei)
   return (
     <span
       className="m-auto w-full whitespace-nowrap overflow-hidden overflow-ellipsis"
@@ -291,13 +298,28 @@ const Allowance = function ({ address, data }) {
   )
 }
 
-const Token = function ({ address }) {
+const Balance = function ({ address }) {
   const { data: token } = useErc20Token(address)
   if (!token) {
     return <span className="m-auto"></span>
   }
-  const [symbol] = token
-  return <span className="m-auto">{symbol}</span>
+  const { decimals, balance } = token
+  const color = balance === '0' ? 'text-gray-300' : ''
+  return (
+    <span className={color}>
+      {formatter.format(new Big(fromUnit(balance, decimals)).toNumber())}
+    </span>
+  )
+}
+
+const Token = function ({ address }) {
+  const { data: token } = useErc20Token(address)
+  if (!token) {
+    // return <span className="m-auto"></span>
+    return <EtherscanLink address={address} />
+  }
+  const { symbol } = token
+  return <EtherscanLink address={address} text={symbol} />
 }
 
 const TokenRevokes = function () {
@@ -332,6 +354,9 @@ const TokenRevokes = function () {
             <span className="m-auto text-gray-600 font-bold">
               {t('allowance')}
             </span>
+            {/* <span className="m-auto text-gray-600 font-bold">
+              {t('balance')}
+            </span> */}
             <span className="m-auto text-gray-600 font-bold">
               {t('actions')}
             </span>
@@ -339,10 +364,15 @@ const TokenRevokes = function () {
               ({ address, allowance, transactionHash, spender }) => (
                 <React.Fragment key={transactionHash}>
                   <Token address={address} />
-                  <div className="hidden md:block">
-                    <EtherscanLink address={unpad(spender)} />
+                  <div className="hidden my-auto md:block">
+                    <Token address={unpad(spender)} />
+                    {/* <EtherscanLink address={unpad(spender)} /> */}
                   </div>
-                  <Allowance address={address} data={allowance} />
+                  <div>
+                    <Allowance address={address} data={allowance} />
+                    <span> of </span>
+                    <Balance address={address} />
+                  </div>
                   <Button
                     className="hidden md:block"
                     disabled={!active}
