@@ -315,7 +315,6 @@ const Balance = function ({ address }) {
 const Token = function ({ address }) {
   const { data: token } = useErc20Token(address)
   if (!token) {
-    // return <span className="m-auto"></span>
     return <EtherscanLink address={address} />
   }
   const { symbol } = token
@@ -354,9 +353,6 @@ const TokenRevokes = function () {
             <span className="m-auto text-gray-600 font-bold">
               {t('allowance')}
             </span>
-            {/* <span className="m-auto text-gray-600 font-bold">
-              {t('balance')}
-            </span> */}
             <span className="m-auto text-gray-600 font-bold">
               {t('actions')}
             </span>
@@ -366,7 +362,6 @@ const TokenRevokes = function () {
                   <Token address={address} />
                   <div className="hidden my-auto md:block">
                     <Token address={unpad(spender)} />
-                    {/* <EtherscanLink address={unpad(spender)} /> */}
                   </div>
                   <div>
                     <Allowance address={address} data={allowance} />
