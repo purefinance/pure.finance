@@ -33,10 +33,8 @@ const parseLogs = logs =>
     blockNumber,
     allowance: data,
     transactionHash,
-    spender: topics[2]
+    spender: topics[2].replace(/0{24}/, '')
   }))
-
-const unpad = string => string.replace(/0{24}/, '')
 
 const SyncStatus = {
   Error: 0,
@@ -65,8 +63,7 @@ const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
 
       const newestOperation = allOperations[0]
       if (library.utils.hexToNumberString(newestOperation.allowance) === '0') {
-        // last operation was a revoke, so we return nothing
-        return
+        return null
       }
       return newestOperation
     })
@@ -89,10 +86,10 @@ function useTokenApprovals() {
 
   const { data: lastBlockNumber } = useLastBlockNumber()
   const localStorageKey =
-    chainId && account ? `pf-token-approvals-sync-${chainId}-${account}` : null
+    chainId && account ? `pf-token-revokes-${chainId}-${account}` : null
 
   // this effect takes care of loading the restore point of sync process
-  // or seting the initial data if syncing for the first time
+  // or setting the initial data if syncing for the first time
   useEffect(
     function () {
       if (!localStorageKey) {
@@ -154,6 +151,7 @@ function useTokenApprovals() {
       if (to < from) {
         return
       }
+      // eslint-disable-next-line no-console
       console.log(`syncing from blockNumber ${from} to blockNumber ${to}`)
 
       library.eth
@@ -162,7 +160,7 @@ function useTokenApprovals() {
           toBlock: to,
           topics: [
             APPROVAL_TOPIC,
-            library.utils.padLeft(account.toLowerCase(), 64)
+            library.utils.padLeft(account?.toLowerCase(), 64)
           ]
         })
         .then(function (logs) {
@@ -172,6 +170,7 @@ function useTokenApprovals() {
             setSyncStatus(SyncStatus.Finished)
           }
 
+          // @ts-ignore
           setSyncBlock(prev => {
             const newTokenApprovals = getNewestApprovals({
               logs: parseLogs(logs),
@@ -201,6 +200,7 @@ function useTokenApprovals() {
           })
         })
         .catch(function (err) {
+          // eslint-disable-next-line no-console
           console.warn('Syncing failed:', err.message)
         })
     },
@@ -220,8 +220,8 @@ function useTokenApprovals() {
   // though they won't be added to the sync process
   useEffect(
     function () {
-      if (!active) {
-        return
+      if (!active || !account) {
+        return null
       }
 
       const subscription = library.eth.subscribe('logs', {
@@ -253,16 +253,27 @@ function useTokenApprovals() {
 }
 
 const useErc20Token = function (address) {
-  const { active, library } = useWeb3React()
-  return useSWR(active ? address : null, function () {
+  const { account, active, library } = useWeb3React()
+  return useSWR(active ? `${account}:${address}` : null, function () {
     const erc20Service = createErc20(library, address)
     return Promise.all([
       erc20Service.symbol(),
       erc20Service.decimals(),
-      erc20Service.totalSupply()
-    ])
+      erc20Service.totalSupply(),
+      erc20Service.balanceOf(account)
+    ]).then(([symbol, decimals, totalSupply, balance]) => ({
+      symbol,
+      decimals,
+      totalSupply,
+      balance
+    }))
   })
 }
+
+const formatter = new Intl.NumberFormat('default', {
+  maximumFractionDigits: 9,
+  minimumFractionDigits: 6
+})
 
 const Allowance = function ({ address, data }) {
   const { library } = useWeb3React()
@@ -273,14 +284,10 @@ const Allowance = function ({ address, data }) {
   if (!token) {
     return <span className="m-auto"></span>
   }
-  const [, decimals, totalSupply] = token
+  const { decimals, totalSupply } = token
   const allowanceInWei = library.utils.hexToNumberString(data)
-  const value = Big(fromUnit(allowanceInWei, decimals), 6).toNumber()
-  const isUnlimited = Big(totalSupply).times(10).lt(allowanceInWei)
-  const formatter = new Intl.NumberFormat('default', {
-    maximumFractionDigits: 9,
-    minimumFractionDigits: 6
-  })
+  const value = new Big(fromUnit(allowanceInWei, decimals)).toNumber()
+  const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
     <span
       className="m-auto w-full whitespace-nowrap overflow-hidden overflow-ellipsis"
@@ -291,13 +298,27 @@ const Allowance = function ({ address, data }) {
   )
 }
 
-const Token = function ({ address }) {
+const Balance = function ({ address }) {
   const { data: token } = useErc20Token(address)
   if (!token) {
     return <span className="m-auto"></span>
   }
-  const [symbol] = token
-  return <span className="m-auto">{symbol}</span>
+  const { decimals, balance } = token
+  const color = balance === '0' ? 'text-gray-300' : ''
+  return (
+    <span className={color}>
+      {formatter.format(new Big(fromUnit(balance, decimals)).toNumber())}
+    </span>
+  )
+}
+
+const Token = function ({ address }) {
+  const { data: token } = useErc20Token(address)
+  if (!token) {
+    return <EtherscanLink address={address} />
+  }
+  const { symbol } = token
+  return <EtherscanLink address={address} text={symbol} />
 }
 
 const TokenRevokes = function () {
@@ -330,7 +351,7 @@ const TokenRevokes = function () {
               {t('spender-address')}
             </span>
             <span className="m-auto text-gray-600 font-bold">
-              {t('allowance')}
+              {t('allowance')} / {t('balance')}
             </span>
             <span className="m-auto text-gray-600 font-bold">
               {t('actions')}
@@ -339,14 +360,18 @@ const TokenRevokes = function () {
               ({ address, allowance, transactionHash, spender }) => (
                 <React.Fragment key={transactionHash}>
                   <Token address={address} />
-                  <div className="hidden md:block">
-                    <EtherscanLink address={unpad(spender)} />
+                  <div className="hidden my-auto md:block">
+                    <Token address={spender} />
                   </div>
-                  <Allowance address={address} data={allowance} />
+                  <div className="my-auto">
+                    <Allowance address={address} data={allowance} />
+                    <span> / </span>
+                    <Balance address={address} />
+                  </div>
                   <Button
                     className="hidden md:block"
                     disabled={!active}
-                    onClick={() => handleRevoke(address, unpad(spender))}
+                    onClick={() => handleRevoke(address, spender)}
                     width="w-28"
                   >
                     {t('revoke')}
@@ -354,7 +379,7 @@ const TokenRevokes = function () {
                   <Button
                     className="flex justify-center mx-auto md:hidden"
                     disabled={!active}
-                    onClick={() => handleRevoke(address, unpad(spender))}
+                    onClick={() => handleRevoke(address, spender)}
                     width="w-10"
                   >
                     <svg
