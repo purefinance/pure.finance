@@ -1,17 +1,17 @@
+import orderBy from 'lodash.orderby'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
-import orderBy from 'lodash.orderby'
-import useSWR from 'swr'
-import { useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
+import { useState } from 'react'
+import useSWR from 'swr'
 
 import Dropdown from '../../../components/Dropdown'
 import Layout from '../../../components/Layout'
 import SvgContainer from '../../../components/svg/SvgContainer'
 import TokenAmount from '../../../components/TokenAmount'
-import fetchJson from '../../../utils/fetch-json'
-import ssDpa from '../../../utils/dp-auctions'
 import { useUpdatingState } from '../../../hooks/useUpdatingState'
+import ssDpa from '../../../utils/dp-auctions'
+import fetchJson from '../../../utils/fetch-json'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -147,8 +147,8 @@ const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
                 {t('collection', { collectionId: i })}
               </li>
             ) : (
-              <Link href={`/dp-auctions/collections/${i}`} passHref>
-                <li key={i}>{t('collection', { collectionId: i })}</li>
+              <Link href={`/dp-auctions/collections/${i}`} key={i} passHref>
+                <li>{t('collection', { collectionId: i })}</li>
               </Link>
             )
           )}
@@ -228,6 +228,6 @@ export const getStaticProps = ({ params }) =>
 // Do not statically render any collections page other than the default one,
 // which has ID 0. Use SSR for the rest of the collections.
 export const getStaticPaths = () => ({
-  paths: [{ params: { collectionId: process.env.DEFAULT_COLLECTION_ID } }],
-  fallback: 'blocking'
+  fallback: 'blocking',
+  paths: [{ params: { collectionId: process.env.DEFAULT_COLLECTION_ID } }]
 })

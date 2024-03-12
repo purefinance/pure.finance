@@ -1,22 +1,27 @@
+import Image from 'next/image'
 import Link from 'next/link'
-import Button from './Button'
 import useTranslation from 'next-translate/useTranslation'
+
+import Button from './Button'
 
 const UtilityBox = ({ buttonText, buttonHref }) => (
   <div className="mt-6 mx-2">
     <Link href={buttonHref}>
-      <a>
-        <div className="border-2 rounded-md">
-          <div className="pb-14 px-0.5">
-            <img height={156} src="/utilities-box-graphic.png" width={336} />
-          </div>
+      <div className="border-2 rounded-md">
+        <div className="pb-14 px-0.5">
+          <Image
+            alt=""
+            height={156}
+            src="/utilities-box-graphic.png"
+            width={336}
+          />
         </div>
-        <div className="flex justify-center -mt-6">
-          <div className="mx-auto">
-            <Button>{buttonText.toUpperCase()}</Button>
-          </div>
+      </div>
+      <div className="flex justify-center -mt-6">
+        <div className="mx-auto">
+          <Button>{buttonText.toUpperCase()}</Button>
         </div>
-      </a>
+      </div>
     </Link>
   </div>
 )

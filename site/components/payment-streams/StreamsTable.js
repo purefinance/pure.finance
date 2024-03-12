@@ -1,17 +1,19 @@
-import Link from 'next/link'
-import Big from 'big.js'
 import { useWeb3React } from '@web3-react/core'
+import Big from 'big.js'
+import Link from 'next/link'
 import useTranslation from 'next-translate/useTranslation'
 import { useContext, useEffect, useState } from 'react'
+
+import Button from '../../components/Button'
+import WithTooltip from '../../components/WithTooltip'
 import { useStreams } from '../../hooks/useStreams'
 import { bigToCrypto, fromUnit } from '../../utils'
 import { updateStreamInfo } from '../../utils/streams'
-import Button from '../../components/Button'
-import WithTooltip from '../../components/WithTooltip'
-import { EtherscanLink } from '../../components/EtherscanLink'
-import SvgContainer from '../svg/SvgContainer'
-import PaymentStreamsLibContext from './PaymentStreamsLib'
 import TransactionsContext from '../context/Transactions'
+import { EtherscanLink } from '../EtherscanLink'
+import SvgContainer from '../svg/SvgContainer'
+
+import PaymentStreamsLibContext from './PaymentStreamsLib'
 
 const StreamsTable = function () {
   const { active, account } = useWeb3React()
@@ -57,8 +59,8 @@ const StreamsTable = function () {
         ...lastTransactionStatus,
         received: [
           {
-            value: newClaimableValue,
-            symbol: claimingStream.token.symbol
+            symbol: claimingStream.token.symbol,
+            value: newClaimableValue
           }
         ]
       })
@@ -130,9 +132,9 @@ const StreamsTable = function () {
         })
         // eslint-disable-next-line promise/catch-or-return
         updateStreamInfo({
+          account,
           id,
           lib: paymentStreamsLib,
-          account,
           streamsView
         }).then(() => mutate())
       })
@@ -186,9 +188,9 @@ const StreamsTable = function () {
         })
         // eslint-disable-next-line promise/catch-or-return
         updateStreamInfo({
+          account,
           id,
           lib: paymentStreamsLib,
-          account,
           streamsView
         }).then(() => mutate())
       })
@@ -217,10 +219,10 @@ const StreamsTable = function () {
           opId: now,
           received: [
             {
+              symbol: stream.token.symbol,
               value: bigToCrypto(
                 fromUnit(stream.tokenClaimable, stream.token.decimals)
-              ),
-              symbol: stream.token.symbol
+              )
             }
           ],
           suffixes: transactions.suffixes,
@@ -252,23 +254,23 @@ const StreamsTable = function () {
         addTransactionStatus({
           actualFee: fromUnit(fees),
           opId: now,
-          transactionStatus: status ? 'confirmed' : 'canceled',
           received: status
             ? [
                 {
+                  symbol: stream.token.symbol,
                   value: bigToCrypto(
                     fromUnit(result.tokenAmount, stream.token.decimals)
-                  ),
-                  symbol: stream.token.symbol
+                  )
                 }
               ]
-            : []
+            : [],
+          transactionStatus: status ? 'confirmed' : 'canceled'
         })
         // eslint-disable-next-line promise/catch-or-return
         updateStreamInfo({
+          account,
           id,
           lib: paymentStreamsLib,
-          account,
           streamsView
         }).then(() => mutate())
       })
@@ -310,9 +312,7 @@ const StreamsTable = function () {
         disabled={!connected}
         href="/payment-streams?view=create"
       >
-        <a>
-          <Button disabled={!connected}>{t('create-stream')}</Button>
-        </a>
+        <Button disabled={!connected}>{t('create-stream')}</Button>
       </Link>
       <div className="flex justify-center my-7 w-full">
         <button
@@ -378,11 +378,11 @@ const StreamsTable = function () {
               )
               const now = new Date().getTime()
               const dateFormatter = new Intl.DateTimeFormat('default', {
-                month: 'numeric',
                 day: 'numeric',
-                year: 'numeric',
                 hour: 'numeric',
-                minute: 'numeric'
+                minute: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
               })
               const futureValue = futureStreamValues?.[streamsView]?.find(
                 futureStream => futureStream.id === id
@@ -452,15 +452,13 @@ const StreamsTable = function () {
                           as={`/payment-streams/edit/${id}`}
                           href={`/payment-streams?view=edit&streamId=${id}`}
                         >
-                          <a>
-                            <Button
-                              className="m-1"
-                              disabled={isFinished}
-                              width="w-28"
-                            >
-                              {t('edit')}
-                            </Button>
-                          </a>
+                          <Button
+                            className="m-1"
+                            disabled={isFinished}
+                            width="w-28"
+                          >
+                            {t('edit')}
+                          </Button>
                         </Link>
                       </>
                     )}

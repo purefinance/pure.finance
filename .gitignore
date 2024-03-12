@@ -9,3 +9,4 @@ packages/**/coverage
 packages/**/dataset*.json
 packages/**/recipients*.json
 site/public/test*.json
+.idea

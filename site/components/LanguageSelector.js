@@ -10,17 +10,15 @@ const LanguageSelector = function () {
     <ul className="flex text-sm space-x-1">
       {locales.map((localeOption, idx) => (
         <li key={localeOption}>
-          <Link href={asPath} locale={localeOption}>
-            <a
-              className={`${
-                localeOption === locale
-                  ? 'text-gray-300'
-                  : 'hover:text-teal-1000'
-              }`}
-            >
-              {idx > 0 && ' / '}
-              {t(`common:language-${localeOption}`)}
-            </a>
+          <Link
+            className={`${
+              localeOption === locale ? 'text-gray-300' : 'hover:text-teal-1000'
+            }`}
+            href={asPath}
+            locale={localeOption}
+          >
+            {idx > 0 && ' / '}
+            {t(`common:language-${localeOption}`)}
           </Link>
         </li>
       ))}
