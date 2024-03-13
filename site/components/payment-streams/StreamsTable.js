@@ -1,12 +1,12 @@
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import Link from 'next/link'
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
 import { useContext, useEffect, useState } from 'react'
 
 import Button from '../../components/Button'
 import WithTooltip from '../../components/WithTooltip'
 import { useStreams } from '../../hooks/useStreams'
+import { Link } from '../../navigation'
 import { bigToCrypto, fromUnit } from '../../utils'
 import { updateStreamInfo } from '../../utils/streams'
 import TransactionsContext from '../context/Transactions'
@@ -17,7 +17,7 @@ import PaymentStreamsLibContext from './PaymentStreamsLib'
 
 const StreamsTable = function () {
   const { active, account } = useWeb3React()
-  const { t } = useTranslation('payment-streams')
+  const t = useTranslations('PaymentStreams')
   const connected = !!(active && account)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus, currentTransactions } =

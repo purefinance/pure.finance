@@ -1,4 +1,5 @@
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
+
 import { daysToSeconds, hoursToSeconds, yearsToSeconds } from '../../utils/time'
 const EndTime = function ({
   onYearsChange,
@@ -8,17 +9,17 @@ const EndTime = function ({
   days,
   hours
 }) {
-  const { t } = useTranslation('payment-streams')
+  const { t } = useTranslations('payment-streams')
   const now = new Date().getTime()
   const deltaDate =
     (hoursToSeconds(hours) + daysToSeconds(days) + yearsToSeconds(years)) * 1000
   const endDate = new Date(now + deltaDate)
   const dateFormatter = new Intl.DateTimeFormat('default', {
-    month: 'numeric',
     day: 'numeric',
-    year: 'numeric',
     hour: 'numeric',
-    minute: 'numeric'
+    minute: 'numeric',
+    month: 'numeric',
+    year: 'numeric'
   })
   return (
     <fieldset className="my-2">

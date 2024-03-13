@@ -4,7 +4,7 @@ import {
   UserRejectedRequestError as UserRejectedRequestErrorInjected
 } from '@web3-react/injected-connector'
 import { UserRejectedRequestError as UserRejectedRequestErrorWalletConnect } from '@web3-react/walletconnect-connector'
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
 
 import Modal from './Modal'
 
@@ -24,7 +24,7 @@ const getErrorKey = function (error) {
 }
 
 const ErrorHandler = function ({ error, modalIsOpen, onRequestClose }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   return error ? (
     <Modal
       className="p-10 max-w-2xl text-center bg-white rounded-md"

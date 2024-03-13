@@ -1,7 +1,6 @@
 import orderBy from 'lodash.orderby'
 import { DateTime } from 'luxon'
-import Link from 'next/link'
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import useSWR from 'swr'
 
@@ -10,6 +9,7 @@ import Layout from '../../../components/Layout'
 import SvgContainer from '../../../components/svg/SvgContainer'
 import TokenAmount from '../../../components/TokenAmount'
 import { useUpdatingState } from '../../../hooks/useUpdatingState'
+import { Link } from '../../../navigation'
 import ssDpa from '../../../utils/dp-auctions'
 import fetchJson from '../../../utils/fetch-json'
 
@@ -21,7 +21,7 @@ const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 // The remaining time is shown in minutes. So every 10 seconds the remaining
 // time is re-calculated.
 const DPAuctionsRow = function ({ auction }) {
-  const { lang, t } = useTranslation('common')
+  const { lang, t } = useTranslations()
 
   const calcEndTime = () =>
     Date.now() +
@@ -63,7 +63,7 @@ const DPAuctionsRow = function ({ auction }) {
 
 // This component renders the list of auctions.
 const DPAuctionsTable = function ({ auctions }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const [showEnded, setShowEnded] = useState(false)
 
   const sortedAuctions = orderBy(
@@ -114,7 +114,7 @@ const DPAuctionsTable = function ({ auctions }) {
 // fly keeping the selected collection in the closure.
 const createCollectionSelector = collectionId =>
   function CollectionSelector({ isOpen }) {
-    const { t } = useTranslation('common')
+    const t = useTranslations()
 
     const rotate = isOpen ? 'transform rotate-180' : ''
     return (
@@ -130,7 +130,7 @@ const createCollectionSelector = collectionId =>
 
 // Use a Dropdown component to allow selecting another existing collection.
 const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   const Selector = createCollectionSelector(collectionId)
 
@@ -163,7 +163,7 @@ const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
 export default function DPAuctions(props) {
   const { collectionId, initialCount, initialAuctions, error } = props
 
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   // The amount of collections is managed by SWR. It is set to revalidate aprox.
   // every block (15 seconds).

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '../navigation'
 
 import PureLogo from './svg/Pure'
 import Wallet from './Wallet'

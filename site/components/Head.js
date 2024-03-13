@@ -3,7 +3,7 @@ import Script from 'next/script'
 
 const CustomHead = ({ title }) => (
   <>
-    {process.env.NEXT_PUBLIC_ANALYTICS_ID ?? (
+    {process.env.NEXT_PUBLIC_ANALYTICS_ID ? (
       <>
         <Script
           async
@@ -21,9 +21,11 @@ const CustomHead = ({ title }) => (
           id="gtag-init"
         />
       </>
+    ) : (
+      ''
     )}
     <Head>
-      <title>Pure Finance {title && ` | ${title}`}</title>
+      <title>{`Pure Finance ${title && ` | ${title}`}`}</title>
       <link href="/favicon.ico" rel="icon" />
     </Head>
   </>

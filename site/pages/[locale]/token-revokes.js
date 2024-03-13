@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import createErc20 from 'erc-20-lib'
+import { useTranslations } from 'next-intl'
+import React, { useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
-import useTranslation from 'next-translate/useTranslation'
-import { useWeb3React } from '@web3-react/core'
 
-import Button from '../components/Button'
-import { EtherscanLink } from '../components/EtherscanLink'
-import Layout from '../components/Layout'
-import PureContext from '../components/context/Pure'
-import { fromUnit } from '../utils'
+import Button from '../../components/Button'
+import PureContext from '../../components/context/Pure'
+import { EtherscanLink } from '../../components/EtherscanLink'
+import Layout from '../../components/Layout'
+import { fromUnit } from '../../utils'
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
 const APPROVAL_TOPIC =
@@ -30,16 +30,16 @@ const useLastBlockNumber = function () {
 const parseLogs = logs =>
   logs.map(({ address, blockNumber, data, transactionHash, topics }) => ({
     address,
-    blockNumber,
     allowance: data,
-    transactionHash,
-    spender: topics[2].replace(/0{24}/, '')
+    blockNumber,
+    spender: topics[2].replace(/0{24}/, ''),
+    transactionHash
   }))
 
 const SyncStatus = {
   Error: 0,
-  Syncing: 1,
-  Finished: 2
+  Finished: 2,
+  Syncing: 1
 }
 
 const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
@@ -71,10 +71,10 @@ const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
 }
 
 const DEFAULT_SYNC_BLOCK_STATE = {
-  fromBlock: MIN_BLOCK_TO_SYNC,
-  toBlock: undefined,
-  hasSyncToMinBlock: false,
   chunkIndex: 0,
+  fromBlock: MIN_BLOCK_TO_SYNC,
+  hasSyncToMinBlock: false,
+  toBlock: undefined,
   tokenApprovals: []
 }
 
@@ -110,11 +110,11 @@ function useTokenApprovals() {
       if (hasSyncToMinBlock) {
         setSyncBlock({
           // the previous value we've synced up to, is now the lower bound to review. The latest blockNumber will be the new toBlock
-          fromBlock: toBlock + 1,
-          tokenApprovals,
-          toBlock: undefined,
           chunkIndex: 0,
-          hasSyncToMinBlock: false
+          fromBlock: toBlock + 1,
+          hasSyncToMinBlock: false,
+          toBlock: undefined,
+          tokenApprovals
         })
         return
       }
@@ -173,27 +173,27 @@ function useTokenApprovals() {
           // @ts-ignore
           setSyncBlock(prev => {
             const newTokenApprovals = getNewestApprovals({
+              library,
               logs: parseLogs(logs),
-              tokenApprovals: prev.tokenApprovals,
-              library
+              tokenApprovals: prev.tokenApprovals
             })
 
             // sync to local storage
             localStorage.setItem(
               localStorageKey,
               JSON.stringify({
-                fromBlock: newHasSyncToMinBlock ? pivotBlock + 1 : fromBlock,
-                toBlock: pivotBlock,
                 chunkIndex: newHasSyncToMinBlock ? 0 : chunkIndex + 1,
-                tokenApprovals: newTokenApprovals,
-                hasSyncToMinBlock: newHasSyncToMinBlock
+                fromBlock: newHasSyncToMinBlock ? pivotBlock + 1 : fromBlock,
+                hasSyncToMinBlock: newHasSyncToMinBlock,
+                toBlock: pivotBlock,
+                tokenApprovals: newTokenApprovals
               })
             )
 
             return {
               ...prev,
-              fromBlock: newHasSyncToMinBlock ? pivotBlock + 1 : prev.fromBlock,
               chunkIndex: newHasSyncToMinBlock ? 0 : prev.chunkIndex + 1,
+              fromBlock: newHasSyncToMinBlock ? pivotBlock + 1 : prev.fromBlock,
               hasSyncToMinBlock: newHasSyncToMinBlock,
               tokenApprovals: newTokenApprovals
             }
@@ -249,7 +249,7 @@ function useTokenApprovals() {
     [active, library, account, chainId, setSyncBlock]
   )
 
-  return { ...syncBlock, syncStatus, setSyncStatus }
+  return { ...syncBlock, setSyncStatus, syncStatus }
 }
 
 const useErc20Token = function (address) {
@@ -262,10 +262,10 @@ const useErc20Token = function (address) {
       erc20Service.totalSupply(),
       erc20Service.balanceOf(account)
     ]).then(([symbol, decimals, totalSupply, balance]) => ({
-      symbol,
+      balance,
       decimals,
-      totalSupply,
-      balance
+      symbol,
+      totalSupply
     }))
   })
 }
@@ -277,12 +277,12 @@ const formatter = new Intl.NumberFormat('default', {
 
 const Allowance = function ({ address, data }) {
   const { library } = useWeb3React()
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   const { data: token } = useErc20Token(address)
 
   if (!token) {
-    return <span className="m-auto"></span>
+    return <span className="m-auto" />
   }
   const { decimals, totalSupply } = token
   const allowanceInWei = library.utils.hexToNumberString(data)
@@ -301,7 +301,7 @@ const Allowance = function ({ address, data }) {
 const Balance = function ({ address }) {
   const { data: token } = useErc20Token(address)
   if (!token) {
-    return <span className="m-auto"></span>
+    return <span className="m-auto" />
   }
   const { decimals, balance } = token
   const color = balance === '0' ? 'text-gray-300' : ''
@@ -324,7 +324,7 @@ const Token = function ({ address }) {
 const TokenRevokes = function () {
   const { active } = useWeb3React()
   const { erc20 } = useContext(PureContext)
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const [isRevoking, setIsRevoking] = useState(false)
 
   const { tokenApprovals, syncStatus, setSyncStatus } = useTokenApprovals()
@@ -414,5 +414,5 @@ const TokenRevokes = function () {
   )
 }
 
-export const getStaticProps = () => ({})
+export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
 export default TokenRevokes

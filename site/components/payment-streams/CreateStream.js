@@ -1,8 +1,7 @@
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
 import { findToken } from 'pf-payment-streams/src/token-list'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'
@@ -14,6 +13,7 @@ import EndTime from '../../components/payment-streams/EndTime'
 import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
 import { useStreams } from '../../hooks/useStreams'
 import { useTokenInput } from '../../hooks/useTokenInput'
+import { Link } from '../../navigation'
 import { fromUnit, toUnit } from '../../utils'
 import fetchJson from '../../utils/fetch-json'
 import * as timeUtils from '../../utils/time'
@@ -41,8 +41,8 @@ const useSupportedTokens = function () {
 // eslint-disable-next-line complexity
 const CreateStream = function () {
   const { active, account } = useWeb3React()
-  const { t } = useTranslation('payment-streams')
-  const { t: tCommon } = useTranslation('common')
+  const { t } = useTranslations('payment-streams')
+  const { t: tCommon } = useTranslations()
   const router = useRouter()
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)

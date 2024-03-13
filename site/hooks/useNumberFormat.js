@@ -1,7 +1,7 @@
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
 
 export const useNumberFormat = function () {
-  const { lang } = useTranslation()
+  const { lang } = useTranslations()
 
   return number =>
     new Intl.NumberFormat(lang, {

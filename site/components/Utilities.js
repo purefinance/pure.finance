@@ -1,6 +1,7 @@
 import Image from 'next/image'
-import Link from 'next/link'
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
+
+import { Link } from '../navigation'
 
 import Button from './Button'
 
@@ -27,7 +28,8 @@ const UtilityBox = ({ buttonText, buttonHref }) => (
 )
 
 const Utilities = function () {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
+
   return (
     <div className="flex flex-wrap justify-center w-full">
       <div className="mb-3.5 w-full">
