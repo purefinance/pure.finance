@@ -7,8 +7,8 @@
     "dev": "concurrently --kill-others --names \"Fork,Next\" \"node utils/fork.js\" \"next dev\"",
     "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --ignore-module next-secure-headers --ignore-module eslint-config-next --no-dev ./pages/*.js ./pages/*/*.js ./pages/*/*/*.js ./pages/*/*/*/*.js",
     "postinstall": "patch-package || true",
-    "prestart": "npm run build",
-    "start": "next start"
+    "preserve": "npm run build",
+    "serve": "serve out"
   },
   "dependencies": {
     "@uniswap/default-token-list": "2.1.0",
@@ -45,7 +45,7 @@
     "concurrently": "6.4.0",
     "dotenv": "10.0.0",
     "ganache-core": "2.13.2",
-    "serve": "13.0.2"
+    "serve": "14.2.1"
   },
   "babel": {
     "presets": [
