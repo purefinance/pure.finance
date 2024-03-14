@@ -1,11 +1,11 @@
-import StreamsTable from '../../../components/payment-streams/StreamsTable'
+import CreateStream from '../../../components/payment-streams/CreateStream'
 import PaymentStreamsLayout from '../../../components/PaymentStreamsLayout'
 
-const PaymentStreams = () => (
+const PaymentStreamsCreate = () => (
   <PaymentStreamsLayout>
-    <StreamsTable />
+    <CreateStream />
   </PaymentStreamsLayout>
 )
 
 export { getStaticProps, getStaticPaths } from '../../../utils/staticProps'
-export default PaymentStreams
+export default PaymentStreamsCreate

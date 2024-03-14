@@ -2,7 +2,7 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useMemo } from 'react'
 import { isAddress } from 'web3-utils'
 
 import { useStreams } from '../../hooks/useStreams'
@@ -21,13 +21,13 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const EditRate = function ({ stream }) {
   const { active, account } = useWeb3React()
   const router = useRouter()
-  const { t } = useTranslations('payment-streams')
-  const { t: tCommon } = useTranslations()
+  const t = useTranslations('PaymentStreams')
+  const tCommon = useTranslations()
 
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)
 
-  const { streamId } = router.query
+  const { id: streamId, locale } = router.query
   const { mutate } = useStreams()
   const [newUsdAmount, setNewUsdAmount] = useState('')
   const [years, setYears] = useState(0)
@@ -111,7 +111,7 @@ const EditRate = function ({ stream }) {
         })
           .then(() => mutate())
           .catch(console.error)
-        router.push('/payment-streams')
+        router.push(`${locale}/payment-streams`)
       })
       .on('error', function (err) {
         addTransactionStatus({
@@ -152,12 +152,12 @@ const EditRate = function ({ stream }) {
 
 const EditFundingAddress = function ({ stream }) {
   const { active, account } = useWeb3React()
-  const { t } = useTranslations('payment-streams')
+  const t = useTranslations('PaymentStreams')
   const { addTransactionStatus } = useContext(TransactionsContext)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const [newFundingAddress, setNewFundingAddress] = useState('')
   const router = useRouter()
-  const { streamId } = router.query
+  const { id: streamId, locale } = router.query
   const { mutate } = useStreams()
 
   const originalFundingAddress = stream.fundingAddress
@@ -224,7 +224,7 @@ const EditFundingAddress = function ({ stream }) {
           lib: paymentStreamsLib,
           streamsView: 'outgoing'
         }).then(() => mutate())
-        router.push('/payment-streams')
+        router.push(`${locale}/payment-streams`)
       })
       .on('error', function (err) {
         addTransactionStatus({
@@ -263,23 +263,25 @@ const EditFundingAddress = function ({ stream }) {
 const EditStream = function () {
   const router = useRouter()
   const { active } = useWeb3React()
-  const { streamId } = router.query
-  const { t } = useTranslations('payment-streams')
+  const { id: streamId, locale } = router.query
+  const t = useTranslations('PaymentStreams')
   const { streams = { outgoing: [] }, isLoading } = useStreams()
 
-  if (!active) {
-    router.push('/payment-streams')
-    return null
-  }
+  const stream = useMemo(
+    () => streams.outgoing.find(s => s.id === streamId),
+    [streamId, streams.outgoing]
+  )
+  useEffect(
+    function () {
+      if (!active || !stream) {
+        router.push(`${locale}/payment-streams`)
+      }
+    },
+    [active, locale, router, stream]
+  )
 
   if (isLoading) {
     return <p>{t('loading-stream', { streamId })}</p>
-  }
-
-  const stream = streams.outgoing.find(s => s.id === streamId)
-  if (!stream) {
-    router.push('/payment-streams')
-    return null
   }
 
   return (

@@ -307,11 +307,7 @@ const StreamsTable = function () {
 
   return (
     <section>
-      <Link
-        as="/payment-streams/new"
-        disabled={!connected}
-        href="/payment-streams?view=create"
-      >
+      <Link disabled={!connected} href="/payment-streams/new">
         <Button disabled={!connected}>{t('create-stream')}</Button>
       </Link>
       <div className="flex justify-center my-7 w-full">
@@ -448,10 +444,7 @@ const StreamsTable = function () {
                             {t('pause')}
                           </Button>
                         )}
-                        <Link
-                          as={`/payment-streams/edit/${id}`}
-                          href={`/payment-streams?view=edit&streamId=${id}`}
-                        >
+                        <Link href={`/payment-streams/edit?id==${id}`}>
                           <Button
                             className="m-1"
                             disabled={isFinished}

@@ -41,8 +41,8 @@ const useSupportedTokens = function () {
 // eslint-disable-next-line complexity
 const CreateStream = function () {
   const { active, account } = useWeb3React()
-  const { t } = useTranslations('payment-streams')
-  const { t: tCommon } = useTranslations()
+  const t = useTranslations('PaymentStreams')
+  const tCommon = useTranslations()
   const router = useRouter()
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)
@@ -55,6 +55,10 @@ const CreateStream = function () {
   const [hours, setHours] = useState(0)
   const [isCreating, setIsCreating] = useState(false)
   const tokenInput = useTokenInput()
+
+  const {
+    query: { locale }
+  } = router
 
   // tokens are in the list in the form of "<token> / [USD|ETH]"" pairs. For example: "UNI / USD"
   // addresses are not available
@@ -138,7 +142,7 @@ const CreateStream = function () {
         })
         setIsCreating(false)
         mutate()
-        router.push('/payment-streams')
+        router.push(`${locale}/payment-streams`)
       })
       .on('error', function (err) {
         setIsCreating(false)
