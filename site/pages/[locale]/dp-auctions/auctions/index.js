@@ -1,22 +1,21 @@
 import { useWeb3React } from '@web3-react/core'
-import createDpaLib from 'dp-auctions-lib'
+import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory'
 import watchAsset from 'wallet-watch-asset'
 
-import Button from '../../../components/Button'
+import Button from '../../../../components/Button'
 import TransactionsContext, {
   TransactionsContextProvider
-} from '../../../components/context/Transactions'
-import { EtherscanLink } from '../../../components/EtherscanLink'
-import Layout from '../../../components/Layout'
-import TokenAmount from '../../../components/TokenAmount'
-import Transactions from '../../../components/Transactions'
-import { fromUnit } from '../../../utils'
-import ssDpa from '../../../utils/dp-auctions'
-import fetchJson from '../../../utils/fetch-json'
+} from '../../../../components/context/Transactions'
+import { EtherscanLink } from '../../../../components/EtherscanLink'
+import Layout from '../../../../components/Layout'
+import TokenAmount from '../../../../components/TokenAmount'
+import Transactions from '../../../../components/Transactions'
+import { fromUnit } from '../../../../utils'
+import dpa from '../../../../utils/dp-auctions'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -227,21 +226,13 @@ const DPAuctionTokens = function ({ auction }) {
 
 const DPAuctionBuyControl = function ({ auction }) {
   const t = useTranslations()
-  const { account, active, library: web3 } = useWeb3React()
+  const { account, active } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionsContext)
-
-  const [dpa, setDpa] = useState(null)
-  useEffect(
-    function () {
-      setDpa(active && web3 ? createDpaLib(web3) : null)
-    },
-    [active, web3]
-  )
 
   const [canBid, setCanBid] = useState(false)
   useEffect(
     function () {
-      if (!dpa || account === auction.payee) {
+      if (!active || !dpa || account === auction.payee) {
         setCanBid(false)
         return
       }
@@ -254,7 +245,7 @@ const DPAuctionBuyControl = function ({ auction }) {
         })
         .then(setCanBid)
     },
-    [dpa, account, auction]
+    [account, auction, active]
   )
 
   const handleBuyAuctionClick = function () {
@@ -375,6 +366,9 @@ const DPAuctionEndStatus = function ({ auction }) {
 const DPAuction = function ({ auction }) {
   const t = useTranslations()
 
+  if (!auction) {
+    return null
+  }
   return (
     <>
       <div className="flex">
@@ -402,12 +396,19 @@ const DPAuction = function ({ auction }) {
 
 // This is the main app component. It holds all the views like the auctions
 // list, the auction detail, etc.
-export default function DPAuctionsDetails({ auctionId, initialData, error }) {
-  const t = useTranslations('common')
+export default function DPAuctionsDetails({ initialData, error }) {
+  const t = useTranslations()
+  const {
+    query: { id: auctionId = 0 }
+  } = useRouter()
 
   const { data: auction } = useSWR(
-    `/api/dp-auctions/auctions/${auctionId}`,
-    fetchJson,
+    `dp-auctions-${auctionId}`,
+    () =>
+      dpa.getAuction(auctionId, true).catch(function (err) {
+        console.warn('Could not get auction', auctionId, err.message)
+        return null
+      }),
     { fallbackData: initialData, refreshInterval: ETH_BLOCK_TIME * 1000 }
   )
 
@@ -433,29 +434,4 @@ export default function DPAuctionsDetails({ auctionId, initialData, error }) {
   )
 }
 
-// Gather the `auctionId` from the path, get the auction data and send it as a
-// prop to the main component. Rebuild the page in the server aprox. on every
-// block (15 seconds).
-export const getStaticProps = ({ params }) =>
-  ssDpa
-    .getAuction(params.auctionId, true)
-    .then(initialData => ({
-      notFound: !initialData,
-      props: {
-        auctionId: params.auctionId,
-        initialData
-      },
-      revalidate: ETH_BLOCK_TIME
-    }))
-    .catch(err => ({
-      props: {
-        auctionId: params.auctionId,
-        error: err.message
-      }
-    }))
-
-// Do not statically render any auction page.
-export const getStaticPaths = () => ({
-  fallback: 'blocking',
-  paths: []
-})
+export { getStaticProps, getStaticPaths } from '../../../../utils/staticProps'

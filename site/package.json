@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "concurrently --kill-others --names \"Fork,Next\" \"node utils/fork.js\" \"next dev\"",
-    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --ignore-module next-secure-headers --no-dev ./pages/*.js ./pages/*/*.js ./pages/*/*/*.js",
+    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --ignore-module next-secure-headers --no-dev ./pages/*.js ./pages/*/*.js ./pages/*/*/*.js ./pages/*/*/*/*.js",
     "postinstall": "patch-package || true",
     "prestart": "npm run build",
     "start": "next start"
