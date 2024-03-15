@@ -6,6 +6,7 @@ import { useContext, useEffect, useState, useMemo } from 'react'
 import { isAddress } from 'web3-utils'
 
 import { useStreams } from '../../hooks/useStreams'
+import { useRouter as useIntlRouter } from '../../navigation'
 import { fromUnit, toUnit } from '../../utils'
 import { updateStreamInfo } from '../../utils/streams'
 import * as timeUtils from '../../utils/time'
@@ -20,14 +21,16 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const EditRate = function ({ stream }) {
   const { active, account } = useWeb3React()
-  const router = useRouter()
+  const {
+    query: { id: streamId }
+  } = useRouter()
+  const router = useIntlRouter()
   const t = useTranslations('PaymentStreams')
   const tCommon = useTranslations()
 
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)
 
-  const { id: streamId, locale } = router.query
   const { mutate } = useStreams()
   const [newUsdAmount, setNewUsdAmount] = useState('')
   const [years, setYears] = useState(0)
@@ -111,7 +114,7 @@ const EditRate = function ({ stream }) {
         })
           .then(() => mutate())
           .catch(console.error)
-        router.push(`${locale}/payment-streams`)
+        router.push('/payment-streams')
       })
       .on('error', function (err) {
         addTransactionStatus({
@@ -156,8 +159,10 @@ const EditFundingAddress = function ({ stream }) {
   const { addTransactionStatus } = useContext(TransactionsContext)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const [newFundingAddress, setNewFundingAddress] = useState('')
-  const router = useRouter()
-  const { id: streamId, locale } = router.query
+  const {
+    query: { id: streamId }
+  } = useRouter()
+  const router = useIntlRouter()
   const { mutate } = useStreams()
 
   const originalFundingAddress = stream.fundingAddress
@@ -224,7 +229,7 @@ const EditFundingAddress = function ({ stream }) {
           lib: paymentStreamsLib,
           streamsView: 'outgoing'
         }).then(() => mutate())
-        router.push(`${locale}/payment-streams`)
+        router.push('/payment-streams')
       })
       .on('error', function (err) {
         addTransactionStatus({
@@ -261,9 +266,11 @@ const EditFundingAddress = function ({ stream }) {
 }
 
 const EditStream = function () {
-  const router = useRouter()
+  const {
+    query: { id: streamId }
+  } = useRouter()
+  const router = useIntlRouter()
   const { active } = useWeb3React()
-  const { id: streamId, locale } = router.query
   const t = useTranslations('PaymentStreams')
   const { streams = { outgoing: [] }, isLoading } = useStreams()
 
@@ -274,10 +281,10 @@ const EditStream = function () {
   useEffect(
     function () {
       if (!active || !stream) {
-        router.push(`${locale}/payment-streams`)
+        router.push('/payment-streams')
       }
     },
-    [active, locale, router, stream]
+    [active, router, stream]
   )
 
   if (isLoading) {

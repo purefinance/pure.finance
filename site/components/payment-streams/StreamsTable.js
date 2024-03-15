@@ -444,7 +444,7 @@ const StreamsTable = function () {
                             {t('pause')}
                           </Button>
                         )}
-                        <Link href={`/payment-streams/edit?id==${id}`}>
+                        <Link href={`/payment-streams/edit?id=${id}`}>
                           <Button
                             className="m-1"
                             disabled={isFinished}

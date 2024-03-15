@@ -1,6 +1,5 @@
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { findToken } from 'pf-payment-streams/src/token-list'
 import { useContext, useState } from 'react'
@@ -13,7 +12,7 @@ import EndTime from '../../components/payment-streams/EndTime'
 import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
 import { useStreams } from '../../hooks/useStreams'
 import { useTokenInput } from '../../hooks/useTokenInput'
-import { Link } from '../../navigation'
+import { Link, useRouter } from '../../navigation'
 import { fromUnit, toUnit } from '../../utils'
 import fetchJson from '../../utils/fetch-json'
 import * as timeUtils from '../../utils/time'
@@ -55,10 +54,6 @@ const CreateStream = function () {
   const [hours, setHours] = useState(0)
   const [isCreating, setIsCreating] = useState(false)
   const tokenInput = useTokenInput()
-
-  const {
-    query: { locale }
-  } = router
 
   // tokens are in the list in the form of "<token> / [USD|ETH]"" pairs. For example: "UNI / USD"
   // addresses are not available
@@ -142,7 +137,7 @@ const CreateStream = function () {
         })
         setIsCreating(false)
         mutate()
-        router.push(`${locale}/payment-streams`)
+        router.push('/payment-streams')
       })
       .on('error', function (err) {
         setIsCreating(false)

@@ -1,5 +1,6 @@
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+
+import { useRouter } from '../navigation'
 
 export const useRedirectToDefaultLocale = function ({
   defaultLocale,
@@ -17,7 +18,7 @@ export const useRedirectToDefaultLocale = function ({
           redirectPage
             ? redirectPage.startsWith('/')
               ? redirectPage
-              : `$/${redirectPage}`
+              : `/${redirectPage}`
             : ''
         }`
       )
