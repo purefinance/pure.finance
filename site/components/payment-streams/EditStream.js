@@ -279,7 +279,7 @@ const EditStream = function () {
     [streamId, streams.outgoing]
   )
   useEffect(
-    function () {
+    function redirectToPaymentStreams() {
       if (!active || !stream) {
         router.push('/payment-streams')
       }

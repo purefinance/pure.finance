@@ -10,7 +10,7 @@ export const useRedirectToDefaultLocale = function ({
   const router = useRouter()
 
   useEffect(
-    function () {
+    function redirectToDefaultLocale() {
       const [language] = navigator.language.split('-')
       const enabledLanguage = locales.includes(language)
       router.replace(
