@@ -9,7 +9,7 @@ const EndTime = function ({
   days,
   hours
 }) {
-  const t = useTranslations('PaymentStreams')
+  const t = useTranslations('payment-streams-util')
   const now = new Date().getTime()
   const deltaDate =
     (hoursToSeconds(hours) + daysToSeconds(days) + yearsToSeconds(years)) * 1000

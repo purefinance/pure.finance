@@ -6,7 +6,7 @@ import { PaymentStreamsLibContextProvider } from './payment-streams/PaymentStrea
 import Transactions from './Transactions'
 
 function PaymentStreamsLayout({ children }) {
-  const t = useTranslations('PaymentStreams')
+  const t = useTranslations()
   return (
     <TransactionsContextProvider>
       <PaymentStreamsLibContextProvider>

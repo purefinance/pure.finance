@@ -115,7 +115,7 @@
   "wrap": "wrap",
   "you-will-get": "You'll get",
   "your-balance-is": "Your balance is {balance} {symbol}",
-  "PaymentStreams": {
+  "payment-streams-util": {
     "actions": "actions",
     "connect-your-wallet": "Connect your wallet to list and create streams.",
     "claim": "claim",
@@ -139,7 +139,6 @@
     "paused": "paused",
     "payee": "Payee",
     "payer": "payer",
-    "payment-streams": "Payment Streams",
     "rate-sec": "rate /sec",
     "resume": "resume",
     "save-fund-rate": "Save Fund Rate",

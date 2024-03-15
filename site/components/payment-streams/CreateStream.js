@@ -40,7 +40,7 @@ const useSupportedTokens = function () {
 // eslint-disable-next-line complexity
 const CreateStream = function () {
   const { active, account } = useWeb3React()
-  const t = useTranslations('PaymentStreams')
+  const t = useTranslations('payment-streams-util')
   const tCommon = useTranslations()
   const router = useRouter()
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)

@@ -25,7 +25,7 @@ const EditRate = function ({ stream }) {
     query: { id: streamId }
   } = useRouter()
   const router = useIntlRouter()
-  const t = useTranslations('PaymentStreams')
+  const t = useTranslations('payment-streams-util')
   const tCommon = useTranslations()
 
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
@@ -155,7 +155,7 @@ const EditRate = function ({ stream }) {
 
 const EditFundingAddress = function ({ stream }) {
   const { active, account } = useWeb3React()
-  const t = useTranslations('PaymentStreams')
+  const t = useTranslations('payment-streams-util')
   const { addTransactionStatus } = useContext(TransactionsContext)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const [newFundingAddress, setNewFundingAddress] = useState('')
@@ -271,7 +271,7 @@ const EditStream = function () {
   } = useRouter()
   const router = useIntlRouter()
   const { active } = useWeb3React()
-  const t = useTranslations('PaymentStreams')
+  const t = useTranslations('payment-streams-util')
   const { streams = { outgoing: [] }, isLoading } = useStreams()
 
   const stream = useMemo(

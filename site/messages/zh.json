@@ -115,7 +115,7 @@
   "wrap": "封装",
   "you-will-get": "你会得到",
   "your-balance-is": "您的余额为 {balance} {symbol}",
-  "PaymentStreams": {
+  "payment-streams-util": {
     "actions": "行动",
     "connect-your-wallet": "连接您的钱包以列出和创建流。",
     "claim": "宣称",
@@ -139,7 +139,6 @@
     "paused": "暂停",
     "payee": "收款人",
     "payer": "付款人",
-    "payment-streams": "支付流",
     "rate-sec": "速率/秒",
     "resume": "恢复",
     "save-fund-rate": "储蓄基金利率",

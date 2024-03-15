@@ -17,7 +17,7 @@ import PaymentStreamsLibContext from './PaymentStreamsLib'
 
 const StreamsTable = function () {
   const { active, account } = useWeb3React()
-  const t = useTranslations('PaymentStreams')
+  const t = useTranslations('payment-streams-util')
   const connected = !!(active && account)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus, currentTransactions } =
