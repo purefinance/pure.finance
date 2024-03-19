@@ -29,7 +29,7 @@ const DPAuctionsRow = function ({ auction }) {
   const endTime = useUpdatingState(calcEndTime, 10000, [auction.currentBlock]) // 10s
 
   return (
-    <Link href={`/dp-auctions/auctions?=id${auction.id}`} passHref>
+    <Link href={`/dp-auctions/auctions?id=${auction.id}`} passHref>
       <tr className="cursor-pointer">
         <td className="border-2">{auction.id}</td>
         <td className="border-2">
