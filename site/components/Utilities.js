@@ -37,10 +37,6 @@ const Utilities = function () {
       </div>
       <UtilityBox buttonHref="/merkle-claims" buttonText={t('merkle-claims')} />
       <UtilityBox
-        buttonHref="/sablier-claims"
-        buttonText={t('sablier-claims')}
-      />
-      <UtilityBox
         buttonHref="/token-approvals"
         buttonText={t('token-approvals')}
       />
