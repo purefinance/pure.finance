@@ -9,7 +9,7 @@ const pTap = require('p-tap').default
 const { findToken } = require('./token-list')
 const dpaAbi = require('./abi.json')
 
-const DPA_ADDRESS = '0x164D41ceB60489D2e054394Fc05ED1894Db3898a' // Chain ID 1
+const DPA_ADDRESS = '0xD8039420f1A61D0930127B89ab7Be23a7f21cd77' // Chain ID 743111
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const UNLIMITED = (2n ** 256n - 1n).toString()

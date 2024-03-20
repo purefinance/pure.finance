@@ -4,6 +4,11 @@
       "address": "0xf47853220BF59C682CCBd28e7cFF4D4E603a4Ca6",
       "birthblock": 13495981,
       "chainId": 1
+    },
+    {
+      "address": "0xc5F62E5a1bF204ba216a877b11E596FcA09760D4",
+      "birthblock": 13495981,
+      "chainId": 743111
     }
   ]
 }

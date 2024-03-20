@@ -1,0 +1,23 @@
+{
+  "name": "token-list",
+  "version": "1.0.0",
+  "license": "MIT",
+  "files": [
+    "src"
+  ],
+  "main": "src/index.js",
+  "scripts": {
+    "deps:check": "dependency-check --no-dev ."
+  },
+  "dependencies": {
+    "@sushiswap/default-token-list": "^18.3.0",
+    "@uniswap/default-token-list": "^2.1.0",
+    "lodash": "4.17.21",
+    "vesper-metadata": "2.95.0",
+    "web3-utils": "1.8.1"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "types": "types/index.d.ts"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Custom Token List",
+  "tokens": [
+    {
+      "address": "0x0C8aFD1b58aa2A5bAd2414B861D8A7fF898eDC3A",
+      "chainId": 743111,
+      "decimals": 18,
+      "logoURI": "https://optimistic.etherscan.io/token/images/weth_28.png",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    }
+  ]
+}
