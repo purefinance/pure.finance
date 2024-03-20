@@ -1,4 +1,11 @@
 module.exports = {
   images: { unoptimized: true },
-  output: 'export'
+  output: 'export',
+  theme: {
+    extend: {
+      fontFamily: {
+        inter: '--font-inter'
+      }
+    }
+  }
 }
