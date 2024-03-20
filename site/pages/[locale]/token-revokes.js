@@ -9,6 +9,7 @@ import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import { EtherscanLink } from '../../components/EtherscanLink'
 import Layout from '../../components/Layout'
+import UtilFormBox from '../../components/UtilFormBox'
 import { fromUnit } from '../../utils'
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
@@ -63,7 +64,7 @@ const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
 
       const newestOperation = allOperations[0]
       if (library.utils.hexToNumberString(newestOperation.allowance) === '0') {
-        return null
+        return
       }
       return newestOperation
     })
@@ -170,8 +171,7 @@ function useTokenApprovals() {
             setSyncStatus(SyncStatus.Finished)
           }
 
-          // @ts-ignore
-          setSyncBlock(prev => {
+          setSyncBlock(function (prev) {
             const newTokenApprovals = getNewestApprovals({
               library,
               logs: parseLogs(logs),
@@ -221,7 +221,7 @@ function useTokenApprovals() {
   useEffect(
     function () {
       if (!active || !account) {
-        return undefined
+        return
       }
 
       const subscription = library.eth.subscribe('logs', {
@@ -343,73 +343,80 @@ const TokenRevokes = function () {
 
   return (
     <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
-      {tokenApprovals.length > 0 && (
-        <section className="flex flex-col overflow-x-auto">
-          <div className="grid-cols-approval-sm md:grid-cols-approval grid gap-x-12 gap-y-5 place-content-center my-6">
-            <span className="m-auto text-gray-600 font-bold">{t('token')}</span>
-            <span className="hidden m-auto text-gray-600 font-bold md:block">
-              {t('spender-address')}
-            </span>
-            <span className="m-auto text-gray-600 font-bold">
-              {t('allowance')} / {t('balance')}
-            </span>
-            <span className="m-auto text-gray-600 font-bold">
-              {t('actions')}
-            </span>
-            {tokenApprovals.map(
-              ({ address, allowance, transactionHash, spender }) => (
-                <React.Fragment key={transactionHash}>
-                  <Token address={address} />
-                  <div className="hidden my-auto md:block">
-                    <Token address={spender} />
-                  </div>
-                  <div className="my-auto">
-                    <Allowance address={address} data={allowance} />
-                    <span> / </span>
-                    <Balance address={address} />
-                  </div>
-                  <Button
-                    className="hidden md:block"
-                    disabled={!active}
-                    onClick={() => handleRevoke(address, spender)}
-                    width="w-28"
-                  >
-                    {t('revoke')}
-                  </Button>
-                  <Button
-                    className="flex justify-center mx-auto md:hidden"
-                    disabled={!active}
-                    onClick={() => handleRevoke(address, spender)}
-                    width="w-10"
-                  >
-                    <svg
-                      className="md:hidden"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      width="18"
-                      xmlns="http://www.w3.org/2000/svg"
+      <UtilFormBox
+        className="md:w-200"
+        title={t('list-and-revoke-token-approvals')}
+      >
+        {tokenApprovals.length > 0 && (
+          <section className="flex flex-col overflow-x-auto">
+            <div className="grid-cols-approval-sm md:grid-cols-approval grid gap-x-12 gap-y-5 place-content-center my-6">
+              <span className="m-auto text-gray-600 font-bold">
+                {t('token')}
+              </span>
+              <span className="hidden m-auto text-gray-600 font-bold md:block">
+                {t('spender-address')}
+              </span>
+              <span className="m-auto text-gray-600 font-bold">
+                {t('allowance')} / {t('balance')}
+              </span>
+              <span className="m-auto text-gray-600 font-bold">
+                {t('actions')}
+              </span>
+              {tokenApprovals.map(
+                ({ address, allowance, transactionHash, spender }) => (
+                  <React.Fragment key={transactionHash}>
+                    <Token address={address} />
+                    <div className="hidden my-auto md:block">
+                      <Token address={spender} />
+                    </div>
+                    <div className="my-auto">
+                      <Allowance address={address} data={allowance} />
+                      <span> / </span>
+                      <Balance address={address} />
+                    </div>
+                    <Button
+                      className="hidden md:block"
+                      disabled={!active}
+                      onClick={() => handleRevoke(address, spender)}
+                      width="w-28"
                     >
-                      <path
-                        d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
-                        fill="white"
-                      />
-                    </svg>
-                  </Button>
-                </React.Fragment>
-              )
-            )}
-          </div>
-        </section>
-      )}
-      {!active && <h3>{t('connect-to-sync')}</h3>}
-      {active && syncStatus === SyncStatus.Syncing && (
-        <h3>{t('syncing-your-approvals')}</h3>
-      )}
-      {active && isRevoking && <h3>{t('revoking-approval')}</h3>}
-      {syncStatus === SyncStatus.Error && <h3>{t('generic-error')}</h3>}
-      {tokenApprovals.length === 0 && syncStatus === SyncStatus.Finished && (
-        <p>{t('no-approvals')}</p>
-      )}
+                      {t('revoke')}
+                    </Button>
+                    <Button
+                      className="flex justify-center mx-auto md:hidden"
+                      disabled={!active}
+                      onClick={() => handleRevoke(address, spender)}
+                      width="w-10"
+                    >
+                      <svg
+                        className="md:hidden"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        width="18"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
+                          fill="white"
+                        />
+                      </svg>
+                    </Button>
+                  </React.Fragment>
+                )
+              )}
+            </div>
+          </section>
+        )}
+        {!active && <h3>{t('connect-to-sync')}</h3>}
+        {active && syncStatus === SyncStatus.Syncing && (
+          <h3>{t('syncing-your-approvals')}</h3>
+        )}
+        {active && isRevoking && <h3>{t('revoking-approval')}</h3>}
+        {syncStatus === SyncStatus.Error && <h3>{t('generic-error')}</h3>}
+        {tokenApprovals.length === 0 && syncStatus === SyncStatus.Finished && (
+          <p>{t('no-approvals')}</p>
+        )}
+      </UtilFormBox>
     </Layout>
   )
 }
