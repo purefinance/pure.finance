@@ -3,6 +3,8 @@ import checkmark from './Checkmark'
 import close from './Close'
 import coinbasewallet from './CoinbaseWallet'
 import cross from './Cross'
+import curlybrackets from './CurlyBrackets'
+import etherscan from './Etherscan'
 import loading from './Loading'
 import metamask from './Metamask'
 import questionmark from './Questionmark'
@@ -14,6 +16,8 @@ const icons = {
   close,
   coinbasewallet,
   cross,
+  curlybrackets,
+  etherscan,
   loading,
   metamask,
   questionmark,
