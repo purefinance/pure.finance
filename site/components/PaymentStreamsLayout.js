@@ -11,7 +11,7 @@ function PaymentStreamsLayout({ children }) {
     <TransactionsContextProvider>
       <PaymentStreamsLibContextProvider>
         <Layout title={t('payment-streams')} walletConnection>
-          <div className="mt-10 w-full">{children}</div>
+          {children}
         </Layout>
         <Transactions />
       </PaymentStreamsLibContextProvider>

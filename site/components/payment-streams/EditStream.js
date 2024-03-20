@@ -257,7 +257,7 @@ const EditFundingAddress = function ({ stream }) {
         value={newFundingAddress}
       />
       <div className="mt-4">
-        <Button className="w-19 m-1" disabled={!canSubmit}>
+        <Button className="m-1 w-full" disabled={!canSubmit}>
           {t('save-funding-address')}
         </Button>
       </div>
@@ -278,6 +278,7 @@ const EditStream = function () {
     () => streams.outgoing.find(s => s.id === streamId),
     [streamId, streams.outgoing]
   )
+
   useEffect(
     function redirectToPaymentStreams() {
       if (!active || !stream) {
