@@ -68,7 +68,6 @@ const SignMessageForm = function () {
   return (
     <UtilFormBox title={t('sign-message')}>
       <TextArea
-        className="mb-"
         placeholder={t('message-placeholder')}
         rows={5}
         title={t('message')}

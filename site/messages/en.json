@@ -103,7 +103,7 @@
   "update-funding-rate": "Update Funding Rate",
   "unpause-stream": "Unpause Stream",
   "unwrap-weth-success": "You unwrapped {value} WETH successfully!",
-  "unwrap": "Unwrap Ethereum",
+  "unwrap": "Unwrap ETH",
   "utilties": "Utilities",
   "value": "Value",
   "verify-signature-etherscan": "Verify on Etherscan",
@@ -113,7 +113,7 @@
   "won": "Won",
   "wrap-eth-success": "You wrapped {value} ETH successfully!",
   "wrap-unwrap-eth": "Wrap/Unwrap ETH",
-  "wrap": "Wrap Ethereum",
+  "wrap": "Wrap ETH",
   "you-will-get": "You'll get",
   "your-balance-is": "Your balance is {balance} {symbol}",
   "payment-streams-util": {

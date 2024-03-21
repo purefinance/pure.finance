@@ -193,6 +193,7 @@ const CreateStream = function () {
           onClick={function () {
             router.push('/payment-streams')
           }}
+          type="button"
         >
           {tCommon('cancel')}
         </Button>
