@@ -78,7 +78,7 @@ const SignMessageForm = function () {
       </div>
       {signature && (
         <div className="flex-wrap mt-6 w-full text-center text-sm">
-          Signature:
+          {t('signature')}:
           <br />
           {signature}
         </div>
