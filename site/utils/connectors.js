@@ -17,5 +17,5 @@ export const walletconnect = new WalletConnectConnector({
 })
 export const walletlink = new WalletLinkConnector({
   url: nodeUrl,
-  appName: `Vesper App${environment ? ` ${environment}` : ''}`
+  appName: `Pure Finance${environment ? ` ${environment}` : ''}`
 })
