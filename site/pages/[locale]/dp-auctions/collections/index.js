@@ -1,7 +1,7 @@
 import orderBy from 'lodash.orderby'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import useSWR from 'swr'
 
@@ -21,7 +21,8 @@ const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 // The remaining time is shown in minutes. So every 10 seconds the remaining
 // time is re-calculated.
 const DPAuctionsRow = function ({ auction }) {
-  const { lang, t } = useTranslations()
+  const locale = useLocale()
+  const t = useTranslations()
 
   const calcEndTime = () =>
     Date.now() +
@@ -53,7 +54,7 @@ const DPAuctionsRow = function ({ auction }) {
           {t(auction.status)}
           {auction.status === 'running' &&
             ` (${t('ends')} ${DateTime.fromMillis(endTime).toRelative({
-              locale: lang
+              locale
             })})`}
         </td>
       </tr>
