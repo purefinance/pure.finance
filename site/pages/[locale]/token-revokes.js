@@ -221,7 +221,7 @@ function useTokenApprovals() {
   useEffect(
     function () {
       if (!active || !account) {
-        return null
+        return undefined
       }
 
       const subscription = library.eth.subscribe('logs', {
