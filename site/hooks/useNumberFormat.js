@@ -1,10 +1,10 @@
-import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 
 export const useNumberFormat = function () {
-  const { lang } = useTranslations()
+  const locale = useLocale()
 
   return number =>
-    new Intl.NumberFormat(lang, {
+    new Intl.NumberFormat(locale, {
       maximumFractionDigits: 6,
       minimumFractionDigits: 2
     }).format(number)
