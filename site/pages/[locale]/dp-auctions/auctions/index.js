@@ -1,22 +1,21 @@
-import { VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory'
-import { useContext, useEffect, useState } from 'react'
-import createDpaLib from 'dp-auctions-lib'
-import useSWR from 'swr'
-import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
+import { useRouter } from 'next/router'
+import { useTranslations } from 'next-intl'
+import { useContext, useEffect, useState } from 'react'
+import useSWR from 'swr'
+import { VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory'
 import watchAsset from 'wallet-watch-asset'
 
+import Button from '../../../../components/Button'
 import TransactionsContext, {
   TransactionsContextProvider
-} from '../../../components/context/Transactions'
-import Button from '../../../components/Button'
-import { EtherscanLink } from '../../../components/EtherscanLink'
-import Layout from '../../../components/Layout'
-import TokenAmount from '../../../components/TokenAmount'
-import Transactions from '../../../components/Transactions'
-import fetchJson from '../../../utils/fetch-json'
-import { fromUnit } from '../../../utils'
-import ssDpa from '../../../utils/dp-auctions'
+} from '../../../../components/context/Transactions'
+import { EtherscanLink } from '../../../../components/EtherscanLink'
+import Layout from '../../../../components/Layout'
+import TokenAmount from '../../../../components/TokenAmount'
+import Transactions from '../../../../components/Transactions'
+import { fromUnit } from '../../../../utils'
+import dpa from '../../../../utils/dp-auctions'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -43,7 +42,7 @@ const numberFromUnit = (number, decimals) =>
 // In addition, when running, the current state is shown as a circle while when
 // stopped or won is shown as a full disc.
 const DPAuctionPriceChart = function ({ auction }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   const startPoint = {
     block: auction.startBlock,
@@ -119,7 +118,7 @@ const DPAuctionPriceChart = function ({ auction }) {
           label={t('block-number')}
           style={{
             axisLabel: { padding: 40 },
-            ticks: { stroke: 'black', size: 5 }
+            ticks: { size: 5, stroke: 'black' }
           }}
           tickFormat={tick => tick.toString()}
           tickValues={xTickValues}
@@ -129,7 +128,7 @@ const DPAuctionPriceChart = function ({ auction }) {
           label={auction.paymentToken.symbol}
           style={{
             axisLabel: { padding: 75 },
-            ticks: { stroke: 'black', size: 5 }
+            ticks: { size: 5, stroke: 'black' }
           }}
         />
         <VictoryLine
@@ -148,7 +147,7 @@ const DPAuctionPriceChart = function ({ auction }) {
               auction.winningPrice === auction.floor ||
               auction.stoppingPrice === auction.floor
                 ? { strokeWidth: 3 }
-                : { strokeWidth: 1, strokeDasharray: '10,10' }
+                : { strokeDasharray: '10,10', strokeWidth: 1 }
           }}
           x="block"
           y="price"
@@ -166,9 +165,9 @@ const DPAuctionPriceChart = function ({ auction }) {
           size={8}
           style={{
             data: {
-              strokeWidth: 1,
               fill: auction.stopped ? 'black' : 'white',
-              stroke: 'black'
+              stroke: 'black',
+              strokeWidth: 1
             }
           }}
           x="block"
@@ -191,7 +190,7 @@ const DPAuctionContentsRow = ({ paymentToken, token }) => (
 )
 
 const DPAuctionTokens = function ({ auction }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   return (
     <table className="w-full border-collapse">
@@ -226,22 +225,14 @@ const DPAuctionTokens = function ({ auction }) {
 }
 
 const DPAuctionBuyControl = function ({ auction }) {
-  const { t } = useTranslation('common')
-  const { account, active, library: web3 } = useWeb3React()
+  const t = useTranslations()
+  const { account, active } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionsContext)
-
-  const [dpa, setDpa] = useState(null)
-  useEffect(
-    function () {
-      setDpa(active && web3 ? createDpaLib(web3) : null)
-    },
-    [active, web3]
-  )
 
   const [canBid, setCanBid] = useState(false)
   useEffect(
     function () {
-      if (!dpa || account === auction.payee) {
+      if (!active || !dpa || account === auction.payee) {
         setCanBid(false)
         return
       }
@@ -254,7 +245,7 @@ const DPAuctionBuyControl = function ({ auction }) {
         })
         .then(setCanBid)
     },
-    [dpa, account, auction]
+    [account, auction, active]
   )
 
   const handleBuyAuctionClick = function () {
@@ -269,8 +260,8 @@ const DPAuctionBuyControl = function ({ auction }) {
           operation: 'bid',
           opId,
           received: auction.tokens.map(token => ({
-            value: fromUnit(token.amount, token.decilams),
-            symbol: token.symbol
+            symbol: token.symbol,
+            value: fromUnit(token.amount, token.decilams)
           })),
           sent: fromUnit(auction.currentPrice, auction.paymentToken.decimals),
           sentSymbol: auction.paymentToken.symbol,
@@ -302,8 +293,8 @@ const DPAuctionBuyControl = function ({ auction }) {
         addTransactionStatus({
           actualFee: fromUnit(fees),
           opId,
-          transactionStatus: status ? 'confirmed' : 'canceled',
-          sent: fromUnit(price, auction.paymentToken.decimals)
+          sent: fromUnit(price, auction.paymentToken.decimals),
+          transactionStatus: status ? 'confirmed' : 'canceled'
         })
         auction.tokens.forEach(function (token) {
           watchAsset({ account, token })
@@ -354,7 +345,7 @@ const DPAuctionBuyControl = function ({ auction }) {
 
 // This component shows the end status of the auction.
 const DPAuctionEndStatus = function ({ auction }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   return auction.status === 'won' ? (
     <>
@@ -373,8 +364,11 @@ const DPAuctionEndStatus = function ({ auction }) {
 
 // This component renders the details view of an auction.
 const DPAuction = function ({ auction }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
+  if (!auction) {
+    return null
+  }
   return (
     <>
       <div className="flex">
@@ -402,12 +396,19 @@ const DPAuction = function ({ auction }) {
 
 // This is the main app component. It holds all the views like the auctions
 // list, the auction detail, etc.
-export default function DPAuctionsDetails({ auctionId, initialData, error }) {
-  const { t } = useTranslation('common')
+export default function DPAuctionsDetails({ initialData, error }) {
+  const t = useTranslations()
+  const {
+    query: { id: auctionId = 0 }
+  } = useRouter()
 
   const { data: auction } = useSWR(
-    `/api/dp-auctions/auctions/${auctionId}`,
-    fetchJson,
+    `dp-auctions-${auctionId}`,
+    () =>
+      dpa.getAuction(auctionId, true).catch(function (err) {
+        console.warn('Could not get auction', auctionId, err.message)
+        return null
+      }),
     { fallbackData: initialData, refreshInterval: ETH_BLOCK_TIME * 1000 }
   )
 
@@ -433,29 +434,4 @@ export default function DPAuctionsDetails({ auctionId, initialData, error }) {
   )
 }
 
-// Gather the `auctionId` from the path, get the auction data and send it as a
-// prop to the main component. Rebuild the page in the server aprox. on every
-// block (15 seconds).
-export const getStaticProps = ({ params }) =>
-  ssDpa
-    .getAuction(params.auctionId, true)
-    .then(initialData => ({
-      notFound: !initialData,
-      props: {
-        auctionId: params.auctionId,
-        initialData
-      },
-      revalidate: ETH_BLOCK_TIME
-    }))
-    .catch(err => ({
-      props: {
-        auctionId: params.auctionId,
-        error: err.message
-      }
-    }))
-
-// Do not statically render any auction page.
-export const getStaticPaths = () => ({
-  paths: [],
-  fallback: 'blocking'
-})
+export { getStaticProps, getStaticPaths } from '../../../../utils/staticProps'

@@ -1,24 +1,22 @@
-import { useContext, useState } from 'react'
-import Big from 'big.js'
-import Link from 'next/link'
-import { isAddress } from 'web3-utils'
-import { useRouter } from 'next/router'
-import useSWR from 'swr'
-import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
+import Big from 'big.js'
+import { useTranslations } from 'next-intl'
+import { findToken } from 'pf-payment-streams/src/token-list'
+import { useContext, useState } from 'react'
+import useSWR from 'swr'
+import { isAddress } from 'web3-utils'
 
-import * as timeUtils from '../../utils/time'
-import { fromUnit, toUnit } from '../../utils'
 import Button from '../../components/Button'
-import EndTime from '../../components/payment-streams/EndTime'
 import Input from '../../components/Input'
+import EndTime from '../../components/payment-streams/EndTime'
 import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
-import TransactionsContext from '../context/Transactions'
 import { useStreams } from '../../hooks/useStreams'
 import { useTokenInput } from '../../hooks/useTokenInput'
-import { findToken } from 'pf-payment-streams/src/token-list'
-
+import { Link, useRouter } from '../../navigation'
+import { fromUnit, toUnit } from '../../utils'
 import fetchJson from '../../utils/fetch-json'
+import * as timeUtils from '../../utils/time'
+import TransactionsContext from '../context/Transactions'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -33,17 +31,17 @@ const useSupportedTokens = function () {
   )
 
   return {
-    tokens: data,
     error,
-    isLoading: data === undefined && error === undefined
+    isLoading: data === undefined && error === undefined,
+    tokens: data
   }
 }
 
 // eslint-disable-next-line complexity
 const CreateStream = function () {
   const { active, account } = useWeb3React()
-  const { t } = useTranslation('payment-streams')
-  const { t: tCommon } = useTranslation('common')
+  const t = useTranslations('payment-streams-util')
+  const tCommon = useTranslations()
   const router = useRouter()
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)
@@ -191,9 +189,7 @@ const CreateStream = function () {
       />
       <div className="flex">
         <Link href="/payment-streams">
-          <a>
-            <Button className="w-19 m-1">{tCommon('cancel')}</Button>
-          </a>
+          <Button className="w-19 m-1">{tCommon('cancel')}</Button>
         </Link>
         <Button className="w-19 m-1" disabled={!canSubmit}>
           {t('create')}

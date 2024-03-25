@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
-import useTranslation from 'next-translate/useTranslation'
 import { useWeb3React } from '@web3-react/core'
+import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 
-import { injected, walletconnect, walletlink } from '../utils/connectors'
 import shortAccount from '../utils/account'
+import { injected, walletconnect, walletlink } from '../utils/connectors'
 
 import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'
@@ -19,7 +19,7 @@ const removeLastConnector = () =>
 const Wallet = function () {
   const { account, active, activate, connector, deactivate, error, setError } =
     useWeb3React()
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const shortenedAccount = shortAccount(account)
 
   const [activatingConnector, setActivatingConnector] = useState()
@@ -97,7 +97,6 @@ const Wallet = function () {
 
   const wallets = [
     {
-      name: 'Metamask',
       connector: injected,
       handleConnection() {
         setActivatingConnector(injected)
@@ -108,10 +107,10 @@ const Wallet = function () {
       handleDisconnection() {
         deactivate()
         removeLastConnector()
-      }
+      },
+      name: 'Metamask'
     },
     {
-      name: 'WalletConnect',
       connector: walletconnect,
       handleConnection() {
         setActivatingConnector(walletconnect)
@@ -122,10 +121,10 @@ const Wallet = function () {
       handleDisconnection() {
         connector.close()
         removeLastConnector()
-      }
+      },
+      name: 'WalletConnect'
     },
     {
-      name: 'Coinbase Wallet',
       connector: walletlink,
       handleConnection() {
         setActivatingConnector(walletlink)
@@ -136,7 +135,8 @@ const Wallet = function () {
       handleDisconnection() {
         connector.close()
         removeLastConnector()
-      }
+      },
+      name: 'Coinbase Wallet'
     }
   ]
 
