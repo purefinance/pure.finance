@@ -1,6 +1,8 @@
 import { useWeb3React } from '@web3-react/core'
-import { createContext, useEffect, useMemo } from 'react'
 import createPaymentStreams from 'pf-payment-streams'
+import { createContext, useEffect, useMemo } from 'react'
+
+import utilsConfig from '../../utils/utilsConfig'
 
 const PaymentStreamsLibContext = createContext({})
 const PaymentStreamsLibContextProvider = function ({ children }) {
@@ -8,7 +10,10 @@ const PaymentStreamsLibContextProvider = function ({ children }) {
   const lib = useMemo(
     () =>
       active && library
-        ? createPaymentStreams(library, { from: account })
+        ? createPaymentStreams(library, {
+            from: account,
+            ...utilsConfig.paymentStreams
+          })
         : undefined,
     [library, account, active]
   )

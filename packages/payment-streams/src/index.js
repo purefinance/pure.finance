@@ -7,10 +7,12 @@ const erc20Abi = require('erc-20-abi')
 const pTap = require('p-tap').default
 
 const { findToken } = require('./token-list')
-const contracts = require('./contracts.json')
 const createExecutor = require('eth-exec-txs')
 const paymentStreamAbi = require('./abis/PaymentStream.json')
 const paymentStreamFactoryAbi = require('./abis/PaymentStreamFactory.json')
+
+const DEFAULT_ADDRESS = '0xf47853220BF59C682CCBd28e7cFF4D4E603a4Ca6' // Chain ID 1
+const DEFAULT_BIRTHBLOCK = 13495981
 
 const fromUnit = (number, decimals = 18) =>
   new Big(`${number}e-${decimals}`).toFixed()
@@ -29,17 +31,15 @@ const createPaymentStreams = function (web3, options = {}) {
     .getChainId()
     // .then((chainId) => (chainId === 1337 ? 1 : chainId)) // Ganache hack
     .then(function (chainId) {
-      const contract = contracts.PaymentStreamFactory.find(
-        c => c.chainId === chainId
-      )
-      if (!contract) {
+      const constractAddress = options.address || DEFAULT_ADDRESS
+      if (!constractAddress) {
         throw new Error(`PaymentStreams not available in chain ${chainId}`)
       }
       const instance = new web3.eth.Contract(
         paymentStreamFactoryAbi,
-        contract.address
+        constractAddress
       )
-      instance.options.birthblock = contract.birthblock
+      instance.options.birthblock = options.birthblock || DEFAULT_BIRTHBLOCK
       instance.options.chainId = chainId
       return instance
     })
@@ -169,7 +169,7 @@ const createPaymentStreams = function (web3, options = {}) {
   // the node takes too long to respond.
   const getPastEventsInChunks = function (contract, event, pastEventOptions) {
     const {
-      fromBlock = contract.options.birthblock,
+      fromBlock = options.birthblock,
       toBlock: _toBlock,
       ...restOfPastEventOptions
     } = pastEventOptions

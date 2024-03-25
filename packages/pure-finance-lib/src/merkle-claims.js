@@ -9,6 +9,7 @@ const fetch = require('node-fetch')
 const parseCookieString = require('../lib/parse-cookie')
 const tryParseEvmError = require('../lib/parse-evm-error')
 
+const DEFAULT_MERKLE_ADDRESS = '0xe67516417a934b27cf0c14868f8165b1bc94bf73' // Chain ID 1
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const fromUnit = (number, decimals = 18) =>
@@ -30,7 +31,7 @@ const createMerkleClaims = function (web3, options) {
 
   debug('Creating Merkle Claims for %s', from || 'read-only')
 
-  const merkleBoxAddress = createMerkleBox.addresses.mainnet
+  const merkleBoxAddress = options.address || DEFAULT_MERKLE_ADDRESS
   const merkleBox = createMerkleBox(web3, merkleBoxAddress, options)
 
   const getHolding = function (claimGroupId) {
@@ -78,10 +79,10 @@ const createMerkleClaims = function (web3, options) {
       .then(function ([token, amount, proof, isClaimable]) {
         debug('Claim is%s claimable', isClaimable ? '' : ' NOT')
         return {
-          token,
           amount,
+          isClaimable,
           proof,
-          isClaimable
+          token
         }
       })
       .catch(tryParseEvmError)
@@ -105,8 +106,8 @@ const createMerkleClaims = function (web3, options) {
       .catch(tryParseEvmError)
 
   return {
-    getHolding,
-    claim
+    claim,
+    getHolding
   }
 }
 
