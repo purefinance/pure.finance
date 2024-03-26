@@ -1,13 +1,12 @@
 import { useRedirectToDefaultLocale } from '../hooks/useRedirectToDefaultLocale'
 import { defaultLocale, locales } from '../navigation'
 
-const HomePage = () => {
+function HomePage() {
   useRedirectToDefaultLocale({
     defaultLocale,
     locales,
-    redirectPage: '/'
+    redirectPage: '/merkle-claims'
   })
-
   return null
 }
 
