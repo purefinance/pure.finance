@@ -23,7 +23,7 @@ function UtilitiesTabs() {
           },
           {
             href: '/wrap-eth',
-            label: t('wrap-unwrap-eth'),
+            label: t('wrap-unwrap'),
             selected: pathname === '/wrap-eth'
           },
           {

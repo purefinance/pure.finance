@@ -1,5 +1,6 @@
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
+import { findByChainId } from 'chain-list'
 import { useTranslations } from 'next-intl'
 import { useContext, useEffect, useState } from 'react'
 import { findTokenBySymbol } from 'token-list'
@@ -56,6 +57,7 @@ const WrapUnwrapEth = function () {
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
+  const { nativeTokenSymbol = 'hETH' } = findByChainId(chainId)
 
   const isValidNumber =
     value !== '' &&
@@ -81,7 +83,7 @@ const WrapUnwrapEth = function () {
       return erc20Service
         .wrapEther(valueInWei)
         .then(function () {
-          setSuccessMessage(t('wrap-eth-success', { value }))
+          setSuccessMessage(t('wrap-eth-success', { nativeTokenSymbol, value }))
           setValue('')
         })
         .then(() =>
@@ -118,8 +120,8 @@ const WrapUnwrapEth = function () {
     })
   }
 
-  const destinyToken = isWrapping ? 'WETH' : 'ETH'
-  const originToken = isWrapping ? 'ETH' : 'WETH'
+  const destinyToken = isWrapping ? 'WETH' : nativeTokenSymbol
+  const originToken = isWrapping ? nativeTokenSymbol : 'WETH'
   const canWrap = Big(ethBalance ? ethBalance : '0').gt(valueInWei)
   const canUnwrap = Big(wEthBalance ? wEthBalance : '-1').gte(valueInWei)
 
@@ -129,7 +131,7 @@ const WrapUnwrapEth = function () {
   const wrapCaption = {
     balance: ethBalance,
     isLoading: isLoadingEthBalance,
-    symbol: 'ETH'
+    symbol: nativeTokenSymbol
   }
   const unwrapCaption = {
     balance: wEthBalance,
@@ -139,18 +141,18 @@ const WrapUnwrapEth = function () {
 
   return (
     <Layout walletConnection>
-      <UtilFormBox title={t('wrap-unwrap-eth')}>
+      <UtilFormBox title={t('wrap-unwrap-eth', { nativeTokenSymbol })}>
         <form className="mx-auto w-full max-w-lg" onSubmit={handleSubmit}>
           <Tabs
             className="mb-6"
             items={[
               {
-                label: t('wrap'),
+                label: t('wrap', { nativeTokenSymbol }),
                 onClick: () => setOperation(Operation.Wrap),
                 selected: isWrapDisabled
               },
               {
-                label: t('unwrap'),
+                label: t('unwrap', { nativeTokenSymbol }),
                 onClick: () => setOperation(Operation.Unwrap),
                 selected: isUnwrapDisabled
               }
@@ -190,7 +192,9 @@ const WrapUnwrapEth = function () {
               (operation === Operation.Unwrap && !canUnwrap)
             }
           >
-            {t(operation === Operation.Wrap ? 'wrap' : 'unwrap')}
+            {t(operation === Operation.Wrap ? 'wrap' : 'unwrap', {
+              nativeTokenSymbol
+            })}
           </Button>
         </form>
         {!!errorMessage && (

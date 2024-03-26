@@ -1,0 +1,42 @@
+[
+  {
+    "chainId": 43111,
+    "eip1559": true,
+    "explorer": {
+      "name": "Hemi explorer",
+      "url": "https://testnet.explorer.hemi.network"
+    },
+    "decimals": 18,
+    "gasOverestimation": 1.5,
+    "name": "Hemi",
+    "nativeTokenSymbol": "hETH",
+    "rpcUrls": ["https://rpc.hemi.network/rpc"],
+    "shortName": "hemi",
+    "standardName": "Hemi",
+    "supportedConnectors": ["injected", "walletconnect", "walletlink"],
+    "wrappedToken": {
+      "address": "",
+      "symbol": "WETH"
+    }
+  },
+  {
+    "chainId": 743111,
+    "eip1559": true,
+    "explorer": {
+      "name": "Hemi Sepolia explorer",
+      "url": "https://testnet.explorer.hemi.network"
+    },
+    "decimals": 18,
+    "gasOverestimation": 1.5,
+    "name": "Hemi Sepolia",
+    "nativeTokenSymbol": "thETH",
+    "rpcUrls": ["https://testnet.rpc.hemi.network/rpc"],
+    "shortName": "sepolia",
+    "standardName": "Hemi Sepolia",
+    "supportedConnectors": ["injected", "walletconnect", "walletlink"],
+    "wrappedToken": {
+      "address": "0x0C8aFD1b58aa2A5bAd2414B861D8A7fF898eDC3A",
+      "symbol": "WETH"
+    }
+  }
+]

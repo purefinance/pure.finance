@@ -26,7 +26,7 @@ const getTokenListByChain = memoize(chainId =>
 )
 
 const findTokenByAddress = memoize(
-  function (_address, chainId = 1) {
+  function (_address, chainId = 743111) {
     const tokenlist = getTokenListByChain(chainId)
     return tokenlist.find(
       ({ address }) => address.toLowerCase() === _address.toLowerCase()
@@ -36,7 +36,7 @@ const findTokenByAddress = memoize(
 )
 
 const findTokenBySymbol = memoize(
-  function (_symbol, chainId = 1) {
+  function (_symbol, chainId = 743111) {
     const tokenlist = getTokenListByChain(chainId)
     return tokenlist.find(({ symbol }) => symbol === _symbol)
   },
