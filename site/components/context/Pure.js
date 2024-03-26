@@ -4,7 +4,7 @@ import { merkle as createMerkle } from 'pure-finance-lib'
 import createTokenApprovals from 'pure-finance-lib/src/token-approvals'
 import { createContext, useEffect, useState } from 'react'
 
-import utilsConfig from '../../utils/utilsConfig'
+import utilsConfig from '../../utils/utilsConfig.json'
 
 /**
  * This component must be a child of <App> to have access to the appropriate
@@ -14,7 +14,7 @@ import utilsConfig from '../../utils/utilsConfig'
 const PureContext = createContext()
 
 export const PureContextProvider = function ({ children }) {
-  const { active, library, account } = useWeb3React()
+  const { active, library, account, chainId } = useWeb3React()
   const [merkle, setMerkle] = useState({})
   const [tokenApprovals, setTokenApprovals] = useState(null)
   const [erc20, setErc20] = useState()
@@ -23,7 +23,10 @@ export const PureContextProvider = function ({ children }) {
     function () {
       if (active) {
         setMerkle(
-          createMerkle(library, { from: account, ...utilsConfig.merkleClaim })
+          createMerkle(library, {
+            from: account,
+            ...utilsConfig[chainId].merkleClaim
+          })
         )
         setTokenApprovals(createTokenApprovals(library, { from: account }))
         setErc20(
@@ -31,7 +34,7 @@ export const PureContextProvider = function ({ children }) {
         )
       }
     },
-    [active, library, account]
+    [active, library, account, chainId]
   )
 
   return (

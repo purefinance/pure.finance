@@ -9,7 +9,6 @@ import { isAddress } from 'web3-utils'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import EndTime from '../../components/payment-streams/EndTime'
-import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
 import { useStreams } from '../../hooks/useStreams'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { useRouter } from '../../navigation'
@@ -17,6 +16,8 @@ import { fromUnit, toUnit } from '../../utils'
 import fetchJson from '../../utils/fetch-json'
 import * as timeUtils from '../../utils/time'
 import TransactionsContext from '../context/Transactions'
+
+import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 

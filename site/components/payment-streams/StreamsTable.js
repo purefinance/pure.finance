@@ -14,7 +14,7 @@ import { EtherscanLink } from '../EtherscanLink'
 import SvgContainer from '../svg/SvgContainer'
 import Tabs from '../Tabs'
 
-import PaymentStreamsLibContext from './PaymentStreamsLib'
+import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const StreamsTable = function () {
   const { active, account } = useWeb3React()

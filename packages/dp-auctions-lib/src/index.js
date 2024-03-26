@@ -9,7 +9,6 @@ const pTap = require('p-tap').default
 const { findToken } = require('./token-list')
 const dpaAbi = require('./abi.json')
 
-const DEFAULT_DPA_ADDRESS = '0x164D41ceB60489D2e054394Fc05ED1894Db3898a' // Chain ID 1
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const UNLIMITED = (2n ** 256n - 1n).toString()
@@ -19,7 +18,10 @@ const createDPAuctionsLib = function (web3, options = {}) {
 
   debug('Creating Descending Price Auction helper library')
 
-  const dpaAddress = options.address || DEFAULT_DPA_ADDRESS
+  const dpaAddress = options.address
+  if (!dpaAddress) {
+    throw new Error('No DP Auctions contract address was provided')
+  }
   const dpa = new web3.eth.Contract(dpaAbi, dpaAddress)
   const router = getRouterContract(web3) // This only works for chainId 1
 

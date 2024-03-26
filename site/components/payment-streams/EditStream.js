@@ -15,7 +15,7 @@ import TransactionsContext from '../context/Transactions'
 import Input from '../Input'
 
 import EndTime from './EndTime'
-import PaymentStreamsLibContext from './PaymentStreamsLib'
+import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 

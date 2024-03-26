@@ -84,6 +84,7 @@ Before submitting an enhancement suggestion, check if there is already a filed o
 First of all, you can validate it with the community, our official channels are:
 
 - [Discord](https://discord.gg/hemixyz)
+- [Twitter](https://twitter.com/hemi_xyz)
 
 How Do I Submit A (Good) Enhancement Suggestion?
 
@@ -122,7 +123,7 @@ While the prerequisites above must be satisfied prior to having your pull reques
 
 ### 6. Translating guide
 
-We are happy to have people volunteer to translate the App. Just follow the steps as described [in our wiki](https://github.com/hemilabs/pure.finance/wiki).
+We are happy to have people volunteer to translate the App. Just follow the steps as described [in our wiki](https://github.com/purefinance/pure.finance/wiki).
 
 ### 7. Issue and Pull Request Labels
 

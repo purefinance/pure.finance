@@ -1,7 +1,7 @@
 import { MemoizedFunction } from 'lodash'
 
-export type ChainId = 1 | 137 | 43114
-type DevelopmentChainId = 1337 | 31337
+export type ChainId = 1 | 137 | 43114 | 43111
+type DevelopmentChainId = 1337 | 31337 | 743111
 export type AnyChainId = number
 type Address = string
 

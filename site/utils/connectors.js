@@ -4,7 +4,7 @@ import { WalletLinkConnector } from '@web3-react/walletlink-connector'
 const environment = process.env.NEXT_PUBLIC_ENVIRONMENT
 const nodeUrl = process.env.NEXT_PUBLIC_NODE_URL
 export const injected = new InjectedConnector({
-  supportedChainIds: [1, 137, 1337, 31337, 43114, 743111]
+  supportedChainIds: [43111, 743111]
 })
 
 export const walletlink = new WalletLinkConnector({
