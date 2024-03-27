@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 import shortAccount from '../utils/account'
-import { injected, walletconnect, walletlink } from '../utils/connectors'
+import { injected, walletlink } from '../utils/connectors'
 
 import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'
@@ -37,10 +37,7 @@ const Wallet = function () {
 
   useEffect(
     function () {
-      const lastConnector = getLastConnector()
       setErrorModalOpen(true)
-      if (error && lastConnector === 'walletconnect')
-        walletconnect.walletConnectProvider = undefined
       if (error) removeLastConnector()
     },
     [error]
@@ -48,25 +45,26 @@ const Wallet = function () {
 
   const [tried, setTried] = useState(false)
 
-  useEffect(function () {
-    const lastConnector = getLastConnector()
-    if (lastConnector === 'injected') {
-      injected
-        .isAuthorized()
-        .then(function (isAuthorized) {
-          if (isAuthorized) {
-            activate(injected, setError)
-          }
-        })
-        .catch(function () {
-          setTried(true)
-        })
-    } else if (lastConnector === 'walletconnect') {
-      activate(walletconnect, setError)
-    } else if (lastConnector === 'walletlink') {
-      activate(walletlink, setError)
-    }
-  }, [])
+  useEffect(
+    function () {
+      const lastConnector = getLastConnector()
+      if (lastConnector === 'injected') {
+        injected
+          .isAuthorized()
+          .then(function (isAuthorized) {
+            if (isAuthorized) {
+              activate(injected, setError)
+            }
+          })
+          .catch(function () {
+            setTried(true)
+          })
+      } else if (lastConnector === 'walletlink') {
+        activate(walletlink, setError)
+      }
+    },
+    [activate, setError]
+  )
 
   useEffect(
     function () {
@@ -77,23 +75,26 @@ const Wallet = function () {
     [tried, active]
   )
 
-  useEffect(function () {
-    const { ethereum } = window
-    if (ethereum && ethereum.on && !active && !error) {
-      const handleChainChanged = function () {
-        activate(injected)
-      }
+  useEffect(
+    function () {
+      const { ethereum } = window
+      if (ethereum && ethereum.on && !active && !error) {
+        const handleChainChanged = function () {
+          activate(injected)
+        }
 
-      ethereum.on('chainChanged', handleChainChanged)
+        ethereum.on('chainChanged', handleChainChanged)
 
-      return function () {
-        if (ethereum.removeListener) {
-          ethereum.removeListener('chainChanged', handleChainChanged)
+        return function () {
+          if (ethereum.removeListener) {
+            ethereum.removeListener('chainChanged', handleChainChanged)
+          }
         }
       }
-    }
-    return undefined
-  }, [])
+      return undefined
+    },
+    [activate, active, error]
+  )
 
   const wallets = [
     {
@@ -109,20 +110,6 @@ const Wallet = function () {
         removeLastConnector()
       },
       name: 'Metamask'
-    },
-    {
-      connector: walletconnect,
-      handleConnection() {
-        setActivatingConnector(walletconnect)
-        activate(walletconnect, setError)
-        persistLastConnector('walletconnect')
-        setShowWalletConnector(false)
-      },
-      handleDisconnection() {
-        connector.close()
-        removeLastConnector()
-      },
-      name: 'WalletConnect'
     },
     {
       connector: walletlink,

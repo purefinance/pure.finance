@@ -3,7 +3,6 @@ import {
   NoEthereumProviderError,
   UserRejectedRequestError as UserRejectedRequestErrorInjected
 } from '@web3-react/injected-connector'
-import { UserRejectedRequestError as UserRejectedRequestErrorWalletConnect } from '@web3-react/walletconnect-connector'
 import { useTranslations } from 'next-intl'
 
 import Modal from './Modal'
@@ -13,10 +12,7 @@ const getErrorKey = function (error) {
     return 'error-no-ethereum-provider'
   } else if (error instanceof UnsupportedChainIdError) {
     return 'error-unsupported-network'
-  } else if (
-    error instanceof UserRejectedRequestErrorInjected ||
-    error instanceof UserRejectedRequestErrorWalletConnect
-  ) {
+  } else if (error instanceof UserRejectedRequestErrorInjected) {
     return 'error-rejected-wallet-connection'
   }
   console.error(error)
