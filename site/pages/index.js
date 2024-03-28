@@ -1,12 +1,15 @@
-import Layout from '../components/Layout'
-import Utilities from '../components/Utilities'
+import { useRedirectToDefaultLocale } from '../hooks/useRedirectToDefaultLocale'
+import { defaultLocale, locales } from '../navigation'
 
-const HomePage = () => (
-  <Layout>
-    <div className="mb-14 w-full">
-      <Utilities />
-    </div>
-  </Layout>
-)
+const HomePage = () => {
+  useRedirectToDefaultLocale({
+    defaultLocale,
+    locales,
+    redirectPage: '/'
+  })
 
+  return null
+}
+
+export { getStaticProps } from '../utils/staticProps'
 export default HomePage

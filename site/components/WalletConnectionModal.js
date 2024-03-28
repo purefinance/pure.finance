@@ -1,5 +1,6 @@
+import { useTranslations } from 'next-intl'
+
 import Modal from './Modal'
-import useTranslation from 'next-translate/useTranslation'
 import SvgContainer from './svg/SvgContainer'
 
 const WalletConnectionModal = function ({
@@ -7,7 +8,7 @@ const WalletConnectionModal = function ({
   onRequestClose,
   wallets
 }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   return (
     <Modal
       className="bg-white rounded-md"

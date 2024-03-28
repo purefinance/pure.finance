@@ -1,18 +1,18 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useWeb3React } from '@web3-react/core'
 import debounce from 'lodash.debounce'
 import { useRouter } from 'next/router'
-import useTranslation from 'next-translate/useTranslation'
-import { useWeb3React } from '@web3-react/core'
+import { useTranslations } from 'next-intl'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import watchAsset from 'wallet-watch-asset'
 
-import { fromUnit, toFixed } from '../utils'
-import Button from '../components/Button'
-import Input from '../components/Input'
-import Layout from '../components/Layout'
-import PureContext from '../components/context/Pure'
+import Button from '../../components/Button'
+import PureContext from '../../components/context/Pure'
+import Input from '../../components/Input'
+import Layout from '../../components/Layout'
+import { fromUnit, toFixed } from '../../utils'
 
 function MerkleClaims() {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const { active, account } = useWeb3React()
   const { query } = useRouter()
   const [claimID, setClaimID] = useState('')
@@ -121,4 +121,5 @@ function MerkleClaims() {
   )
 }
 
+export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
 export default MerkleClaims

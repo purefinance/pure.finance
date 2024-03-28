@@ -1,21 +1,23 @@
-import Link from 'next/link'
-import Big from 'big.js'
 import { useWeb3React } from '@web3-react/core'
-import useTranslation from 'next-translate/useTranslation'
+import Big from 'big.js'
+import { useTranslations } from 'next-intl'
 import { useContext, useEffect, useState } from 'react'
-import { useStreams } from '../../hooks/useStreams'
-import { bigToCrypto, fromUnit } from '../../utils'
-import { updateStreamInfo } from '../../utils/streams'
+
 import Button from '../../components/Button'
 import WithTooltip from '../../components/WithTooltip'
-import { EtherscanLink } from '../../components/EtherscanLink'
-import SvgContainer from '../svg/SvgContainer'
-import PaymentStreamsLibContext from './PaymentStreamsLib'
+import { useStreams } from '../../hooks/useStreams'
+import { Link } from '../../navigation'
+import { bigToCrypto, fromUnit } from '../../utils'
+import { updateStreamInfo } from '../../utils/streams'
 import TransactionsContext from '../context/Transactions'
+import { EtherscanLink } from '../EtherscanLink'
+import SvgContainer from '../svg/SvgContainer'
+
+import PaymentStreamsLibContext from './PaymentStreamsLib'
 
 const StreamsTable = function () {
   const { active, account } = useWeb3React()
-  const { t } = useTranslation('payment-streams')
+  const t = useTranslations('payment-streams-util')
   const connected = !!(active && account)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus, currentTransactions } =
@@ -57,8 +59,8 @@ const StreamsTable = function () {
         ...lastTransactionStatus,
         received: [
           {
-            value: newClaimableValue,
-            symbol: claimingStream.token.symbol
+            symbol: claimingStream.token.symbol,
+            value: newClaimableValue
           }
         ]
       })
@@ -130,9 +132,9 @@ const StreamsTable = function () {
         })
         // eslint-disable-next-line promise/catch-or-return
         updateStreamInfo({
+          account,
           id,
           lib: paymentStreamsLib,
-          account,
           streamsView
         }).then(() => mutate())
       })
@@ -186,9 +188,9 @@ const StreamsTable = function () {
         })
         // eslint-disable-next-line promise/catch-or-return
         updateStreamInfo({
+          account,
           id,
           lib: paymentStreamsLib,
-          account,
           streamsView
         }).then(() => mutate())
       })
@@ -217,10 +219,10 @@ const StreamsTable = function () {
           opId: now,
           received: [
             {
+              symbol: stream.token.symbol,
               value: bigToCrypto(
                 fromUnit(stream.tokenClaimable, stream.token.decimals)
-              ),
-              symbol: stream.token.symbol
+              )
             }
           ],
           suffixes: transactions.suffixes,
@@ -252,23 +254,23 @@ const StreamsTable = function () {
         addTransactionStatus({
           actualFee: fromUnit(fees),
           opId: now,
-          transactionStatus: status ? 'confirmed' : 'canceled',
           received: status
             ? [
                 {
+                  symbol: stream.token.symbol,
                   value: bigToCrypto(
                     fromUnit(result.tokenAmount, stream.token.decimals)
-                  ),
-                  symbol: stream.token.symbol
+                  )
                 }
               ]
-            : []
+            : [],
+          transactionStatus: status ? 'confirmed' : 'canceled'
         })
         // eslint-disable-next-line promise/catch-or-return
         updateStreamInfo({
+          account,
           id,
           lib: paymentStreamsLib,
-          account,
           streamsView
         }).then(() => mutate())
       })
@@ -305,14 +307,8 @@ const StreamsTable = function () {
 
   return (
     <section>
-      <Link
-        as="/payment-streams/new"
-        disabled={!connected}
-        href="/payment-streams?view=create"
-      >
-        <a>
-          <Button disabled={!connected}>{t('create-stream')}</Button>
-        </a>
+      <Link disabled={!connected} href="/payment-streams/new">
+        <Button disabled={!connected}>{t('create-stream')}</Button>
       </Link>
       <div className="flex justify-center my-7 w-full">
         <button
@@ -378,11 +374,11 @@ const StreamsTable = function () {
               )
               const now = new Date().getTime()
               const dateFormatter = new Intl.DateTimeFormat('default', {
-                month: 'numeric',
                 day: 'numeric',
-                year: 'numeric',
                 hour: 'numeric',
-                minute: 'numeric'
+                minute: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
               })
               const futureValue = futureStreamValues?.[streamsView]?.find(
                 futureStream => futureStream.id === id
@@ -448,19 +444,14 @@ const StreamsTable = function () {
                             {t('pause')}
                           </Button>
                         )}
-                        <Link
-                          as={`/payment-streams/edit/${id}`}
-                          href={`/payment-streams?view=edit&streamId=${id}`}
-                        >
-                          <a>
-                            <Button
-                              className="m-1"
-                              disabled={isFinished}
-                              width="w-28"
-                            >
-                              {t('edit')}
-                            </Button>
-                          </a>
+                        <Link href={`/payment-streams/edit?id=${id}`}>
+                          <Button
+                            className="m-1"
+                            disabled={isFinished}
+                            width="w-28"
+                          >
+                            {t('edit')}
+                          </Button>
                         </Link>
                       </>
                     )}

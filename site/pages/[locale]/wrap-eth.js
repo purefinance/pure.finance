@@ -1,16 +1,18 @@
-import { useContext, useEffect, useState } from 'react'
-import Big from 'big.js'
-import { tokens } from '@uniswap/default-token-list'
-import useTranslation from 'next-translate/useTranslation'
+import tokenList from '@uniswap/default-token-list'
 import { useWeb3React } from '@web3-react/core'
+import Big from 'big.js'
+import { useTranslations } from 'next-intl'
+import { useContext, useEffect, useState } from 'react'
 import watchAsset from 'wallet-watch-asset'
 
-import { fromUnit, sweepDust, toFixed, toUnit } from '../utils'
-import Button from '../components/Button'
-import Input from '../components/Input'
-import Layout from '../components/Layout'
-import PureContext from '../components/context/Pure'
-import { useBalance } from '../hooks/useBalance'
+import Button from '../../components/Button'
+import PureContext from '../../components/context/Pure'
+import Input from '../../components/Input'
+import Layout from '../../components/Layout'
+import { useBalance } from '../../hooks/useBalance'
+import { fromUnit, sweepDust, toFixed, toUnit } from '../../utils'
+
+const { tokens } = tokenList
 
 const Operation = {
   Wrap: 1,
@@ -50,7 +52,7 @@ const WrapUnwrapEth = function () {
     mutate: reloadWethBalance
   } = useBalance({ symbol: 'WETH' })
   const [value, setValue] = useState('')
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
@@ -128,13 +130,13 @@ const WrapUnwrapEth = function () {
 
   const wrapCaption = {
     balance: ethBalance,
-    symbol: 'ETH',
-    isLoading: isLoadingEthBalance
+    isLoading: isLoadingEthBalance,
+    symbol: 'ETH'
   }
   const unwrapCaption = {
     balance: wEthBalance,
-    symbol: 'WETH',
-    isLoading: isLoadingWethBalance
+    isLoading: isLoadingWethBalance,
+    symbol: 'WETH'
   }
 
   return (
@@ -213,5 +215,5 @@ const WrapUnwrapEth = function () {
   )
 }
 
-export const getStaticProps = () => ({})
+export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
 export default WrapUnwrapEth

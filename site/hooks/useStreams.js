@@ -2,6 +2,7 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
+
 import PaymentStreamsLibContext from '../components/payment-streams/PaymentStreamsLib'
 import { getSavedStreamsInfo, saveStreamsInfo } from '../utils/streams'
 
@@ -52,12 +53,12 @@ export const useStreams = function () {
 
   const { data, error, mutate } = useSWR(
     active ? [`${account}-streams`, library] : null,
-    (_, library) => getStreams(library, account).catch(console.error),
+    ([, library]) => getStreams(library, account).catch(console.error),
     {
-      refreshInterval: ETH_BLOCK_TIME * 1000,
       onSuccess() {
         setSecondsPast(1)
-      }
+      },
+      refreshInterval: ETH_BLOCK_TIME * 1000
     }
   )
 
@@ -76,8 +77,8 @@ export const useStreams = function () {
           tokenClaimable,
           ...stream
         }) => ({
-          usdPerSec,
           tokenPerSec,
+          usdPerSec,
           ...stream,
           claimable: Big(claimable).plus(Big(usdPerSec).times(secondsPast)),
           tokenClaimable: Big(tokenClaimable).plus(
@@ -96,10 +97,10 @@ export const useStreams = function () {
   )
 
   return {
-    streams: data,
-    futureStreamValues,
-    mutate,
     error,
-    isLoading
+    futureStreamValues,
+    isLoading,
+    mutate,
+    streams: data
   }
 }

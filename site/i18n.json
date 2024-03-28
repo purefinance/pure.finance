@@ -1,8 +1,0 @@
-{
-  "locales": ["en", "zh"],
-  "defaultLocale": "en",
-  "pages": {
-    "*": ["common"],
-    "/payment-streams": ["payment-streams"]
-  }
-}

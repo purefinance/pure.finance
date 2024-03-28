@@ -1,5 +1,6 @@
 'use strict'
 
+const Big = require('big.js').default
 const createErc20 = require('erc-20-lib')
 const createMerkleBox = require('merkle-box-lib')
 const debug = require('debug')('purefi:merkle-claims')
@@ -9,6 +10,9 @@ const parseCookieString = require('../lib/parse-cookie')
 const tryParseEvmError = require('../lib/parse-evm-error')
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+const fromUnit = (number, decimals = 18) =>
+  new Big(`${number}e-${decimals}`).toFixed()
 
 const getClaimData = function (uri, account) {
   debug('Getting claim data from %s', uri)
@@ -35,8 +39,6 @@ const createMerkleClaims = function (web3, options) {
       .getHolding(claimGroupId)
       .then(function (holding) {
         const { balance, erc20, memo, owner, withdrawUnlockTime } = holding
-        debug('Holding has %s', balance)
-        debug('Withdraw time is %s', withdrawUnlockTime)
         if (owner === ZERO_ADDRESS) {
           throw new Error('Invalid claim group ID')
         }
@@ -45,11 +47,22 @@ const createMerkleClaims = function (web3, options) {
           throw new Error('Could not get balance location')
         }
         return Promise.all([
+          balance,
+          withdrawUnlockTime,
           createErc20(web3, erc20).getInfo(),
           getClaimData(uri, from).catch(() => null)
         ])
       })
-      .then(function ([token, claimData]) {
+      .then(function ([balance, withdrawUnlockTime, token, claimData]) {
+        debug(
+          'Holding has %s %s',
+          fromUnit(balance, token.decimals),
+          token.symbol
+        )
+        debug(
+          'Withdraw time is %s',
+          new Date(withdrawUnlockTime * 1000).toISOString()
+        )
         if (!claimData) {
           throw new Error('No balance for this account')
         }

@@ -1,14 +1,15 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
 import { useWeb3React } from '@web3-react/core'
-import { isAddress, isHexStrict } from 'web3-utils'
 import { util } from 'erc-20-lib'
 import debounce from 'lodash.debounce'
-import PureContext from '../components/context/Pure'
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import vesperTokens from 'vesper-metadata/src/vesper.tokenlist.json'
+import { isAddress, isHexStrict } from 'web3-utils'
+
+import PureContext from '../components/context/Pure'
 
 const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const { active, chainId, library } = useWeb3React()
   const { erc20 } = useContext(PureContext)
 

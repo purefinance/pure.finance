@@ -67,7 +67,7 @@ const createEstimateGasAndSend = (web3, emitter, overestimation = 1.25) =>
         // Send the transaction
         debug(
           'Sending transaction to %s',
-          transactionOptions.to || method._parent.options.address
+          transactionOptions.to || method._parent?.options.address || 'contract'
         )
         const promiEvent = method.send({ ...transactionOptions, gas })
 

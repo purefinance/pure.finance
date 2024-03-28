@@ -12,7 +12,7 @@ const createPaymentStreams = require('..')
 const pTap = require('p-tap')
 
 // Some useful token addresses
-const vspAddr = '0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421' // VSP:1
+const usdcAddr = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' // USDC:1
 
 // Receipt check helper
 const checkSuccess = function (objWithStatus) {
@@ -82,7 +82,7 @@ describe('Payment Streams', function () {
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
 
     return ps
-      .createStream(acc[1], usdAmount, vspAddr, endTime, { from })
+      .createStream(acc[1], usdAmount, usdcAddr, endTime, { from })
       .promise.then(checkSuccess)
       .then(function ({ result }) {
         result.should.have.a
@@ -96,14 +96,14 @@ describe('Payment Streams', function () {
       })
   })
 
-  it('shoud list created streams', function () {
+  it('should list created streams', function () {
     const usdAmount = '100000000000000000000' // 100 USD
     const endTime = Math.round(Date.now() / 1000) + 3600 // Now + 1h
 
     return Promise.all([
-      ps.createStream(acc[3], usdAmount, vspAddr, endTime, { from: acc[2] })
+      ps.createStream(acc[3], usdAmount, usdcAddr, endTime, { from: acc[2] })
         .promise,
-      ps.createStream(acc[4], usdAmount, vspAddr, endTime, { from: acc[3] })
+      ps.createStream(acc[4], usdAmount, usdcAddr, endTime, { from: acc[3] })
         .promise
     ])
       .then(ops => ops.map(checkSuccess))
@@ -132,12 +132,12 @@ describe('Payment Streams', function () {
     const usdAmount = '100000000000000000000' // 100 USD
     const endTime = Math.round(Date.now() / 1000) + 300 // Now + 5m
 
-    return createErc20(web3, vspAddr, { from: alice })
+    return createErc20(web3, usdcAddr, { from: alice })
       .swapEther(ethAmount)
       .then(checkSuccess)
       .then(
         () =>
-          ps.createStream(bob, usdAmount, vspAddr, endTime, {
+          ps.createStream(bob, usdAmount, usdcAddr, endTime, {
             from: alice
           }).promise
       )

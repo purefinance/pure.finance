@@ -1,10 +1,10 @@
+import { useWeb3React } from '@web3-react/core'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import React from 'react'
-import useTranslation from 'next-translate/useTranslation'
-import { useWeb3React } from '@web3-react/core'
 
-import Button from '../components/Button'
-import Layout from '../components/Layout'
+import Button from '../../components/Button'
+import Layout from '../../components/Layout'
 
 const useFeedback = function () {
   const { account, active } = useWeb3React()
@@ -32,7 +32,7 @@ const useFeedback = function () {
 
 const SignMessageForm = function () {
   const { active, account, library: web3 } = useWeb3React()
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   const [message, setMessage] = useState('')
   const [signature, setSignature] = useState()
@@ -78,7 +78,7 @@ const SignMessageForm = function () {
       </div>
       {signature && (
         <div className="flex-wrap mt-6 w-full text-center text-sm">
-          Signature:
+          {t('signature')}:
           <br />
           {signature}
         </div>
@@ -109,7 +109,7 @@ const SignMessageForm = function () {
 }
 
 const SignMessage = function () {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   return (
     <Layout title={t('sign-message')} walletConnection>
       <SignMessageForm />
@@ -117,5 +117,5 @@ const SignMessage = function () {
   )
 }
 
-export const getStaticProps = () => ({})
+export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
 export default SignMessage

@@ -1,4 +1,5 @@
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
+
 import { daysToSeconds, hoursToSeconds, yearsToSeconds } from '../../utils/time'
 const EndTime = function ({
   onYearsChange,
@@ -8,17 +9,17 @@ const EndTime = function ({
   days,
   hours
 }) {
-  const { t } = useTranslation('payment-streams')
+  const t = useTranslations('payment-streams-util')
   const now = new Date().getTime()
   const deltaDate =
     (hoursToSeconds(hours) + daysToSeconds(days) + yearsToSeconds(years)) * 1000
   const endDate = new Date(now + deltaDate)
   const dateFormatter = new Intl.DateTimeFormat('default', {
-    month: 'numeric',
     day: 'numeric',
-    year: 'numeric',
     hour: 'numeric',
-    minute: 'numeric'
+    minute: 'numeric',
+    month: 'numeric',
+    year: 'numeric'
   })
   return (
     <fieldset className="my-2">
@@ -28,7 +29,9 @@ const EndTime = function ({
         value={years}
       >
         {[...Array(11).keys()].map(year => (
-          <option key={year} value={year}>{`${year} years`}</option>
+          <option key={year} value={year}>
+            {t('count-years', { count: year })}
+          </option>
         ))}
       </select>
       <select
@@ -36,7 +39,9 @@ const EndTime = function ({
         value={days}
       >
         {[...Array(365).keys()].map(day => (
-          <option key={day} value={day}>{`${day} days`}</option>
+          <option key={day} value={day}>
+            {t('count-days', { count: day })}
+          </option>
         ))}
       </select>
       <select
@@ -44,7 +49,9 @@ const EndTime = function ({
         value={hours}
       >
         {[...Array(24).keys()].map(hour => (
-          <option key={hour} value={hour}>{`${hour} hours`}</option>
+          <option key={hour} value={hour}>
+            {t('count-hours', { count: hour })}
+          </option>
         ))}
       </select>
       <p className={deltaDate === 0 ? 'invisible' : ''}>
