@@ -3,7 +3,9 @@
 .env*.local
 !site/.env
 .eslintcache
+.idea
 .nyc_output
+.vscode
 node_modules
 packages/**/coverage
 packages/**/dataset*.json
