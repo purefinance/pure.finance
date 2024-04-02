@@ -7,6 +7,7 @@ import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
 import Layout from '../../components/Layout'
+import UtilFormBox from '../../components/UtilFormBox'
 import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
@@ -151,42 +152,34 @@ const TokenApprovalsForm = function () {
   )
 
   return (
-    <>
-      <div className="flex flex-wrap justify-center mt-10 mx-auto w-full max-w-lg space-y-4">
-        <div className="w-full h-24">
-          <Input
-            placeholder={t('token-address-placeholder')}
-            title={`${t('token-address')}:`}
-            {...tokenInput}
-          />
-        </div>
-        <div className="w-full h-24">
-          <Input
-            placeholder={t('spender-address-placeholder')}
-            title={`${t('spender-address')}:`}
-            {...spenderInput}
-          />
-        </div>
-        <Input
-          suffix={token && token.symbol}
-          title={`${t('allowance')}:`}
-          {...allowanceInput}
-        />
-      </div>
-      <div className="mt-7.5 flex justify-center">
-        <Button {...approveButton}>
-          {t('approve-allowance').toUpperCase()}
-        </Button>
-      </div>
-      <div className="mt-7.5 flex justify-center">
-        <Button {...infiniteButton}>
-          {t('approve-infinite').toUpperCase()}
-        </Button>
-      </div>
-      <p className={`text-center text-sm mt-6 ${feedback.color}`}>
-        {feedback.message}
-      </p>
-    </>
+    <UtilFormBox title={t('token-approvals')}>
+      <Input
+        placeholder={t('token-address-placeholder')}
+        title={t('token-address')}
+        {...tokenInput}
+      />
+      <Input
+        placeholder={t('spender-address-placeholder')}
+        title={t('spender-address')}
+        {...spenderInput}
+      />
+      <Input
+        className="mb-8"
+        suffix={token && token.symbol}
+        title={t('allowance')}
+        {...allowanceInput}
+      />
+      <Button {...approveButton} className="mb-4">
+        {t('approve-allowance')}
+      </Button>
+
+      <Button {...infiniteButton}>{t('approve-infinite')}</Button>
+      {feedback.message && (
+        <p className={`text-center text-sm mt-6 ${feedback.color}`}>
+          {feedback.message}
+        </p>
+      )}
+    </UtilFormBox>
   )
 }
 

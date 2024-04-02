@@ -7,15 +7,13 @@ import { VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory'
 import watchAsset from 'wallet-watch-asset'
 
 import Button from '../../../../components/Button'
-import TransactionsContext, {
-  TransactionsContextProvider
-} from '../../../../components/context/Transactions'
+import TransactionsContext from '../../../../components/context/Transactions'
+import { DPAuctionsContext } from '../../../../components/DPAuctionsContext'
+import DPAuctionsLayout from '../../../../components/DPAuctionsLayout'
 import { EtherscanLink } from '../../../../components/EtherscanLink'
-import Layout from '../../../../components/Layout'
 import TokenAmount from '../../../../components/TokenAmount'
 import Transactions from '../../../../components/Transactions'
 import { fromUnit } from '../../../../utils'
-import dpa from '../../../../utils/dp-auctions'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -228,6 +226,7 @@ const DPAuctionBuyControl = function ({ auction }) {
   const t = useTranslations()
   const { account, active } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionsContext)
+  const dpa = useContext(DPAuctionsContext)
 
   const [canBid, setCanBid] = useState(false)
   useEffect(
@@ -245,7 +244,7 @@ const DPAuctionBuyControl = function ({ auction }) {
         })
         .then(setCanBid)
     },
-    [account, auction, active]
+    [account, auction, active, dpa]
   )
 
   const handleBuyAuctionClick = function () {
@@ -401,6 +400,7 @@ export default function DPAuctionsDetails({ initialData, error }) {
   const {
     query: { id: auctionId = 0 }
   } = useRouter()
+  const dpa = useContext(DPAuctionsContext)
 
   const { data: auction } = useSWR(
     `dp-auctions-${auctionId}`,
@@ -413,24 +413,22 @@ export default function DPAuctionsDetails({ initialData, error }) {
   )
 
   return (
-    <TransactionsContextProvider>
-      <Layout title={t('dp-auctions')} walletConnection>
-        <div className="mt-10 w-full">
-          <div className="mb-1.5 text-gray-600 font-bold">
-            {t('auction')} {auctionId}
-          </div>
-          {auction ? (
-            <DPAuction auction={auction} />
-          ) : (
-            <>
-              <div>{t('error-getting-auction')}:</div>
-              <div>{error}</div>
-            </>
-          )}
+    <DPAuctionsLayout>
+      <div className="mt-10 w-full">
+        <div className="mb-1.5 text-gray-600 font-bold">
+          {t('auction')} {auctionId}
         </div>
-        <Transactions />
-      </Layout>
-    </TransactionsContextProvider>
+        {auction ? (
+          <DPAuction auction={auction} />
+        ) : (
+          <>
+            <div>{t('error-getting-auction')}:</div>
+            <div>{error}</div>
+          </>
+        )}
+      </div>
+      <Transactions />
+    </DPAuctionsLayout>
   )
 }
 

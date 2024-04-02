@@ -1,3 +1,5 @@
+import { useWeb3React } from '@web3-react/core'
+import { findByChainId } from 'chain-list'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 
@@ -29,6 +31,8 @@ const UtilityBox = ({ buttonText, buttonHref }) => (
 
 const Utilities = function () {
   const t = useTranslations()
+  const { chainId } = useWeb3React()
+  const { nativeTokenSymbol = 'hETH' } = findByChainId(chainId)
 
   return (
     <div className="flex flex-wrap justify-center w-full">
@@ -37,14 +41,13 @@ const Utilities = function () {
       </div>
       <UtilityBox buttonHref="/merkle-claims" buttonText={t('merkle-claims')} />
       <UtilityBox
-        buttonHref="/sablier-claims"
-        buttonText={t('sablier-claims')}
-      />
-      <UtilityBox
         buttonHref="/token-approvals"
         buttonText={t('token-approvals')}
       />
-      <UtilityBox buttonHref="/wrap-eth" buttonText={t('wrap-unwrap-eth')} />
+      <UtilityBox
+        buttonHref="/wrap-eth"
+        buttonText={t('wrap-unwrap-eth', { nativeTokenSymbol })}
+      />
       <UtilityBox buttonHref="/token-revokes" buttonText={t('token-revokes')} />
       <UtilityBox buttonHref="/dp-auctions" buttonText={t('dp-auctions')} />
       <UtilityBox

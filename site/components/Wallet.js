@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import shortAccount from '../utils/account'
 import { injected, walletlink } from '../utils/connectors'
 
+import Dropdown from './Dropdown'
+import SvgContainer from './svg/SvgContainer'
 import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'
 const persistLastConnectorKey = 'lastConnector'
@@ -145,29 +147,33 @@ const Wallet = function () {
       />
       {!active ? (
         <button
-          className="hover:text-gray-400 font-semibold focus:outline-none"
+          className="px-4 py-2 text-white text-base font-bold bg-black rounded-xl"
           onClick={() => setShowWalletConnector(true)}
         >
           {t('connect-wallet')}
         </button>
       ) : (
-        <div className="text-center font-semibold md:text-right">
-          <p className="text-gray-400 text-xs">{t('address')}:</p>
-          <div>
-            <div className="font-bold focus:outline-none">
+        <Dropdown
+          Selector={({ isOpen }) => (
+            <div className="pl-4 pr-8 py-2 text-white text-base font-bold bg-black rounded-xl">
               {shortenedAccount}
+              <SvgContainer
+                className={`absolute inline w-6 h-6 fill-current ${
+                  isOpen ? 'transform rotate-180' : ''
+                }`}
+                name="caret"
+              />
             </div>
-          </div>
-          <div>
-            <button
-              className={`text-sm ${!account && 'hidden'}
-              font-semibold focus:outline-none text-gray-400 hover:text-black`}
-              onClick={deactivateConnector}
-            >
-              {t('disconnect')}
-            </button>
-          </div>
-        </div>
+          )}
+          className="text-gray-600 cursor-pointer"
+        >
+          <ul
+            className="absolute z-10 mt-1 p-2 w-40 text-center bg-white rounded-xl shadow-lg"
+            onClick={deactivateConnector}
+          >
+            {t('disconnect')}
+          </ul>
+        </Dropdown>
       )}
     </>
   )

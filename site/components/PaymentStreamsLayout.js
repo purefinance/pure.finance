@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 
 import { TransactionsContextProvider } from './context/Transactions'
 import Layout from './Layout'
-import { PaymentStreamsLibContextProvider } from './payment-streams/PaymentStreamsLib'
+import PaymentStreamsLibContextProvider from './payment-streams/PaymentStreamsLib'
 import Transactions from './Transactions'
 
 function PaymentStreamsLayout({ children }) {
@@ -11,7 +11,7 @@ function PaymentStreamsLayout({ children }) {
     <TransactionsContextProvider>
       <PaymentStreamsLibContextProvider>
         <Layout title={t('payment-streams')} walletConnection>
-          <div className="mt-10 w-full">{children}</div>
+          {children}
         </Layout>
         <Transactions />
       </PaymentStreamsLibContextProvider>

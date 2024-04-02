@@ -2,16 +2,17 @@ import orderBy from 'lodash.orderby'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import useSWR from 'swr'
 
+import { DPAuctionsContext } from '../../../../components/DPAuctionsContext'
+import DPAuctionsLayout from '../../../../components/DPAuctionsLayout'
 import Dropdown from '../../../../components/Dropdown'
-import Layout from '../../../../components/Layout'
 import SvgContainer from '../../../../components/svg/SvgContainer'
 import TokenAmount from '../../../../components/TokenAmount'
+import UtilFormBox from '../../../../components/UtilFormBox'
 import { useUpdatingState } from '../../../../hooks/useUpdatingState'
 import { Link } from '../../../../navigation'
-import dpa from '../../../../utils/dp-auctions'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -141,7 +142,7 @@ const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
         Selector={Selector}
         className="mb-4 w-48 text-gray-600 cursor-pointer"
       >
-        <ul className="absolute z-10 mt-1 w-48 bg-white border-2 shadow-lg">
+        <ul className="absolute z-10 mt-1 p-2 w-40 text-center bg-white rounded-xl shadow-lg">
           {new Array(count).fill(null).map((_, i) =>
             Number.parseInt(collectionId) === i ? (
               <li className={'font-bold'} key={i}>
@@ -175,6 +176,8 @@ export default function DPAuctions({
     query: { id: collectionId = process.env.NEXT_PUBLIC_DEFAULT_COLLECTION_ID }
   } = useRouter()
 
+  const dpa = useContext(DPAuctionsContext)
+
   // The amount of collections is managed by SWR. It is set to revalidate aprox.
   // every block (15 seconds).
   const { data: count } = useSWR(
@@ -204,21 +207,23 @@ export default function DPAuctions({
   )
 
   return (
-    <Layout title={t('dp-auctions')} walletConnection>
-      <div className="mt-10 w-full">
-        <DPAuctionsCollectionSelector
-          collectionId={collectionId}
-          count={count}
-        />
-        {error ? (
-          <div>
-            {t('error-getting-auctions')}: {error}
-          </div>
-        ) : (
-          <DPAuctionsTable auctions={auctions} />
-        )}
-      </div>
-    </Layout>
+    <DPAuctionsLayout>
+      <UtilFormBox className="md:w-200" title={t('dp-auctions')}>
+        <div className="mt-10 w-full">
+          <DPAuctionsCollectionSelector
+            collectionId={collectionId}
+            count={count}
+          />
+          {error ? (
+            <div>
+              {t('error-getting-auctions')}: {error}
+            </div>
+          ) : (
+            <DPAuctionsTable auctions={auctions} />
+          )}
+        </div>
+      </UtilFormBox>
+    </DPAuctionsLayout>
   )
 }
 

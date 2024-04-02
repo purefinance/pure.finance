@@ -1,22 +1,23 @@
-import tokenList from '@uniswap/default-token-list'
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
+import { findByChainId } from 'chain-list'
 import { useTranslations } from 'next-intl'
 import { useContext, useEffect, useState } from 'react'
+import { findTokenBySymbol } from 'token-list'
 import watchAsset from 'wallet-watch-asset'
 
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
 import Layout from '../../components/Layout'
+import Tabs from '../../components/Tabs'
+import UtilFormBox from '../../components/UtilFormBox'
 import { useBalance } from '../../hooks/useBalance'
 import { fromUnit, sweepDust, toFixed, toUnit } from '../../utils'
 
-const { tokens } = tokenList
-
 const Operation = {
-  Wrap: 1,
-  Unwrap: 2
+  Unwrap: 2,
+  Wrap: 1
 }
 
 const useTemporalMessage = function () {
@@ -56,6 +57,7 @@ const WrapUnwrapEth = function () {
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
+  const { nativeTokenSymbol = 'hETH' } = findByChainId(chainId)
 
   const isValidNumber =
     value !== '' &&
@@ -75,15 +77,13 @@ const WrapUnwrapEth = function () {
 
     // Work around chain id issues with Ganache. Then find WETH token info.
     const _chainId = chainId === 1337 ? 1 : chainId
-    const weth = tokens.find(
-      token => token.symbol === 'WETH' && token.chainId === _chainId
-    )
+    const weth = findTokenBySymbol('WETH', _chainId)
 
     if (isWrapping) {
       return erc20Service
         .wrapEther(valueInWei)
-        .then(() => {
-          setSuccessMessage(t('wrap-eth-success', { value }))
+        .then(function () {
+          setSuccessMessage(t('wrap-eth-success', { nativeTokenSymbol, value }))
           setValue('')
         })
         .then(() =>
@@ -98,7 +98,7 @@ const WrapUnwrapEth = function () {
 
     return erc20Service
       .unwrapEther(sweepDust(valueInWei, wEthBalance))
-      .then(() => {
+      .then(function () {
         setSuccessMessage(t('unwrap-weth-success', { value }))
         setValue('')
         return Promise.all([reloadEthBalance(), reloadWethBalance()])
@@ -120,8 +120,8 @@ const WrapUnwrapEth = function () {
     })
   }
 
-  const destinyToken = isWrapping ? 'WETH' : 'ETH'
-  const originToken = isWrapping ? 'ETH' : 'WETH'
+  const destinyToken = isWrapping ? 'WETH' : nativeTokenSymbol
+  const originToken = isWrapping ? nativeTokenSymbol : 'WETH'
   const canWrap = Big(ethBalance ? ethBalance : '0').gt(valueInWei)
   const canUnwrap = Big(wEthBalance ? wEthBalance : '-1').gte(valueInWei)
 
@@ -131,7 +131,7 @@ const WrapUnwrapEth = function () {
   const wrapCaption = {
     balance: ethBalance,
     isLoading: isLoadingEthBalance,
-    symbol: 'ETH'
+    symbol: nativeTokenSymbol
   }
   const unwrapCaption = {
     balance: wEthBalance,
@@ -140,77 +140,74 @@ const WrapUnwrapEth = function () {
   }
 
   return (
-    <Layout title={t('wrap-unwrap-eth')} walletConnection>
-      <form
-        className="flex flex-col items-center mx-auto w-full max-w-lg"
-        onSubmit={handleSubmit}
-      >
-        <div className="flex justify-center my-7 w-full">
-          <button
-            className={`w-full capitalize h-10 border-b ${
-              isWrapDisabled
-                ? 'bg-gray-800 text-white cursor-not-allowed'
-                : 'hover:bg-gray-200 hover:text-white'
-            }`}
-            disabled={isWrapDisabled}
-            onClick={() => setOperation(Operation.Wrap)}
-          >
-            {t('wrap')}
-          </button>
-          <button
-            className={`w-full capitalize h-10 border-b ${
-              isUnwrapDisabled
-                ? 'bg-gray-800 text-white cursor-not-allowed'
-                : 'hover:bg-gray-200 hover:text-white'
-            }`}
-            disabled={isUnwrapDisabled}
-            onClick={() => setOperation(Operation.Unwrap)}
-          >
-            {t('unwrap')}
-          </button>
-        </div>
-        <div className="mb-7 w-full">
-          <Input
-            caption={getBalanceCaption(
-              isWrapping ? wrapCaption : unwrapCaption
-            )}
-            onChange={e => setValue(e.target.value)}
-            placeholder={t('enter-amount-here')}
-            suffix={originToken}
-            value={value}
+    <Layout walletConnection>
+      <UtilFormBox title={t('wrap-unwrap-eth', { nativeTokenSymbol })}>
+        <form className="mx-auto w-full max-w-lg" onSubmit={handleSubmit}>
+          <Tabs
+            className="mb-6"
+            items={[
+              {
+                label: t('wrap', { nativeTokenSymbol }),
+                onClick: () => setOperation(Operation.Wrap),
+                selected: isWrapDisabled
+              },
+              {
+                label: t('unwrap', { nativeTokenSymbol }),
+                onClick: () => setOperation(Operation.Unwrap),
+                selected: isUnwrapDisabled
+              }
+            ]}
           />
-        </div>
-        <div className="w-full">
-          <Input
-            caption={getBalanceCaption(
-              isWrapping ? unwrapCaption : wrapCaption
-            )}
-            disabled
-            suffix={destinyToken}
-            title={t('you-will-get')}
-            value={value || '-'}
-          />
-        </div>
-        <Button
-          className="mt-7.5 uppercase"
-          disabled={
-            !active ||
-            !isValidNumber ||
-            (operation === Operation.Wrap && !canWrap) ||
-            (operation === Operation.Unwrap && !canUnwrap)
-          }
-        >
-          {t(operation === Operation.Wrap ? 'wrap' : 'unwrap')}
-        </Button>
-      </form>
-      {!!errorMessage && (
-        <p className="mt-6 text-center text-red-600 text-sm">{errorMessage}</p>
-      )}
-      {!!successMessage && (
-        <p className="mt-6 text-center text-green-400 text-sm">
-          {successMessage}
-        </p>
-      )}
+
+          <div className="mb-7 w-full">
+            <Input
+              caption={getBalanceCaption(
+                isWrapping ? wrapCaption : unwrapCaption
+              )}
+              onChange={e => setValue(e.target.value)}
+              placeholder="0.00"
+              suffix={originToken}
+              title={t('enter-amount-here')}
+              value={value}
+            />
+          </div>
+          <div className="w-full">
+            <Input
+              caption={getBalanceCaption(
+                isWrapping ? unwrapCaption : wrapCaption
+              )}
+              disabled
+              placeholder="0.00"
+              suffix={destinyToken}
+              title={t('you-will-get')}
+              value={value || ''}
+            />
+          </div>
+          <Button
+            className="mt-7.5 uppercase"
+            disabled={
+              !active ||
+              !isValidNumber ||
+              (operation === Operation.Wrap && !canWrap) ||
+              (operation === Operation.Unwrap && !canUnwrap)
+            }
+          >
+            {t(operation === Operation.Wrap ? 'wrap' : 'unwrap', {
+              nativeTokenSymbol
+            })}
+          </Button>
+        </form>
+        {!!errorMessage && (
+          <p className="mt-6 text-center text-red-600 text-sm">
+            {errorMessage}
+          </p>
+        )}
+        {!!successMessage && (
+          <p className="mt-6 text-center text-green-400 text-sm">
+            {successMessage}
+          </p>
+        )}
+      </UtilFormBox>
     </Layout>
   )
 }

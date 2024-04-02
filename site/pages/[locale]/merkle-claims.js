@@ -9,6 +9,7 @@ import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
 import Layout from '../../components/Layout'
+import UtilFormBox from '../../components/UtilFormBox'
 import { fromUnit, toFixed } from '../../utils'
 
 function MerkleClaims() {
@@ -88,35 +89,34 @@ function MerkleClaims() {
 
   return (
     <Layout title={t('merkle-claims')} walletConnection>
-      <div className="flex flex-wrap justify-center mt-10 mx-auto w-full max-w-lg space-y-3">
+      <UtilFormBox title={t('merkle-claims')}>
         <Input
           disabled={!active || claimInProgress}
           onChange={handleClaimIDChange}
-          title={`${t('claim-id')}:`}
+          placeholder={t('enter-claim-id')}
+          title={t('claim-id')}
           value={claimID}
         />
         <Input
+          className="mb-8"
           disabled
+          placeholder="0.0"
           suffix={holding && holding.token && holding.token.symbol}
-          title={`${t('balance')}:`}
+          title={t('balance')}
           value={
             holding.amount &&
             toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
           }
         />
-      </div>
-      <div className="mt-7.5 flex justify-center">
-        <Button
-          className="mt-7.5 flex justify-center"
-          disabled={!active || !holding.isClaimable || claimInProgress}
-          onClick={handleClaimSubmit}
-        >
-          {t('claim').toUpperCase()}
+        <Button className="flex justify-center" onClick={handleClaimSubmit}>
+          {t('claim')}
         </Button>
-      </div>
-      <p className={`text-center text-sm mt-6 ${feedback.color}`}>
-        {feedback.message}
-      </p>
+        {feedback.message && (
+          <p className={`text-center text-sm mt-6 ${feedback.color}`}>
+            {feedback.message}
+          </p>
+        )}
+      </UtilFormBox>
     </Layout>
   )
 }

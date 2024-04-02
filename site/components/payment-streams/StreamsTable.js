@@ -6,18 +6,20 @@ import { useContext, useEffect, useState } from 'react'
 import Button from '../../components/Button'
 import WithTooltip from '../../components/WithTooltip'
 import { useStreams } from '../../hooks/useStreams'
-import { Link } from '../../navigation'
+import { Link, useRouter } from '../../navigation'
 import { bigToCrypto, fromUnit } from '../../utils'
 import { updateStreamInfo } from '../../utils/streams'
 import TransactionsContext from '../context/Transactions'
 import { EtherscanLink } from '../EtherscanLink'
 import SvgContainer from '../svg/SvgContainer'
+import Tabs from '../Tabs'
 
-import PaymentStreamsLibContext from './PaymentStreamsLib'
+import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const StreamsTable = function () {
   const { active, account } = useWeb3React()
   const t = useTranslations('payment-streams-util')
+  const router = useRouter()
   const connected = !!(active && account)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus, currentTransactions } =
@@ -307,33 +309,29 @@ const StreamsTable = function () {
 
   return (
     <section>
-      <Link disabled={!connected} href="/payment-streams/new">
-        <Button disabled={!connected}>{t('create-stream')}</Button>
-      </Link>
-      <div className="flex justify-center my-7 w-full">
-        <button
-          className={`w-full capitalize h-10 border-b ${
-            isIncomingDisabled
-              ? 'bg-gray-800 text-white cursor-not-allowed'
-              : 'hover:bg-gray-200 hover:text-white'
-          }`}
-          disabled={isIncomingDisabled}
-          onClick={() => setStreamsView('incoming')}
-        >
-          {t('incoming-streams')}
-        </button>
-        <button
-          className={`w-full capitalize h-10 border-b ${
-            isOutgoingDisabled
-              ? 'bg-gray-800 text-white cursor-not-allowed'
-              : 'hover:bg-gray-200 hover:text-white'
-          }`}
-          disabled={isOutgoingDisabled}
-          onClick={() => setStreamsView('outgoing')}
-        >
-          {t('outgoing-streams')}
-        </button>
-      </div>
+      <Button
+        disabled={!connected}
+        onClick={function () {
+          router.push('/payment-streams/new')
+        }}
+      >
+        {t('create-stream')}
+      </Button>
+      <Tabs
+        className="mb-6 w-2/3"
+        items={[
+          {
+            label: t('incoming-streams'),
+            onClick: () => setStreamsView('incoming'),
+            selected: isIncomingDisabled
+          },
+          {
+            label: t('outgoing-streams'),
+            onClick: () => setStreamsView('outgoing'),
+            selected: isOutgoingDisabled
+          }
+        ]}
+      />
       {streamsList.length === 0 && <p>{t('no-streams')}</p>}
       {streamsList.length > 0 && (
         <table className="w-full text-sm">

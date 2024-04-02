@@ -1,17 +1,20 @@
-import Navbar from './Navbar'
-import Footer from './Footer'
+import { inter } from '../fonts'
+
 import Head from './Head'
+import Navbar from './Navbar'
+import UtilitiesTabs from './UtilitiesTabs'
 
 const Layout = ({ children, title, walletConnection }) => (
   <>
     <Head title={title} />
-    <div className="max-w-customscreen py-15 mx-auto px-8 w-full xl:px-0">
-      <Navbar walletConnection={walletConnection} />
-      <div className="md:pt-19 md:min-h-content mx-auto pb-8 pt-6 w-full text-center md:pb-0">
-        {title && <h1 className="text-1.5xl text-center font-bold">{title}</h1>}
-        {children}
+    <div className={`py-15 px-8 w-full ${inter.className}`}>
+      <div className="max-w-customscreen mx-auto">
+        <Navbar walletConnection={walletConnection} />
+        <UtilitiesTabs />
+        <div className="md:pt-19 md:min-h-content flex flex-col items-center mx-auto pb-8 pt-6 w-full md:pb-0">
+          {children}
+        </div>
       </div>
-      <Footer />
     </div>
   </>
 )

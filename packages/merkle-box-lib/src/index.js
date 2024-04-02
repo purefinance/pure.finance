@@ -3,7 +3,6 @@
 const debug = require('debug')('merkle-box')
 
 const abi = require('./abi.json')
-const addresses = require('./addresses')
 const util = require('./util')
 
 const createMerkleBox = function (web3, address, options = {}) {
@@ -40,14 +39,12 @@ const createMerkleBox = function (web3, address, options = {}) {
     )
 
   return {
+    claim,
     getHolding,
     isClaimable,
-    newClaimsGroup,
-    claim
+    newClaimsGroup
   }
 }
-
-createMerkleBox.addresses = addresses
 
 createMerkleBox.util = util
 

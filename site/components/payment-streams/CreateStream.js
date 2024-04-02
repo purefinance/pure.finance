@@ -9,14 +9,15 @@ import { isAddress } from 'web3-utils'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import EndTime from '../../components/payment-streams/EndTime'
-import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
 import { useStreams } from '../../hooks/useStreams'
 import { useTokenInput } from '../../hooks/useTokenInput'
-import { Link, useRouter } from '../../navigation'
+import { useRouter } from '../../navigation'
 import { fromUnit, toUnit } from '../../utils'
 import fetchJson from '../../utils/fetch-json'
 import * as timeUtils from '../../utils/time'
 import TransactionsContext from '../context/Transactions'
+
+import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -187,11 +188,17 @@ const CreateStream = function () {
         onYearsChange={setYears}
         years={years}
       />
-      <div className="flex">
-        <Link href="/payment-streams">
-          <Button className="w-19 m-1">{tCommon('cancel')}</Button>
-        </Link>
-        <Button className="w-19 m-1" disabled={!canSubmit}>
+      <div className="flex w-full space-x-4">
+        <Button
+          className="w-1/2"
+          onClick={function () {
+            router.push('/payment-streams')
+          }}
+          type="button"
+        >
+          {tCommon('cancel')}
+        </Button>
+        <Button className="w-1/2" disabled={!canSubmit}>
           {t('create')}
         </Button>
       </div>
