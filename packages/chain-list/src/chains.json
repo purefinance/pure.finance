@@ -4,7 +4,7 @@
     "eip1559": true,
     "explorer": {
       "name": "Hemi explorer",
-      "url": "https://testnet.explorer.hemi.network"
+      "url": "https://explorer.hemi.network"
     },
     "decimals": 18,
     "gasOverestimation": 1.5,
@@ -13,7 +13,7 @@
     "rpcUrls": ["https://rpc.hemi.network/rpc"],
     "shortName": "hemi",
     "standardName": "Hemi",
-    "supportedConnectors": ["injected", "walletconnect", "walletlink"],
+    "supportedConnectors": ["injected", "walletlink"],
     "wrappedToken": {
       "address": "",
       "symbol": "WETH"
@@ -33,7 +33,7 @@
     "rpcUrls": ["https://testnet.rpc.hemi.network/rpc"],
     "shortName": "sepolia",
     "standardName": "Hemi Sepolia",
-    "supportedConnectors": ["injected", "walletconnect", "walletlink"],
+    "supportedConnectors": ["injected", "walletlink"],
     "wrappedToken": {
       "address": "0x0C8aFD1b58aa2A5bAd2414B861D8A7fF898eDC3A",
       "symbol": "WETH"
