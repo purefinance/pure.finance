@@ -1,6 +1,6 @@
+import { useWeb3React } from '@web3-react/core'
 import { useContext } from 'react'
 import useSWR from 'swr'
-import { useWeb3React } from '@web3-react/core'
 
 import PureContext from '../components/context/Pure'
 
@@ -10,7 +10,7 @@ export const useBalance = function ({ symbol }) {
 
   const { data, mutate, error } = useSWR(
     [`${symbol}-Balance-${userAccount}`, userAccount, erc20],
-    async function (_, account, erc20Instancer) {
+    async function ([, account, erc20Instancer]) {
       if (!active) {
         return Promise.resolve(null)
       }

@@ -1,15 +1,15 @@
-import { useContext, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 import { useWeb3React } from '@web3-react/core'
-import useTranslation from 'next-translate/useTranslation'
+import { useRouter } from 'next/router'
+import { useTranslations } from 'next-intl'
+import { useContext, useEffect, useState } from 'react'
 
-import { fromUnit, toUnit } from '../utils'
-import { useFormButton } from '../hooks/useFormButton'
-import { useTokenInput } from '../hooks/useTokenInput'
-import Button from '../components/Button'
-import Input from '../components/Input'
-import Layout from '../components/Layout'
-import PureContext from '../components/context/Pure'
+import Button from '../../components/Button'
+import PureContext from '../../components/context/Pure'
+import Input from '../../components/Input'
+import Layout from '../../components/Layout'
+import { useFormButton } from '../../hooks/useFormButton'
+import { useTokenInput } from '../../hooks/useTokenInput'
+import { fromUnit, toUnit } from '../../utils'
 
 const useAllowanceInput = function (
   token,
@@ -88,7 +88,7 @@ const useFeedback = function () {
 }
 
 const TokenApprovalsForm = function () {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const { account } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
   const { query } = useRouter()
@@ -191,7 +191,7 @@ const TokenApprovalsForm = function () {
 }
 
 const TokenApprovals = function () {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   return (
     <Layout title={t('token-approvals')} walletConnection>
       <TokenApprovalsForm />
@@ -199,5 +199,5 @@ const TokenApprovals = function () {
   )
 }
 
-export const getStaticProps = () => ({})
+export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
 export default TokenApprovals

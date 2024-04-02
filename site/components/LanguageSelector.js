@@ -1,26 +1,27 @@
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
+
+import { Link, locales, usePathname } from '../navigation'
 
 const LanguageSelector = function () {
-  const { asPath, locale, locales } = useRouter()
-  const { t } = useTranslation()
-
+  const {
+    query: { locale }
+  } = useRouter()
+  const pathname = usePathname()
+  const t = useTranslations()
   return (
     <ul className="flex text-sm space-x-1">
       {locales.map((localeOption, idx) => (
         <li key={localeOption}>
-          <Link href={asPath} locale={localeOption}>
-            <a
-              className={`${
-                localeOption === locale
-                  ? 'text-gray-300'
-                  : 'hover:text-teal-1000'
-              }`}
-            >
-              {idx > 0 && ' / '}
-              {t(`common:language-${localeOption}`)}
-            </a>
+          <Link
+            className={`${
+              localeOption === locale ? 'text-gray-300' : 'hover:text-teal-1000'
+            }`}
+            href={pathname}
+            locale={localeOption}
+          >
+            {idx > 0 && ' / '}
+            {t(`language-${localeOption}`)}
           </Link>
         </li>
       ))}

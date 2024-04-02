@@ -1,17 +1,17 @@
-import { DateTime } from 'luxon'
-import Link from 'next/link'
 import orderBy from 'lodash.orderby'
-import useSWR from 'swr'
+import { DateTime } from 'luxon'
+import { useRouter } from 'next/router'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
-import useTranslation from 'next-translate/useTranslation'
+import useSWR from 'swr'
 
-import Dropdown from '../../../components/Dropdown'
-import Layout from '../../../components/Layout'
-import SvgContainer from '../../../components/svg/SvgContainer'
-import TokenAmount from '../../../components/TokenAmount'
-import fetchJson from '../../../utils/fetch-json'
-import ssDpa from '../../../utils/dp-auctions'
-import { useUpdatingState } from '../../../hooks/useUpdatingState'
+import Dropdown from '../../../../components/Dropdown'
+import Layout from '../../../../components/Layout'
+import SvgContainer from '../../../../components/svg/SvgContainer'
+import TokenAmount from '../../../../components/TokenAmount'
+import { useUpdatingState } from '../../../../hooks/useUpdatingState'
+import { Link } from '../../../../navigation'
+import dpa from '../../../../utils/dp-auctions'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -21,7 +21,8 @@ const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 // The remaining time is shown in minutes. So every 10 seconds the remaining
 // time is re-calculated.
 const DPAuctionsRow = function ({ auction }) {
-  const { lang, t } = useTranslation('common')
+  const locale = useLocale()
+  const t = useTranslations()
 
   const calcEndTime = () =>
     Date.now() +
@@ -29,7 +30,7 @@ const DPAuctionsRow = function ({ auction }) {
   const endTime = useUpdatingState(calcEndTime, 10000, [auction.currentBlock]) // 10s
 
   return (
-    <Link href={`/dp-auctions/auctions/${auction.id}`} passHref>
+    <Link href={`/dp-auctions/auctions?id=${auction.id}`} passHref>
       <tr className="cursor-pointer">
         <td className="border-2">{auction.id}</td>
         <td className="border-2">
@@ -53,7 +54,7 @@ const DPAuctionsRow = function ({ auction }) {
           {t(auction.status)}
           {auction.status === 'running' &&
             ` (${t('ends')} ${DateTime.fromMillis(endTime).toRelative({
-              locale: lang
+              locale
             })})`}
         </td>
       </tr>
@@ -63,7 +64,7 @@ const DPAuctionsRow = function ({ auction }) {
 
 // This component renders the list of auctions.
 const DPAuctionsTable = function ({ auctions }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const [showEnded, setShowEnded] = useState(false)
 
   const sortedAuctions = orderBy(
@@ -114,7 +115,7 @@ const DPAuctionsTable = function ({ auctions }) {
 // fly keeping the selected collection in the closure.
 const createCollectionSelector = collectionId =>
   function CollectionSelector({ isOpen }) {
-    const { t } = useTranslation('common')
+    const t = useTranslations()
 
     const rotate = isOpen ? 'transform rotate-180' : ''
     return (
@@ -130,7 +131,7 @@ const createCollectionSelector = collectionId =>
 
 // Use a Dropdown component to allow selecting another existing collection.
 const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
 
   const Selector = createCollectionSelector(collectionId)
 
@@ -147,8 +148,12 @@ const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
                 {t('collection', { collectionId: i })}
               </li>
             ) : (
-              <Link href={`/dp-auctions/collections/${i}`} passHref>
-                <li key={i}>{t('collection', { collectionId: i })}</li>
+              <Link
+                href={`/dp-auctions/collections?collectionId=${i}`}
+                key={i}
+                passHref
+              >
+                <li>{t('collection', { collectionId: i })}</li>
               </Link>
             )
           )}
@@ -160,24 +165,41 @@ const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
 
 // This is the main app component. It holds all the views like the auctions
 // list, the auction detail, etc.
-export default function DPAuctions(props) {
-  const { collectionId, initialCount, initialAuctions, error } = props
-
-  const { t } = useTranslation('common')
+export default function DPAuctions({
+  initialCount = 0,
+  initialAuctions = [],
+  error
+}) {
+  const t = useTranslations()
+  const {
+    query: { id: collectionId = process.env.NEXT_PUBLIC_DEFAULT_COLLECTION_ID }
+  } = useRouter()
 
   // The amount of collections is managed by SWR. It is set to revalidate aprox.
   // every block (15 seconds).
   const { data: count } = useSWR(
-    `/api/dp-auctions/collections/count`,
-    fetchJson,
+    `dp-auctions-collections-count`,
+    () =>
+      dpa.getTotalCollections().catch(function (err) {
+        console.warn('Could not get collection count', err.message)
+        return ''
+      }),
     { fallbackData: initialCount, refreshInterval: ETH_BLOCK_TIME * 1000 }
   )
 
   // The list of auctions in the collection is managed by SWR. It is set to
   // revalidate aprox. every block (15 seconds).
   const { data: auctions } = useSWR(
-    `/api/dp-auctions/collections/${collectionId}`,
-    fetchJson,
+    `dp-auctions-collections-${collectionId}`,
+    () =>
+      dpa.getCollectionAuctions(collectionId).catch(function (err) {
+        console.warn(
+          'Could not get auctions in collection',
+          collectionId,
+          err.message
+        )
+        return []
+      }),
     { fallbackData: initialAuctions, refreshInterval: ETH_BLOCK_TIME * 1000 }
   )
 
@@ -200,34 +222,4 @@ export default function DPAuctions(props) {
   )
 }
 
-// Get the list of auctions in the collection and the collection count. Then
-// build the page with the list of auctions in the server aprox. on every block
-// (15 seconds).
-// If the collection id is greater than the number of collections, 404!
-export const getStaticProps = ({ params }) =>
-  Promise.all([
-    ssDpa.getCollectionAuctions(params.collectionId),
-    ssDpa.getTotalCollections()
-  ])
-    .then(([initialAuctions, initialCount]) => ({
-      notFound: Number.parseInt(params.collectionId) >= initialCount,
-      props: {
-        collectionId: params.collectionId,
-        initialAuctions,
-        initialCount
-      },
-      revalidate: ETH_BLOCK_TIME
-    }))
-    .catch(err => ({
-      props: {
-        collectionId: params.collectionId,
-        error: err.message
-      }
-    }))
-
-// Do not statically render any collections page other than the default one,
-// which has ID 0. Use SSR for the rest of the collections.
-export const getStaticPaths = () => ({
-  paths: [{ params: { collectionId: process.env.DEFAULT_COLLECTION_ID } }],
-  fallback: 'blocking'
-})
+export { getStaticProps, getStaticPaths } from '../../../../utils/staticProps'

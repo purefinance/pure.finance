@@ -1,10 +1,11 @@
-import useTranslation from 'next-translate/useTranslation'
+import { useTranslations } from 'next-intl'
+
+import { useNumberFormat } from '../hooks/useNumberFormat'
 
 import { EtherscanLink } from './EtherscanLink'
 import JustifiedBetweenRow from './JustifiedBetweenRow'
 import Modal from './Modal'
 import SvgContainer from './svg/SvgContainer'
-import { useNumberFormat } from '../hooks/useNumberFormat'
 
 const TransactionModalRow = ({ text, value, tipLink = '' }) => (
   <JustifiedBetweenRow
@@ -29,7 +30,7 @@ const TransactionModalRow = ({ text, value, tipLink = '' }) => (
 
 // eslint-disable-next-line complexity
 const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   const formatNumber = useNumberFormat()
 
   const isConfirmed = transaction.transactionStatus === 'confirmed'

@@ -1,9 +1,10 @@
+import { useTranslations } from 'next-intl'
+
 import LanguageSelector from './LanguageSelector'
 import Vesper from './svg/Vesper'
-import useTranslation from 'next-translate/useTranslation'
 
 const Footer = function () {
-  const { t } = useTranslation('common')
+  const t = useTranslations()
   return (
     <div className="flex flex-wrap justify-center mt-20 w-full">
       <div className="w-full">

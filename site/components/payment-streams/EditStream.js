@@ -1,31 +1,36 @@
-import { useRouter } from 'next/router'
-import useTranslation from 'next-translate/useTranslation'
+import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import { useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useTranslations } from 'next-intl'
+import { useContext, useEffect, useState, useMemo } from 'react'
+import { isAddress } from 'web3-utils'
+
 import { useStreams } from '../../hooks/useStreams'
-import Input from '../Input'
-import Button from '../Button'
+import { useRouter as useIntlRouter } from '../../navigation'
 import { fromUnit, toUnit } from '../../utils'
 import { updateStreamInfo } from '../../utils/streams'
 import * as timeUtils from '../../utils/time'
-import PaymentStreamsLibContext from './PaymentStreamsLib'
-import EndTime from './EndTime'
-import { useWeb3React } from '@web3-react/core'
-import { isAddress } from 'web3-utils'
+import Button from '../Button'
 import TransactionsContext from '../context/Transactions'
+import Input from '../Input'
+
+import EndTime from './EndTime'
+import PaymentStreamsLibContext from './PaymentStreamsLib'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const EditRate = function ({ stream }) {
   const { active, account } = useWeb3React()
-  const router = useRouter()
-  const { t } = useTranslation('payment-streams')
-  const { t: tCommon } = useTranslation('common')
+  const {
+    query: { id: streamId }
+  } = useRouter()
+  const router = useIntlRouter()
+  const t = useTranslations('payment-streams-util')
+  const tCommon = useTranslations()
 
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const { addTransactionStatus } = useContext(TransactionsContext)
 
-  const { streamId } = router.query
   const { mutate } = useStreams()
   const [newUsdAmount, setNewUsdAmount] = useState('')
   const [years, setYears] = useState(0)
@@ -102,9 +107,9 @@ const EditRate = function ({ stream }) {
           transactionStatus: status ? 'confirmed' : 'canceled'
         })
         updateStreamInfo({
+          account,
           id: streamId,
           lib: paymentStreamsLib,
-          account,
           streamsView: 'outgoing'
         })
           .then(() => mutate())
@@ -150,12 +155,14 @@ const EditRate = function ({ stream }) {
 
 const EditFundingAddress = function ({ stream }) {
   const { active, account } = useWeb3React()
-  const { t } = useTranslation('payment-streams')
+  const t = useTranslations('payment-streams-util')
   const { addTransactionStatus } = useContext(TransactionsContext)
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
   const [newFundingAddress, setNewFundingAddress] = useState('')
-  const router = useRouter()
-  const { streamId } = router.query
+  const {
+    query: { id: streamId }
+  } = useRouter()
+  const router = useIntlRouter()
   const { mutate } = useStreams()
 
   const originalFundingAddress = stream.fundingAddress
@@ -217,9 +224,9 @@ const EditFundingAddress = function ({ stream }) {
         })
         // eslint-disable-next-line promise/catch-or-return
         updateStreamInfo({
+          account,
           id: streamId,
           lib: paymentStreamsLib,
-          account,
           streamsView: 'outgoing'
         }).then(() => mutate())
         router.push('/payment-streams')
@@ -259,25 +266,29 @@ const EditFundingAddress = function ({ stream }) {
 }
 
 const EditStream = function () {
-  const router = useRouter()
+  const {
+    query: { id: streamId }
+  } = useRouter()
+  const router = useIntlRouter()
   const { active } = useWeb3React()
-  const { streamId } = router.query
-  const { t } = useTranslation('payment-streams')
+  const t = useTranslations('payment-streams-util')
   const { streams = { outgoing: [] }, isLoading } = useStreams()
 
-  if (!active) {
-    router.push('/payment-streams')
-    return null
-  }
+  const stream = useMemo(
+    () => streams.outgoing.find(s => s.id === streamId),
+    [streamId, streams.outgoing]
+  )
+  useEffect(
+    function redirectToPaymentStreams() {
+      if (!active || !stream) {
+        router.push('/payment-streams')
+      }
+    },
+    [active, router, stream]
+  )
 
   if (isLoading) {
     return <p>{t('loading-stream', { streamId })}</p>
-  }
-
-  const stream = streams.outgoing.find(s => s.id === streamId)
-  if (!stream) {
-    router.push('/payment-streams')
-    return null
   }
 
   return (
