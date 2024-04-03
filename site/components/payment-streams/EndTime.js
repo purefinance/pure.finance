@@ -32,9 +32,9 @@ const EndTime = function ({
           value={years}
         >
           {[...Array(11).keys()].map(year => (
-          <option key={year} value={year}>
-            {t('count-years', { count: year })}
-          </option>
+            <option key={year} value={year}>
+              {t('count-years', { count: year })}
+            </option>
           ))}
         </select>
         <select
@@ -43,9 +43,9 @@ const EndTime = function ({
           value={days}
         >
           {[...Array(365).keys()].map(day => (
-          <option key={day} value={day}>
-            {t('count-days', { count: day })}
-          </option>
+            <option key={day} value={day}>
+              {t('count-days', { count: day })}
+            </option>
           ))}
         </select>
         <select
@@ -54,9 +54,9 @@ const EndTime = function ({
           value={hours}
         >
           {[...Array(24).keys()].map(hour => (
-          <option key={hour} value={hour}>
-            {t('count-hours', { count: hour })}
-          </option>
+            <option key={hour} value={hour}>
+              {t('count-hours', { count: hour })}
+            </option>
           ))}
         </select>
       </div>
