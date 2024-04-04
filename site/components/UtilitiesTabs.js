@@ -22,19 +22,9 @@ function UtilitiesTabs() {
             selected: pathname === '/token-approvals'
           },
           {
-            href: '/wrap-eth',
-            label: t('wrap-unwrap'),
-            selected: pathname === '/wrap-eth'
-          },
-          {
             href: '/token-revokes',
             label: t('token-revokes'),
             selected: pathname === '/token-revokes'
-          },
-          {
-            href: '/dp-auctions',
-            label: t('dp-auctions'),
-            selected: pathname === '/dp-auctions'
           },
           {
             href: '/payment-streams',
@@ -42,9 +32,19 @@ function UtilitiesTabs() {
             selected: pathname === '/payment-streams'
           },
           {
+            href: '/wrap-eth',
+            label: t('wrap-unwrap'),
+            selected: pathname === '/wrap-eth'
+          },
+          {
             href: '/sign-message',
             label: t('sign-message'),
             selected: pathname === '/sign-message'
+          },
+          {
+            href: '/dp-auctions',
+            label: t('dp-auctions'),
+            selected: pathname === '/dp-auctions'
           }
         ]}
       />
