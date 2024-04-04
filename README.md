@@ -29,7 +29,7 @@ npm run test:e2e
 ```sh
 npm ci
 cd site
-npm run build
+BASE_PATH="/pure.finance" npm run build
 ```
 
 Then upload the folder `site/out` to the hosting server.
