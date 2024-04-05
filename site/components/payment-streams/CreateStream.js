@@ -38,7 +38,6 @@ const useSupportedTokens = function () {
   }
 }
 
-// eslint-disable-next-line complexity
 const CreateStream = function () {
   const { active, account } = useWeb3React()
   const t = useTranslations('payment-streams-util')

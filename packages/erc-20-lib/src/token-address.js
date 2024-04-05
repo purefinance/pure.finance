@@ -1,12 +1,12 @@
 'use strict'
 
-const { tokens } = require('@uniswap/default-token-list')
+const { findTokenBySymbol } = require('token-list')
 
-const tokenAddress = function (symbol, extraTokens = []) {
-  const tokenData = tokens.concat(extraTokens)
+// TODO remove the default chain id from here
+const tokenAddress = function (symbol, chainId = 1) {
   const token =
-    tokenData.find(t => t.symbol === symbol) ||
-    tokenData.find(t => t.symbol.toLowerCase() === symbol.toLowerCase())
+    findTokenBySymbol(symbol, chainId) ||
+    findTokenBySymbol(symbol.toLowerCase(), chainId)
   return token && token.address
 }
 

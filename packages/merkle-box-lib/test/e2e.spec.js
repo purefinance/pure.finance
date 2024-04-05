@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict'
 
 require('chai').should()
@@ -19,10 +21,10 @@ const checkTxSuccess = function (receipt) {
 describe('End-to-end', function () {
   this.timeout(60000) // 1m
 
-  const tokenAddress = createErc20.util.tokenAddress('WETH')
-
   let acc
   let web3
+  let chainId
+  let tokenAddress
   let merkleBox
   let claimGroupId
   let balance
@@ -31,7 +33,7 @@ describe('End-to-end', function () {
   before(function () {
     if (!process.env.E2E) {
       this.skip()
-      return
+      return undefined
     }
 
     let provider
@@ -54,8 +56,9 @@ describe('End-to-end', function () {
     const setWeb3 = function () {
       // @ts-ignore ts(2339)
       web3 = new Web3(provider)
-      return web3.eth.getChainId().then(function (chainId) {
-        console.log('  Using fork with chain id %s', chainId)
+      return web3.eth.getChainId().then(function (_chainId) {
+        chainId = _chainId
+        console.log('  Using fork with chain id %s', _chainId)
       })
     }
 
@@ -68,7 +71,14 @@ describe('End-to-end', function () {
       })
     }
 
-    return setProvider().then(setWeb3).then(setTestAccounts)
+    const setTokenAddress = function () {
+      tokenAddress = createErc20.util.tokenAddress('WETH', chainId)
+    }
+
+    return setProvider()
+      .then(setWeb3)
+      .then(setTestAccounts)
+      .then(setTokenAddress)
   })
 
   it('should create a claim group', function () {
