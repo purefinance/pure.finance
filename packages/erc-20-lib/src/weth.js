@@ -3,8 +3,8 @@
 const tokenAddress = require('./token-address')
 
 const abi = require('./abis/weth9.json')
-const address = tokenAddress('WETH')
 
-const getContract = web3 => new web3.eth.Contract(abi, address)
+const getContract = (web3, chainId) =>
+  new web3.eth.Contract(abi, tokenAddress('WETH', chainId))
 
-module.exports = { abi, address, getContract }
+module.exports = { abi, getContract }

@@ -26,6 +26,7 @@ const getTokenListByChain = memoize(chainId =>
 )
 
 const findTokenByAddress = memoize(
+  // FIXME un-hardcode chain id
   function (_address, chainId = 743111) {
     const tokenlist = getTokenListByChain(chainId)
     return tokenlist.find(
@@ -36,9 +37,15 @@ const findTokenByAddress = memoize(
 )
 
 const findTokenBySymbol = memoize(
+  // FIXME un-hardcode chain id
   function (_symbol, chainId = 743111) {
     const tokenlist = getTokenListByChain(chainId)
-    return tokenlist.find(({ symbol }) => symbol === _symbol)
+    return (
+      tokenlist.find(({ symbol }) => symbol === _symbol) ||
+      tokenlist.find(
+        ({ symbol }) => symbol.toLowerCase() === _symbol.toLowerCase()
+      )
+    )
   },
   (...args) => JSON.stringify(args)
 )
