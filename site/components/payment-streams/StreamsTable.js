@@ -10,14 +10,14 @@ import { Link, useRouter } from '../../navigation'
 import { bigToCrypto, fromUnit } from '../../utils'
 import { updateStreamInfo } from '../../utils/streams'
 import TransactionsContext from '../context/Transactions'
-import { EtherscanLink } from '../EtherscanLink'
+import { ExplorerLink } from '../ExplorerLink'
 import SvgContainer from '../svg/SvgContainer'
 import Tabs from '../Tabs'
 
 import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const StreamsTable = function () {
-  const { active, account } = useWeb3React()
+  const { active, account, chainId } = useWeb3React()
   const t = useTranslations('payment-streams-util')
   const router = useRouter()
   const connected = !!(active && account)
@@ -393,13 +393,17 @@ const StreamsTable = function () {
                     <span>{status}</span>
                   </th>
                   <td>
-                    <EtherscanLink
+                    <ExplorerLink
                       address={streamsView === 'incoming' ? payer : payee}
+                      chainId={chainId}
                     />
                   </td>
                   {streamsView === 'outgoing' && (
                     <td>
-                      <EtherscanLink address={fundingAddress} />
+                      <ExplorerLink
+                        address={fundingAddress}
+                        chainId={chainId}
+                      />
                     </td>
                   )}
                   {/* <td>{dateFormatter.format(startDate)}</td> */}

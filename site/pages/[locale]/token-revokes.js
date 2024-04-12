@@ -7,7 +7,7 @@ import useSWR from 'swr'
 
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
-import { EtherscanLink } from '../../components/EtherscanLink'
+import { ExplorerLink } from '../../components/ExplorerLink'
 import Layout from '../../components/Layout'
 import UtilFormBox from '../../components/UtilFormBox'
 import { fromUnit } from '../../utils'
@@ -313,12 +313,13 @@ const Balance = function ({ address }) {
 }
 
 const Token = function ({ address }) {
+  const { chainId } = useWeb3React()
   const { data: token } = useErc20Token(address)
   if (!token) {
-    return <EtherscanLink address={address} />
+    return <ExplorerLink address={address} chainId={chainId} />
   }
   const { symbol } = token
-  return <EtherscanLink address={address} text={symbol} />
+  return <ExplorerLink address={address} chainId={chainId} text={symbol} />
 }
 
 const TokenRevokes = function () {

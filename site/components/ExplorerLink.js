@@ -1,19 +1,32 @@
 const formatShort = text => `${text.substr(0, 6)}...${text.slice(-4)}`
 
-const ETHERSCAN_URL = 'https://etherscan.io'
+const explorerUrls = {
+  1: 'https://etherscan.io',
+  43111: 'https://explorer.hemi.network',
+  743111: 'https://testnet.explorer.hemi.network'
+}
 
 /**
- * A link to an address or a transaction in Etherscan.
+ * A link to an address or transaction in a chain explorer.
+ * Defaults to Etherscan.
  *
  * @param {object} options Link data.
  * @param {string} [options.address] The address of the link.
+ * @param {number} [options.chainId] The chainId of the address or tx.
+ * @param {boolean} [options.long] Whether the hash has to be complete or short.
  * @param {string} [options.text] The text of the link.
  * @param {string} [options.tx] The transaction hash of the link.
- * @param {boolean} [options.long] Whether the hash has to be complete or short.
  * @returns
  */
-export const EtherscanLink = function ({ address, text, tx, long = false }) {
-  const url = `${ETHERSCAN_URL}${address ? `/address/${address}` : `/tx/${tx}`}`
+export const ExplorerLink = function ({
+  address,
+  chainId = 1,
+  long = false,
+  text,
+  tx
+}) {
+  const baseUrl = explorerUrls[chainId]
+  const url = `${baseUrl}${address ? `/address/${address}` : `/tx/${tx}`}`
   const hash = address ?? tx
   return (
     <a

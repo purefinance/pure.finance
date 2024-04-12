@@ -10,7 +10,7 @@ import Button from '../../../../components/Button'
 import TransactionsContext from '../../../../components/context/Transactions'
 import { DPAuctionsContext } from '../../../../components/DPAuctionsContext'
 import DPAuctionsLayout from '../../../../components/DPAuctionsLayout'
-import { EtherscanLink } from '../../../../components/EtherscanLink'
+import { ExplorerLink } from '../../../../components/ExplorerLink'
 import TokenAmount from '../../../../components/TokenAmount'
 import Transactions from '../../../../components/Transactions'
 import { fromUnit } from '../../../../utils'
@@ -344,12 +344,14 @@ const DPAuctionBuyControl = function ({ auction }) {
 
 // This component shows the end status of the auction.
 const DPAuctionEndStatus = function ({ auction }) {
+  const { chainId } = useWeb3React()
   const t = useTranslations()
 
   return auction.status === 'won' ? (
     <>
       <div>
-        {t('won-by')}: <EtherscanLink address={auction.winner} />
+        {t('won-by')}:{' '}
+        <ExplorerLink address={auction.winner} chainId={chainId} />
       </div>
       <div>
         {t('winning-price')}:{' '}
@@ -363,6 +365,7 @@ const DPAuctionEndStatus = function ({ auction }) {
 
 // This component renders the details view of an auction.
 const DPAuction = function ({ auction }) {
+  const { chainId } = useWeb3React()
   const t = useTranslations()
 
   if (!auction) {
@@ -376,7 +379,8 @@ const DPAuction = function ({ auction }) {
         </div>
         <div className="ml-4 w-1/2">
           <div className="mb-2">
-            {t('seller')}: <EtherscanLink address={auction.payee} />
+            {t('seller')}:{' '}
+            <ExplorerLink address={auction.payee} chainId={chainId} />
           </div>
           <DPAuctionTokens auction={auction} />
         </div>
