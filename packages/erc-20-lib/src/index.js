@@ -37,6 +37,8 @@ const createErc20 = function (web3, address, options = {}) {
   const totalSupply = () => contract.methods.totalSupply().call()
 
   return {
+    getAddress: () => contract.options.address,
+
     getInfo: () =>
       Promise.all([
         contract.methods.symbol().call(),

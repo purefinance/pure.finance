@@ -39,8 +39,11 @@ const createMerkleBox = function (web3, address, options = {}) {
       { from, ...txOps }
     )
 
+  const getAddress = () => merkleBox.options.address
+
   return {
     claim,
+    getAddress,
     getHolding,
     isClaimable,
     newClaimsGroup
