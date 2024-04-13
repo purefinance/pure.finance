@@ -23,7 +23,8 @@
     },
     "paymentStreams": {
       "address": "0xc5F62E5a1bF204ba216a877b11E596FcA09760D4",
-      "birthblock": 221903
+      "birthblock": 221903,
+      "chainLink": false
     }
   }
 }
