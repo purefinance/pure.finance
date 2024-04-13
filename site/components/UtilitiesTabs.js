@@ -36,15 +36,21 @@ function UtilitiesTabs() {
       href: '/sign-message',
       label: t('sign-message'),
       selected: pathname === '/sign-message'
-    },
-    {
+    }
+    // Descending Price Auctions should go here.
+  ]
+  // Add optional components starting with the last open to keep the array
+  // positions constant.
+  //
+  // Add Descending Price Auctions if Uniswap v2 is supported.
+  if (utilsConfig[chainId].dpAuctions.uniswapV2) {
+    items.splice(5, 0, {
       href: '/dp-auctions',
       label: t('dp-auctions'),
       selected: pathname === '/dp-auctions'
-    }
-  ]
-  // Add Payment Streams in the proper position but only if ChainLink is
-  // enabled in the target chain.
+    })
+  }
+  // Add Payment Streams if ChainLink is supported.
   if (utilsConfig[chainId]?.paymentStreams?.chainLink) {
     items.splice(3, 0, {
       href: '/payment-streams',
