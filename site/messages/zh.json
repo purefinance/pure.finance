@@ -39,7 +39,7 @@
   "error-no-ethereum-provider": "未检测到以太坊浏览器扩展，请在桌面上安装 MetaMask 或从移动设备上的 dApp 浏览器访问。",
   "error-rejected-wallet-connection": "请授权本网站访问您的以太坊账户。",
   "error-unknown": "出现未知错误。",
-  "error-unsupported-network": "您连接到不受支持的网络。切换到以太坊（网络 ID：1）。",
+  "error-unsupported-network": "您连接到不受支持的网络。",
   "error": "错误",
   "estimated-tx-fee": "预估网络费用",
   "floored": "有地板的",
