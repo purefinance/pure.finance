@@ -260,7 +260,7 @@ const DPAuctionBuyControl = function ({ auction }) {
           opId,
           received: auction.tokens.map(token => ({
             symbol: token.symbol,
-            value: fromUnit(token.amount, token.decilams)
+            value: fromUnit(token.amount, token.decimals)
           })),
           sent: fromUnit(auction.currentPrice, auction.paymentToken.decimals),
           sentSymbol: auction.paymentToken.symbol,

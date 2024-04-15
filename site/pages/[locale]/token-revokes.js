@@ -64,7 +64,7 @@ const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
 
       const newestOperation = allOperations[0]
       if (library.utils.hexToNumberString(newestOperation.allowance) === '0') {
-        return
+        return null
       }
       return newestOperation
     })
@@ -221,7 +221,7 @@ function useTokenApprovals() {
   useEffect(
     function () {
       if (!active || !account) {
-        return
+        return undefined
       }
 
       const subscription = library.eth.subscribe('logs', {

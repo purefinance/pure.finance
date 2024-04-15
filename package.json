@@ -70,6 +70,10 @@
           "@next/next/no-html-link-for-pages": [
             "warn",
             "site/pages"
+          ],
+          "complexity": [
+            "warn",
+            20
           ]
         }
       }

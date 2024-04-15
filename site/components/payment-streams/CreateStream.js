@@ -21,6 +21,7 @@ import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
+// To create a payment stream, the payment token has to have a ChainLink feed!
 const useSupportedTokens = function () {
   const { data, error } = useSWR('supported-tokens', () =>
     fetchJson('https://cl-docs-addresses.web.app/addresses.json').then(
@@ -57,9 +58,9 @@ const CreateStream = function () {
 
   // tokens are in the list in the form of "<token> / [USD|ETH]"" pairs. For example: "UNI / USD"
   // addresses are not available
-  const isTokenSupported = function (value) {
+  const isTokenSupported = function (address) {
     // vesper is registered as "Vesper Finance TVL" - see https://docs.chain.link/docs/ethereum-addresses/#Ethereum%20Mainnet
-    const symbol = findToken(value, 1)?.symbol.toLowerCase()
+    const symbol = findToken(address, 1)?.symbol.toLowerCase()
     if (!symbol) {
       return false
     }

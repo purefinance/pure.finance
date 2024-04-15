@@ -43,7 +43,7 @@ function UtilitiesTabs() {
   // positions constant.
   //
   // Add Descending Price Auctions if Uniswap v2 is supported.
-  if (utilsConfig[chainId].dpAuctions.uniswapV2) {
+  if (chainId && utilsConfig[chainId]?.dpAuctions.uniswapV2) {
     items.splice(5, 0, {
       href: '/dp-auctions',
       label: t('dp-auctions'),
@@ -51,7 +51,7 @@ function UtilitiesTabs() {
     })
   }
   // Add Payment Streams if ChainLink is supported.
-  if (utilsConfig[chainId]?.paymentStreams?.chainLink) {
+  if (chainId && utilsConfig[chainId]?.paymentStreams?.chainLink) {
     items.splice(3, 0, {
       href: '/payment-streams',
       label: t('payment-streams'),

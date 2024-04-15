@@ -35,7 +35,7 @@ function MerkleClaims() {
     merkle.getHolding &&
     merkle
       .getHolding(cID)
-      .then(h => {
+      .then(function (h) {
         if (h.isClaimable) {
           clearFeedback()
         } else {
@@ -50,16 +50,19 @@ function MerkleClaims() {
     [merkle]
   )
 
-  const handleClaimIDChange = function (e) {
-    const re = /^[0-9\b]+$/
-    if (e.target.value === '' || re.test(e.target.value)) {
-      clearFeedback()
-      setClaimID(e.target.value)
-      delayedClaimID(e.target.value)
-    }
-  }
+  const handleClaimIDChange = useCallback(
+    function (e) {
+      const re = /^[0-9\b]+$/
+      if (e.target.value === '' || re.test(e.target.value)) {
+        clearFeedback()
+        setClaimID(e.target.value)
+        delayedClaimID(e.target.value)
+      }
+    },
+    [delayedClaimID]
+  )
 
-  const handleClaimSubmit = () => {
+  const handleClaimSubmit = function () {
     setClaimInProgress(true)
     setInfoMessage(t('claim-in-progress'))
     return merkle
@@ -73,10 +76,13 @@ function MerkleClaims() {
       .then(() => watchAsset({ account, token: holding.token }))
   }
 
-  useEffect(() => {
-    clearFeedback()
-    setClaimID('')
-  }, [active, account])
+  useEffect(
+    function () {
+      clearFeedback()
+      setClaimID('')
+    },
+    [active, account]
+  )
 
   useEffect(() => setHolding({ amount: '', isClaimable: false }), [claimID])
 
@@ -84,7 +90,7 @@ function MerkleClaims() {
     function setClaimIdFromQueryOnLoad() {
       handleClaimIDChange({ target: { value: query.id } })
     },
-    [merkle, query]
+    [handleClaimIDChange, merkle, query]
   )
 
   return (
@@ -108,6 +114,7 @@ function MerkleClaims() {
             toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
           }
         />
+        {/* TODO disable the button if not claimable! */}
         <Button className="flex justify-center" onClick={handleClaimSubmit}>
           {t('claim')}
         </Button>
