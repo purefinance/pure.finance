@@ -6,21 +6,20 @@ const sushiswapTokens = require('@sushiswap/default-token-list').tokens
 const uniswapTokens = require('@uniswap/default-token-list').tokens
 const vesperTokens = require('vesper-metadata/src/vesper.tokenlist.json').tokens
 
-const zapperTokens = require('./token-lists/zapper.json').tokens
-// Source at https://github.com/pangolindex/tokenlists
-const pangolindexTokens = require('./token-lists/pangolindex.json').tokens
 const customTokens = require('./token-lists/custom.json').tokens
 const hemiTokens = require('./token-lists/hemi.json').tokens
+// Source at https://github.com/pangolindex/tokenlists
+const pangolindexTokens = require('./token-lists/pangolindex.json').tokens
+const zapperTokens = require('./token-lists/zapper.json').tokens
 
-const getTokenListByChain = memoize(chainId =>
-  []
+const getTokenListByChain = memoize((chainId = 1) =>
+  sushiswapTokens
     .concat(customTokens)
-    .concat(vesperTokens)
     .concat(hemiTokens)
-    .concat(uniswapTokens)
-    .concat(sushiswapTokens)
-    .concat(zapperTokens)
     .concat(pangolindexTokens)
+    .concat(uniswapTokens)
+    .concat(vesperTokens)
+    .concat(zapperTokens)
     .filter(t => t.chainId === chainId)
     .map(t => ({ ...t, address: toChecksumAddress(t.address) }))
 )
