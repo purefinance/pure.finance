@@ -2,12 +2,9 @@
 
 const { findTokenBySymbol } = require('token-list')
 
-// TODO remove the default chain id from here
-const tokenAddress = function (symbol, chainId = 1) {
-  const token =
-    findTokenBySymbol(symbol, chainId) ||
-    findTokenBySymbol(symbol.toLowerCase(), chainId)
-  return token && token.address
+const tokenAddress = function (symbol, chainId) {
+  const token = findTokenBySymbol(symbol, chainId)
+  return token?.address
 }
 
 module.exports = tokenAddress
