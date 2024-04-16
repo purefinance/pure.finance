@@ -8,6 +8,8 @@
  *     2021-03-08T19:49 2021-03-09
  */
 
+/* eslint-disable no-console */
+
 'use strict'
 
 require('dotenv').config()
@@ -21,8 +23,8 @@ const createSablier = require('..')
 const [recipient, amount, token, start, stop] = process.argv.slice(2)
 
 const provider = new HDWalletProvider({
-  addressIndex: Number.parseInt(process.env.ACCOUNT) || 0,
-  mnemonic: process.env.MNEMONIC,
+  addressIndex: Number.parseInt(process.env.ACCOUNT || '0'),
+  mnemonic: process.env.MNEMONIC || '',
   numberOfAddresses: 1,
   providerOrUrl: process.env.NODE_URL
 })
@@ -40,12 +42,16 @@ const stopTime = toTimestamp(stop)
 
 const deposit = sablier.calcDeposit(startTime, stopTime, amount)
 
-const tokenAddress = token.startsWith('0x')
-  ? token
-  : createErc20.util.tokenAddress(token)
+const tokenAddress = chainId =>
+  token.startsWith('0x') ? token : createErc20.util.tokenAddress(token, chainId)
 
-return createErc20(web3, tokenAddress, { from })
-  .approve(sablier.getAddress(), deposit)
+web3.eth
+  .getChainId(chainId =>
+    createErc20(web3, tokenAddress(chainId), { from }).approve(
+      sablier.getAddress(),
+      deposit
+    )
+  )
   .then(() =>
     sablier.createStream(recipient, deposit, tokenAddress, startTime, stopTime)
   )

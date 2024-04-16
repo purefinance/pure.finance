@@ -39,7 +39,7 @@
   "error-no-ethereum-provider": "No Ethereum browser extension detected, install MetaMask on desktop or visit from a dApp browser on mobile.",
   "error-rejected-wallet-connection": "Please authorize this website to access your Ethereum account.",
   "error-unknown": "An unknown error occurred.",
-  "error-unsupported-network": "You're connected to an unsupported network. Switch to Ethereum (net id: 1).",
+  "error-unsupported-network": "You're connected to an unsupported network.",
   "error": "Error",
   "estimated-tx-fee": "Estimated network fee",
   "floored": "Floored",

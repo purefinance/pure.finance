@@ -1,8 +1,9 @@
+import { useWeb3React } from '@web3-react/core'
 import { useTranslations } from 'next-intl'
 
 import { useNumberFormat } from '../hooks/useNumberFormat'
 
-import { EtherscanLink } from './EtherscanLink'
+import { ExplorerLink } from './ExplorerLink'
 import JustifiedBetweenRow from './JustifiedBetweenRow'
 import Modal from './Modal'
 import SvgContainer from './svg/SvgContainer'
@@ -28,8 +29,8 @@ const TransactionModalRow = ({ text, value, tipLink = '' }) => (
   />
 )
 
-// eslint-disable-next-line complexity
 const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
+  const { chainId } = useWeb3React()
   const t = useTranslations()
   const formatNumber = useNumberFormat()
 
@@ -123,7 +124,10 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                 <TransactionModalRow
                   text={t('transaction-hash')}
                   value={
-                    <EtherscanLink tx={transaction[`transactionHash-${idx}`]} />
+                    <ExplorerLink
+                      chainId={chainId}
+                      tx={transaction[`transactionHash-${idx}`]}
+                    />
                   }
                 />
               )}

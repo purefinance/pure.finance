@@ -3,7 +3,6 @@ import { util } from 'erc-20-lib'
 import debounce from 'lodash.debounce'
 import { useTranslations } from 'next-intl'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import vesperTokens from 'vesper-metadata/src/vesper.tokenlist.json'
 import { isAddress, isHexStrict } from 'web3-utils'
 
 import PureContext from '../components/context/Pure'
@@ -31,7 +30,7 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
       const addressPromise = isAddress(value)
         ? Promise.resolve(value)
         : Promise.resolve(
-            util.tokenAddress(value, vesperTokens.tokens) ||
+            util.tokenAddress(value, chainId) ||
               library.eth.ens.getAddress(value)
           ).catch(function (err) {
             console.log(err)

@@ -9,7 +9,7 @@ import { getSavedStreamsInfo, saveStreamsInfo } from '../utils/streams'
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
 export const useStreams = function () {
-  const { active, account, library } = useWeb3React()
+  const { active, account, chainId, library } = useWeb3React()
   const [secondsPast, setSecondsPast] = useState(1)
   const [futureStreamValues, setFutureStreamValues] = useState({
     incoming: [],
@@ -17,8 +17,8 @@ export const useStreams = function () {
   })
   const paymentStreamsLib = useContext(PaymentStreamsLibContext)
 
-  const getStreams = function (library, address) {
-    const { savedStreams, startBlock } = getSavedStreamsInfo(account)
+  const getStreams = function (address) {
+    const { savedStreams, startBlock } = getSavedStreamsInfo(account, chainId)
     return Promise.all([
       library.eth.getBlockNumber(),
       paymentStreamsLib.getStreams(address, startBlock)
@@ -43,7 +43,7 @@ export const useStreams = function () {
           incoming,
           outgoing
         }
-        saveStreamsInfo(account, {
+        saveStreamsInfo(account, chainId, {
           savedStreams: newStreams,
           startBlock: blockNumber + 1
         })
@@ -52,8 +52,8 @@ export const useStreams = function () {
   }
 
   const { data, error, mutate } = useSWR(
-    active ? [`${account}-streams`, library] : null,
-    ([, library]) => getStreams(library, account).catch(console.error),
+    active ? `${account}-${chainId}-streams` : null,
+    () => getStreams(account).catch(console.error),
     {
       onSuccess() {
         setSecondsPast(1)

@@ -5,7 +5,7 @@ import DPAuctionsContextProvider from './DPAuctionsContext'
 import Layout from './Layout'
 import Transactions from './Transactions'
 
-function PaymentStreamsLayout({ children }) {
+function DPAuctionsLayout({ children }) {
   const t = useTranslations()
   return (
     <TransactionsContextProvider>
@@ -19,4 +19,4 @@ function PaymentStreamsLayout({ children }) {
   )
 }
 
-export default PaymentStreamsLayout
+export default DPAuctionsLayout

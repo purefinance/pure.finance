@@ -70,7 +70,7 @@ const WrapUnwrapEth = function () {
   const handleSubmit = function (e) {
     e.preventDefault()
     if (!active || !isValidNumber) {
-      return
+      return null
     }
 
     const erc20Service = erc20(account)
