@@ -27,11 +27,6 @@ jobs:
           cd site
           BASE_PATH="/pure.finance" npm run build
 
-      - name: Content Files
-        run: |
-          mkdir -p pure.finance
-          rsync -av  purefinance/site/out/ pure.finance/
-
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@master
         with:
@@ -39,6 +34,7 @@ jobs:
           username: ${{ secrets.HOSTINGER_USER }}
           port: ${{ secrets.HOSTINGER_PORT }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
-          source: pure.finance/*
-          target: public_html/purefinance
+          source: purefinance/site/out/*
+          target: public_html/pure.finance
           rm: true
+          strip_components: 3
