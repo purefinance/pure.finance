@@ -20,4 +20,5 @@ function HomePage() {
   return null
 }
 
+export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
 export default HomePage
