@@ -4,7 +4,7 @@
     "eip1559": true,
     "explorer": {
       "name": "Hemi explorer",
-      "url": "https://explorer.hemi.network"
+      "url": "https://explorer.hemi.xyz"
     },
     "decimals": 18,
     "gasOverestimation": 1.5,
@@ -24,7 +24,7 @@
     "eip1559": true,
     "explorer": {
       "name": "Hemi Sepolia explorer",
-      "url": "https://testnet.explorer.hemi.network"
+      "url": "https://testnet.explorer.hemi.xyz"
     },
     "decimals": 18,
     "gasOverestimation": 1.5,
