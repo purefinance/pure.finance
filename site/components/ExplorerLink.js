@@ -2,8 +2,8 @@ const formatShort = text => `${text.substr(0, 6)}...${text.slice(-4)}`
 
 const explorerUrls = {
   1: 'https://etherscan.io',
-  43111: 'https://explorer.hemi.network',
-  743111: 'https://testnet.explorer.hemi.network'
+  43111: 'https://explorer.hemi.xyz',
+  743111: 'https://testnet.explorer.hemi.xyz'
 }
 
 /**
