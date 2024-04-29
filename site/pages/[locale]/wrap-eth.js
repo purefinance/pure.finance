@@ -57,7 +57,7 @@ const WrapUnwrapEth = function () {
 
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
-  const { nativeTokenSymbol = 'hETH' } = findByChainId(chainId)
+  const { nativeTokenSymbol = 'ETH' } = findByChainId(chainId)
 
   const isValidNumber =
     value !== '' &&
@@ -184,7 +184,7 @@ const WrapUnwrapEth = function () {
             />
           </div>
           <Button
-            className="mt-7.5 uppercase"
+            className="mt-7.5 normal-case"
             disabled={
               !active ||
               !isValidNumber ||
