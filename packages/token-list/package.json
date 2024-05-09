@@ -10,6 +10,7 @@
     "deps:check": "dependency-check --no-dev ."
   },
   "dependencies": {
+    "@hemilabs/token-list": "^1.0.0",
     "@sushiswap/default-token-list": "^18.3.0",
     "@uniswap/default-token-list": "^2.1.0",
     "lodash": "4.17.21",

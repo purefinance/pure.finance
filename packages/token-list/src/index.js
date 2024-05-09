@@ -7,7 +7,7 @@ const uniswapTokens = require('@uniswap/default-token-list').tokens
 const vesperTokens = require('vesper-metadata/src/vesper.tokenlist.json').tokens
 
 const customTokens = require('./token-lists/custom.json').tokens
-const hemiTokens = require('./token-lists/hemi.json').tokens
+const hemiTokens = require('@hemilabs/token-list').tokens
 // Source at https://github.com/pangolindex/tokenlists
 const pangolindexTokens = require('./token-lists/pangolindex.json').tokens
 const zapperTokens = require('./token-lists/zapper.json').tokens
