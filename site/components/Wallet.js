@@ -147,18 +147,19 @@ const Wallet = function () {
       />
       {!active ? (
         <button
-          className="px-4 py-2 text-white text-base font-bold bg-black rounded-xl"
+          className="border-slate-200 flex gap-2 items-center px-2 py-2 text-black text-sm border rounded-lg"
           onClick={() => setShowWalletConnector(true)}
         >
+          <SvgContainer name="wallet" />
           {t('connect-wallet')}
         </button>
       ) : (
         <Dropdown
           Selector={({ isOpen }) => (
-            <div className="pl-4 pr-8 py-2 text-white text-base font-bold bg-black rounded-xl">
+            <div className="border-slate-20 flex items-center pl-2 pr-1 py-2 text-black text-sm border rounded-xl">
               {shortenedAccount}
               <SvgContainer
-                className={`absolute inline w-6 h-6 fill-current ${
+                className={`w-6 h-6 fill-current ${
                   isOpen ? 'transform rotate-180' : ''
                 }`}
                 name="caret"

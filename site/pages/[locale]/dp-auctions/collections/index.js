@@ -6,11 +6,11 @@ import { useContext, useState } from 'react'
 import useSWR from 'swr'
 
 import { DPAuctionsContext } from '../../../../components/DPAuctionsContext'
-import DPAuctionsLayout from '../../../../components/DPAuctionsLayout'
 import Dropdown from '../../../../components/Dropdown'
+import DPAuctionsLayout from '../../../../components/layout/DPAuctionsLayout'
+import UtilFormBox from '../../../../components/layout/UtilFormBox'
 import SvgContainer from '../../../../components/svg/SvgContainer'
 import TokenAmount from '../../../../components/TokenAmount'
-import UtilFormBox from '../../../../components/UtilFormBox'
 import { useUpdatingState } from '../../../../hooks/useUpdatingState'
 import { Link } from '../../../../navigation'
 

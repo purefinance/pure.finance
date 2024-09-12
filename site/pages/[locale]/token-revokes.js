@@ -8,9 +8,31 @@ import useSWR from 'swr'
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import { ExplorerLink } from '../../components/ExplorerLink'
-import Layout from '../../components/Layout'
-import UtilFormBox from '../../components/UtilFormBox'
+import TableBox from '../../components/layout/TableBox'
+import ToolsLayout from '../../components/layout/ToolsLayout'
 import { fromUnit } from '../../utils'
+
+const helperText = {
+  title: 'How List and Revoke Token Approvals Work?',
+  text: 'Managing your token allowances is crucial for maintaining control over your assets. Use this tool to view and revoke any of your current token allowances. Simply connect your wallet, review the list of allowances, and revoke any permissions you wish to remove.',
+  questions: [
+    {
+      title: 'Why should I review my token allowances?',
+      answer:
+        'Regularly reviewing your token allowances helps ensure that no unnecessary or potentially risky permissions are granted to third-party applications or users.'
+    },
+    {
+      title: 'How do I revoke a token allowance?',
+      answer:
+        "To revoke a token allowance, click the 'Revoke' button next to the allowance you wish to remove. Confirm the transaction in your wallet, and the allowance will be revoked."
+    },
+    {
+      title: 'Is there a fee to revoke a token allowance?',
+      answer:
+        'There is a transaction fee to revoke a token allowance, with the fee amount varying depending on network conditions.'
+    }
+  ]
+}
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
 const APPROVAL_TOPIC =
@@ -343,14 +365,19 @@ const TokenRevokes = function () {
   }
 
   return (
-    <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
-      <UtilFormBox
-        className="md:w-200"
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('list-and-revoke-token-approvals')}
+      walletConnection
+    >
+      <TableBox
+        text={t('utilities-text.token-revokes')}
         title={t('list-and-revoke-token-approvals')}
       >
-        {tokenApprovals.length > 0 && (
-          <section className="flex flex-col overflow-x-auto">
-            <div className="grid-cols-approval-sm md:grid-cols-approval grid gap-x-12 gap-y-5 place-content-center my-6">
+        {/* {tokenApprovals.length > 0 && (
+          <section className="flex flex-col">
+            <div className="grid grid-cols-4">
               <span className="m-auto text-gray-600 font-bold">
                 {t('token')}
               </span>
@@ -376,38 +403,64 @@ const TokenRevokes = function () {
                       <Balance address={address} />
                     </div>
                     <Button
-                      className="hidden md:block"
                       disabled={!active}
                       onClick={() => handleRevoke(address, spender)}
                       width="w-28"
                     >
                       {t('revoke')}
                     </Button>
-                    <Button
-                      className="flex justify-center mx-auto md:hidden"
-                      disabled={!active}
-                      onClick={() => handleRevoke(address, spender)}
-                      width="w-10"
-                    >
-                      <svg
-                        className="md:hidden"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        width="18"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
-                          fill="white"
-                        />
-                      </svg>
-                    </Button>
                   </React.Fragment>
                 )
               )}
             </div>
           </section>
+        )} */}
+
+        {tokenApprovals.length > 0 && (
+          <div className="w-100 md:w-150 overflow-scroll lg:w-full">
+            <table className="w-150">
+              <thead className="">
+                <tr className="bg-slate-50 text-slate-600 border-slate-200 text-left text-sm font-light border rounded-xl">
+                  <th className="px-2 py-4 w-10 font-medium">{t('token')}</th>
+                  <th className="w-14 font-medium">{t('allowance')}</th>
+                  <th className="w-14 font-medium">{t('balance')}</th>
+                  <th className="w-24 font-medium">{t('spender-address')}</th>
+                  <th className="w-10 font-medium">{t('actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tokenApprovals.map(
+                  ({ address, allowance, transactionHash, spender }) => (
+                    <tr className="border-b" key={transactionHash}>
+                      <td className="px-2 py-4">
+                        <Token address={address} />
+                      </td>
+                      <td>
+                        <Allowance address={address} data={allowance} />
+                      </td>
+                      <td>
+                        <Balance address={address} />
+                      </td>
+                      <td>
+                        <Token address={spender} />
+                      </td>
+                      <td className="px-2 py-4">
+                        <Button
+                          className=""
+                          disabled={!active}
+                          onClick={() => handleRevoke(address, spender)}
+                        >
+                          {t('revoke')}
+                        </Button>
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
+
         {!active && <h3>{t('connect-to-sync')}</h3>}
         {active && syncStatus === SyncStatus.Syncing && (
           <h3>{t('syncing-your-approvals')}</h3>
@@ -417,8 +470,8 @@ const TokenRevokes = function () {
         {tokenApprovals.length === 0 && syncStatus === SyncStatus.Finished && (
           <p>{t('no-approvals')}</p>
         )}
-      </UtilFormBox>
-    </Layout>
+      </TableBox>
+    </ToolsLayout>
   )
 }
 

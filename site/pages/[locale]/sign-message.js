@@ -4,11 +4,22 @@ import { useEffect, useState } from 'react'
 import React from 'react'
 
 import Button from '../../components/Button'
-import { InputTitle, TextArea } from '../../components/Input'
-import Layout from '../../components/Layout'
+import { TextArea } from '../../components/Input'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilFormBox from '../../components/layout/UtilFormBox'
 import SvgContainer from '../../components/svg/SvgContainer'
-import UtilFormBox from '../../components/UtilFormBox'
 
+const helperText = {
+  title: 'How Does a Sign Message Work?',
+  text: "Signing a message creates a unique cryptographic signature using your wallet's private key. This signature can be used to verify that you are the owner of the wallet without revealing your private key. Enter your message, sign it, and share the signature for verification.",
+  questions: [
+    {
+      title: 'How can I verify a signed message?',
+      answer:
+        'To verify a signed message, use the signature and the original message with any signature verification tool. Etherscan offers one such tool, but there are many options available, including web-based platforms and command-line interfaces (CLIs).'
+    }
+  ]
+}
 const useFeedback = function () {
   const { account, active } = useWeb3React()
 
@@ -51,6 +62,7 @@ const SignMessageForm = function () {
 
   const signButton = {
     disabled: !active || !message,
+    className: 'mt-4',
     onClick() {
       web3.eth.personal
         .sign(message, account)
@@ -65,27 +77,44 @@ const SignMessageForm = function () {
     }
   }
 
+  const copySignatureToClipboard = () => {
+    navigator.clipboard.writeText(signature)
+  }
+
   return (
-    <UtilFormBox title={t('sign-message')}>
+    <UtilFormBox
+      text={t('utilities-text.sign-message')}
+      title={t('sign-message')}
+    >
       <TextArea
         placeholder={t('message-placeholder')}
-        rows={5}
-        title={t('message')}
+        rows={3}
         {...messageInput}
       />
-      <Button {...signButton}>{t('sign')}</Button>
       {signature && (
-        <div className="mt-6 break-all">
-          <InputTitle>{t('signature')}</InputTitle>
-          <div className="p-4 w-full bg-gray-50 rounded-2xl">{signature}</div>
+        <div className="bg-slate-100 mt-4 pb-1 pt-2 px-1 break-all rounded-2xl">
+          <div className="flex items-center justify-between px-2">
+            <label className="text-slate-600">{t('signature')}</label>
+            <SvgContainer
+              className="w-5 cursor-pointer"
+              name="copy"
+              onClick={copySignatureToClipboard}
+            />
+          </div>
+          <div className="border-slate-100 mt-2 p-4 w-full bg-white border rounded-2xl">
+            {signature}
+          </div>
         </div>
       )}
+
+      <Button {...signButton}>{t('sign')}</Button>
+
       <p className={`text-center text-sm mt-4 mb-8 ${feedback.color}`}>
         {feedback.message}
       </p>
-      <div className="flex justify-between mx-auto w-full max-w-lg text-gray-400 text-xs">
+      <div className="flex gap-2 items-center justify-center w-full max-w-lg text-gray-400 text-xs">
         <a
-          className="flex items-center p-2 pr-4 hover:text-black bg-gray-50 rounded-full focus:outline-none"
+          className="flex items-center hover:text-black rounded-full focus:outline-none"
           href="https://etherscan.io/verifiedSignatures"
           rel="noreferrer"
           target="_blank"
@@ -93,13 +122,14 @@ const SignMessageForm = function () {
           <SvgContainer className="inline-block mr-2" name="etherscan" />
           {t('verify-signature-etherscan')}
         </a>
+        <span className="text-slate-200">|</span>
         <a
-          className="flex items-center p-2 pr-4 hover:text-black bg-gray-50 rounded-full focus:outline-none"
+          className="flex gap-1 items-center hover:text-black rounded-full focus:outline-none"
           href="https://github.com/hemilabs/pure.finance/blob/master/site/pages/[locale]/sign-message.js"
           rel="noreferrer"
           target="_blank"
         >
-          <SvgContainer className="inline-block mr-2" name="curlybrackets" />
+          <SvgContainer className="inline-block" name="Github" />
           {t('view-source-code')}
         </a>
       </div>
@@ -110,9 +140,14 @@ const SignMessageForm = function () {
 const SignMessage = function () {
   const t = useTranslations()
   return (
-    <Layout title={t('sign-message')} walletConnection>
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('sign-message')}
+      walletConnection
+    >
       <SignMessageForm />
-    </Layout>
+    </ToolsLayout>
   )
 }
 

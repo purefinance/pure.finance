@@ -1,23 +1,16 @@
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
-import { defaultLocale, locales } from '../../navigation'
-import { homepageRedirect } from '../index'
+import HomeLayout from '../../components/layout/HomeLayout'
+import UtilitiesTabs from '../../components/UtilitiesTabs'
 
 function HomePage() {
-  const router = useRouter()
+  const t = useTranslations()
 
-  useEffect(
-    function redirectHomepage() {
-      const [language] = navigator.language.split('-')
-      const enabledLanguage = locales.includes(language)
-      router.replace(
-        `/${enabledLanguage ? language : defaultLocale}${homepageRedirect}`
-      )
-    },
-    [router]
+  return (
+    <HomeLayout title={t('tools')}>
+      <UtilitiesTabs />
+    </HomeLayout>
   )
-  return null
 }
 
 export { getStaticProps, getStaticPaths } from '../../utils/staticProps'

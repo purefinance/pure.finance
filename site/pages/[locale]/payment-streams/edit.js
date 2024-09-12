@@ -1,8 +1,8 @@
 import { useTranslations } from 'next-intl'
 
+import PaymentStreamsLayout from '../../../components/layout/PaymentStreamsLayout'
+import UtilFormBox from '../../../components/layout/UtilFormBox'
 import EditStream from '../../../components/payment-streams/EditStream'
-import PaymentStreamsLayout from '../../../components/PaymentStreamsLayout'
-import UtilFormBox from '../../../components/UtilFormBox'
 
 const PaymentStreamsEdit = () => {
   const t = useTranslations()

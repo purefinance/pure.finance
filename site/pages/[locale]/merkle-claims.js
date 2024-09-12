@@ -8,9 +8,27 @@ import watchAsset from 'wallet-watch-asset'
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
-import Layout from '../../components/Layout'
-import UtilFormBox from '../../components/UtilFormBox'
+import InputBalance from '../../components/InputBalance'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilFormBox from '../../components/layout/UtilFormBox'
 import { fromUnit, toFixed } from '../../utils'
+
+const helperText = {
+  title: 'How Merkle Claims works?',
+  text: 'Utilize Merkle trees to claim tokens stored in a MerkleBox contract. This tool allows users to efficiently access their rewards, leveraging the cryptographic structure of Merkle trees to ensure secure and verifiable claims.',
+  questions: [
+    {
+      title: 'What are Merkle Claims?',
+      answer:
+        'Merkle Claims use a Merkle tree structure to securely and efficiently verify and distribute tokens to users based on their claim IDs.'
+    },
+    {
+      title: 'How do I find my Claim ID?',
+      answer:
+        'Your Claim ID is usually provided by the issuer of the rewards. Check the communication or platform where the rewards were announced.'
+    }
+  ]
+}
 
 function MerkleClaims() {
   const t = useTranslations()
@@ -94,37 +112,45 @@ function MerkleClaims() {
   )
 
   return (
-    <Layout title={t('merkle-claims')} walletConnection>
-      <UtilFormBox title={t('merkle-claims')}>
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('merkle-claims')}
+      walletConnection
+    >
+      <UtilFormBox
+        text={t('utilities-text.merkle-claims')}
+        title={t('merkle-claims')}
+      >
         <Input
+          caption={feedback.message}
+          captionColor={feedback.color}
           disabled={!active || claimInProgress}
+          feedback={feedback}
           onChange={handleClaimIDChange}
           placeholder={t('enter-claim-id')}
           title={t('claim-id')}
           value={claimID}
         />
-        <Input
-          className="mb-8"
+        <InputBalance
           disabled
-          placeholder="0.0"
-          suffix={holding && holding.token && holding.token.symbol}
+          placeholder="-"
           title={t('balance')}
+          token={holding && holding.token && holding.token.symbol}
           value={
             holding.amount &&
             toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
           }
         />
         {/* TODO disable the button if not claimable! */}
-        <Button className="flex justify-center" onClick={handleClaimSubmit}>
+        <Button
+          className="flex justify-center mt-8"
+          onClick={handleClaimSubmit}
+        >
           {t('claim')}
         </Button>
-        {feedback.message && (
-          <p className={`text-center text-sm mt-6 ${feedback.color}`}>
-            {feedback.message}
-          </p>
-        )}
       </UtilFormBox>
-    </Layout>
+    </ToolsLayout>
   )
 }
 

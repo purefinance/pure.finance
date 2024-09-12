@@ -1,18 +1,19 @@
 import { useTranslations } from 'next-intl'
 
-import { TransactionsContextProvider } from './context/Transactions'
-import DPAuctionsContextProvider from './DPAuctionsContext'
-import Layout from './Layout'
-import Transactions from './Transactions'
+import { TransactionsContextProvider } from '../context/Transactions'
+import DPAuctionsContextProvider from '../DPAuctionsContext'
+import Transactions from '../Transactions'
+
+import ToolsLayout from './ToolsLayout'
 
 function DPAuctionsLayout({ children }) {
   const t = useTranslations()
   return (
     <TransactionsContextProvider>
       <DPAuctionsContextProvider>
-        <Layout title={t('dp-auctions')} walletConnection>
+        <ToolsLayout title={t('dp-auctions')} walletConnection>
           {children}
-        </Layout>
+        </ToolsLayout>
         <Transactions />
       </DPAuctionsContextProvider>
     </TransactionsContextProvider>

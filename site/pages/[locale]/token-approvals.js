@@ -6,11 +6,29 @@ import { useContext, useEffect, useState } from 'react'
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
-import Layout from '../../components/Layout'
-import UtilFormBox from '../../components/UtilFormBox'
+import InputBalance from '../../components/InputBalance'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilFormBox from '../../components/layout/UtilFormBox'
 import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
+
+const helperText = {
+  title: 'How Token Approvals Work?',
+  text: 'Token approvals allow you to grant permissions to specific addresses to spend your tokens on your behalf. You can approve a specific amount or allow unlimited spending, depending on your needs.',
+  questions: [
+    {
+      title: 'How do I grant token approval?',
+      answer:
+        'To grant token approval, enter the token address or symbol, the spender address, and the allowance amount.'
+    },
+    {
+      title: 'Is there a fee to grant token approvals?',
+      answer:
+        'There is a transaction fee to grant token approvals, with the fee amount varying based on network conditions.'
+    }
+  ]
+}
 
 const useAllowanceInput = function (
   token,
@@ -59,7 +77,7 @@ const useAllowanceInput = function (
   return {
     disabled,
     onChange: handleChange,
-    suffix: token && token.symbol,
+    token: token && token.symbol,
     value: allowance
   }
 }
@@ -152,7 +170,10 @@ const TokenApprovalsForm = function () {
   )
 
   return (
-    <UtilFormBox title={t('token-approvals')}>
+    <UtilFormBox
+      text={t('utilities-text.token-approvals')}
+      title={t('token-approvals')}
+    >
       <Input
         placeholder={t('token-address-placeholder')}
         title={t('token-address')}
@@ -163,17 +184,24 @@ const TokenApprovalsForm = function () {
         title={t('spender-address')}
         {...spenderInput}
       />
-      <Input
-        className="mb-8"
+      <InputBalance
+        className="mb-4"
         suffix={token && token.symbol}
         title={t('allowance')}
         {...allowanceInput}
       />
-      <Button {...approveButton} className="mb-4">
+
+      <p
+        className="text-orange-950 hover:text-orange-500 text-right cursor-pointer"
+        {...infiniteButton}
+      >
+        {t('approve-infinite')}
+      </p>
+
+      <Button {...approveButton} className="mt-4">
         {t('approve-allowance')}
       </Button>
 
-      <Button {...infiniteButton}>{t('approve-infinite')}</Button>
       {feedback.message && (
         <p className={`text-center text-sm mt-6 ${feedback.color}`}>
           {feedback.message}
@@ -186,9 +214,14 @@ const TokenApprovalsForm = function () {
 const TokenApprovals = function () {
   const t = useTranslations()
   return (
-    <Layout title={t('token-approvals')} walletConnection>
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('token-approvals')}
+      walletConnection
+    >
       <TokenApprovalsForm />
-    </Layout>
+    </ToolsLayout>
   )
 }
 

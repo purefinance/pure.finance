@@ -30,7 +30,7 @@ export const ExplorerLink = function ({
   const hash = address ?? tx
   return (
     <a
-      className="m-auto hover:text-black text-gray-400 font-semibold focus:outline-none"
+      className="m-auto text-black hover:text-gray-400 font-semibold focus:outline-none"
       href={url}
       rel="noreferrer"
       target="_blank"

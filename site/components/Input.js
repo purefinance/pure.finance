@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+
+import SvgContainer from './svg/SvgContainer'
 
 const commonInputStyles =
-  'text-base p-4 rounded-xl bg-gray-50 placeholder-gray-400 placeholder-capitalize'
+  'text-base px-4 py-3 rounded-xl bg-white placeholder-slate-400 border placeholder-capitalize'
 
 export const InputTitle = ({ children }) => (
-  <label className="block mb-2.5 text-sm">{children}</label>
+  <label className="text-md text-slate-500 block mb-2.5">{children}</label>
 )
 
 const SimpleInput = props => (
@@ -26,8 +28,27 @@ const SuffixedInput = ({ suffix, ...props }) => (
 
 const Caption = ({ caption, captionColor }) =>
   caption && (
-    <p className={`text-center text-sm mt-2 ${captionColor}`}>{caption}</p>
+    <div className="absolute flex gap-1 items-center">
+      <CaptionIcon captionColor={captionColor} />
+      <p className={` text-sm pr-4 ${captionColor}`}>{caption}</p>
+    </div>
   )
+
+const CaptionIcon = ({ captionColor }) => {
+  const [name, setName] = useState('')
+
+  useEffect(() => {
+    if (captionColor.includes('red')) {
+      setName('error')
+    }
+
+    if (captionColor.includes('green')) {
+      setName('check')
+    }
+  }, [])
+
+  return <SvgContainer className={`w-6 h-6`} name={name} />
+}
 
 const Input = ({
   className = '',
@@ -37,12 +58,11 @@ const Input = ({
   captionColor,
   ...props
 }) => (
-  <div className={`w-full mb-6 ${className}`}>
-    {title && <InputTitle>{title}</InputTitle>}
+  <div className={`w-full flex items-center justify-end mb-6 ${className}`}>
     {suffix ? (
-      <SuffixedInput suffix={suffix} {...props} />
+      <SuffixedInput suffix={suffix} {...props} placeholder={title} />
     ) : (
-      <SimpleInput {...props} />
+      <SimpleInput {...props} placeholder={title} />
     )}
     {caption && <Caption caption={caption} captionColor={captionColor} />}
   </div>
