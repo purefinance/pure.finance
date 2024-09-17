@@ -12,28 +12,6 @@ import TableBox from '../../components/layout/TableBox'
 import ToolsLayout from '../../components/layout/ToolsLayout'
 import { fromUnit } from '../../utils'
 
-const helperText = {
-  title: 'How List and Revoke Token Approvals Work?',
-  text: 'Managing your token allowances is crucial for maintaining control over your assets. Use this tool to view and revoke any of your current token allowances. Simply connect your wallet, review the list of allowances, and revoke any permissions you wish to remove.',
-  questions: [
-    {
-      title: 'Why should I review my token allowances?',
-      answer:
-        'Regularly reviewing your token allowances helps ensure that no unnecessary or potentially risky permissions are granted to third-party applications or users.'
-    },
-    {
-      title: 'How do I revoke a token allowance?',
-      answer:
-        "To revoke a token allowance, click the 'Revoke' button next to the allowance you wish to remove. Confirm the transaction in your wallet, and the allowance will be revoked."
-    },
-    {
-      title: 'Is there a fee to revoke a token allowance?',
-      answer:
-        'There is a transaction fee to revoke a token allowance, with the fee amount varying depending on network conditions.'
-    }
-  ]
-}
-
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
 const APPROVAL_TOPIC =
   '0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925'
@@ -348,9 +326,28 @@ const TokenRevokes = function () {
   const { active } = useWeb3React()
   const { erc20 } = useContext(PureContext)
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.token-revokes')
   const [isRevoking, setIsRevoking] = useState(false)
 
   const { tokenApprovals, syncStatus, setSyncStatus } = useTokenApprovals()
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('why-review-question'),
+        answer: tHelperText('why-review-answer')
+      },
+      {
+        title: tHelperText('how-revoke-question'),
+        answer: tHelperText('how-revoke-answer')
+      },
+      {
+        title: tHelperText('fee-question'),
+        answer: tHelperText('fee-answer')
+      }
+    ]
+  }
 
   const handleRevoke = function (address, spender) {
     if (!active) {

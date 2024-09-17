@@ -2,7 +2,6 @@ import { useTranslations } from 'next-intl'
 import { useContext } from 'react'
 
 import { Link } from '../../navigation'
-
 import PureContext from '../context/Pure'
 import Dropdown from '../Dropdown'
 import SvgContainer from '../svg/SvgContainer'
@@ -35,7 +34,7 @@ const Breadcrumb = function ({ title }) {
           {utilities.map(({ title, href, selected }) => (
             <Link href={href} key={title}>
               <div className="hover:bg-slate-50 flex items-center justify-between px-3 py-2 rounded-md">
-                <li className={`${selected ? 'text-black' : ''} `}>{title}</li>
+                <li className={selected ? 'text-black' : undefined}>{title}</li>
                 {selected && <SvgContainer name="check" width="24" />}
               </div>
             </Link>

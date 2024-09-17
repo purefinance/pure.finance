@@ -9,17 +9,6 @@ import ToolsLayout from '../../components/layout/ToolsLayout'
 import UtilFormBox from '../../components/layout/UtilFormBox'
 import SvgContainer from '../../components/svg/SvgContainer'
 
-const helperText = {
-  title: 'How Does a Sign Message Work?',
-  text: "Signing a message creates a unique cryptographic signature using your wallet's private key. This signature can be used to verify that you are the owner of the wallet without revealing your private key. Enter your message, sign it, and share the signature for verification.",
-  questions: [
-    {
-      title: 'How can I verify a signed message?',
-      answer:
-        'To verify a signed message, use the signature and the original message with any signature verification tool. Etherscan offers one such tool, but there are many options available, including web-based platforms and command-line interfaces (CLIs).'
-    }
-  ]
-}
 const useFeedback = function () {
   const { account, active } = useWeb3React()
 
@@ -139,6 +128,19 @@ const SignMessageForm = function () {
 
 const SignMessage = function () {
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.sign-message')
+
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('how-verify-question'),
+        answer: tHelperText('how-verify-answer')
+      }
+    ]
+  }
+
   return (
     <ToolsLayout
       breadcrumb

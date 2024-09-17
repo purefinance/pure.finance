@@ -11,7 +11,7 @@ const Balance = ({ balance, showMax, setMax }) => {
       <label className="text-black text-sm">{balance}</label>
       {showMax && (
         <label className="text-orange-950 ml-1 cursor-pointer" onClick={setMax}>
-          MAX
+          {t('max')}
         </label>
       )}
     </div>

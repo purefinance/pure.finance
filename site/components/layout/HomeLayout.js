@@ -9,12 +9,10 @@ const HomeLayout = ({ children, title }) => (
   <>
     <Head title={title} />
     <div className={`w-full ${inter.className}`}>
-      <div className="">
-        <Navbar />
-        <Hero />
-        <div className="container">{children}</div>
-        <Footer />
-      </div>
+      <Navbar />
+      <Hero />
+      <div className="container">{children}</div>
+      <Footer />
     </div>
   </>
 )

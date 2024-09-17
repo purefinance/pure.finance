@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import SvgContainer from './svg/SvgContainer'
 
@@ -35,17 +35,15 @@ const Caption = ({ caption, captionColor }) =>
   )
 
 const CaptionIcon = ({ captionColor }) => {
-  const [name, setName] = useState('')
+  let name = ''
 
-  useEffect(() => {
-    if (captionColor.includes('red')) {
-      setName('error')
-    }
+  if (captionColor.includes('red')) {
+    name = 'error'
+  }
 
-    if (captionColor.includes('green')) {
-      setName('check')
-    }
-  }, [])
+  if (captionColor.includes('green')) {
+    name = 'check'
+  }
 
   return <SvgContainer className={`w-6 h-6`} name={name} />
 }

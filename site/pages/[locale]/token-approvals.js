@@ -13,23 +13,6 @@ import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
 
-const helperText = {
-  title: 'How Token Approvals Work?',
-  text: 'Token approvals allow you to grant permissions to specific addresses to spend your tokens on your behalf. You can approve a specific amount or allow unlimited spending, depending on your needs.',
-  questions: [
-    {
-      title: 'How do I grant token approval?',
-      answer:
-        'To grant token approval, enter the token address or symbol, the spender address, and the allowance amount.'
-    },
-    {
-      title: 'Is there a fee to grant token approvals?',
-      answer:
-        'There is a transaction fee to grant token approvals, with the fee amount varying based on network conditions.'
-    }
-  ]
-}
-
 const useAllowanceInput = function (
   token,
   spender,
@@ -213,6 +196,23 @@ const TokenApprovalsForm = function () {
 
 const TokenApprovals = function () {
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.token-approvals')
+
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('how-grant-question'),
+        answer: tHelperText('how-grant-answer')
+      },
+      {
+        title: tHelperText('fee-question'),
+        answer: tHelperText('fee-answer')
+      }
+    ]
+  }
+
   return (
     <ToolsLayout
       breadcrumb

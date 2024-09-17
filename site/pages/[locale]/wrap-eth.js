@@ -20,45 +20,6 @@ const Operation = {
   Wrap: 1
 }
 
-const helperText = {
-  title: 'How Wrap/Unwrap ETH Works?',
-  text: (
-    <>
-      <p>
-        <span className="text-black">Wrapping ETH</span> involves depositing ETH
-        into the WETH contract, which holds the ETH and issues an equivalent
-        amount of WETH, an ERC-20 token. WETH enables ETH to be used in various
-        DeFi protocols and applications that require ERC-20 tokens, as ETH
-        itself does not conform to this standard.
-      </p>
-      <p className="mt-2">
-        <span className="text-black">Unwrapping WETH</span> sends it back to the
-        contract, where the WETH tokens are burned, and the equivalent amount of
-        ETH is returned to your wallet. The value of WETH is always pegged 1:1
-        with ETH, allowing for seamless interaction within the Ethereum
-        ecosystem while maintaining the ability to revert to ETH.
-      </p>
-    </>
-  ),
-  questions: [
-    {
-      title: 'What is WETH?',
-      answer:
-        'WETH, or Wrapped ETH, is an ERC-20 token that represents ETH 1:1 and is compatible with most Ethereum-based decentralized applications.'
-    },
-    {
-      title: 'Why should I wrap ETH?',
-      answer:
-        'Wrapping ETH allows you to use your ETH in DeFi applications that require ERC-20 tokens, enabling a wider range of financial activities.'
-    },
-    {
-      title: 'Is there a fee to wrap or unwrap ETH?',
-      answer:
-        'There is a transaction fee when wrapping and unwrapping ETH, with the fee amount varying depending on market conditions.'
-    }
-  ]
-}
-
 const useTemporalMessage = function () {
   const state = useState()
   const [text, setText] = state
@@ -89,10 +50,39 @@ const WrapUnwrapEth = function () {
   })
   const [value, setValue] = useState('')
   const t = useTranslations()
-
+  const tHelperText = useTranslations('helper-text.wrap-unwrap')
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
   const { nativeTokenSymbol = 'ETH' } = findByChainId(chainId)
+  const helperText = {
+    title: tHelperText('title'),
+    text: (
+      <>
+        <p>
+          <span className="text-black">{tHelperText('text.wrap-title')}</span>{' '}
+          {tHelperText('text.wrap-content')}
+        </p>
+        <p className="mt-2">
+          <span className="text-black">{tHelperText('text.unwrap-title')}</span>{' '}
+          {tHelperText('text.unwrap-content')}
+        </p>
+      </>
+    ),
+    questions: [
+      {
+        title: tHelperText('what-is-question'),
+        answer: tHelperText('what-is-answer')
+      },
+      {
+        title: tHelperText('why-wrap-question'),
+        answer: tHelperText('why-wrap-answer')
+      },
+      {
+        title: tHelperText('fee-question'),
+        answer: tHelperText('fee-answer')
+      }
+    ]
+  }
 
   const isValidNumber =
     value !== '' &&

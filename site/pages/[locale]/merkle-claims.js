@@ -13,25 +13,9 @@ import ToolsLayout from '../../components/layout/ToolsLayout'
 import UtilFormBox from '../../components/layout/UtilFormBox'
 import { fromUnit, toFixed } from '../../utils'
 
-const helperText = {
-  title: 'How Merkle Claims works?',
-  text: 'Utilize Merkle trees to claim tokens stored in a MerkleBox contract. This tool allows users to efficiently access their rewards, leveraging the cryptographic structure of Merkle trees to ensure secure and verifiable claims.',
-  questions: [
-    {
-      title: 'What are Merkle Claims?',
-      answer:
-        'Merkle Claims use a Merkle tree structure to securely and efficiently verify and distribute tokens to users based on their claim IDs.'
-    },
-    {
-      title: 'How do I find my Claim ID?',
-      answer:
-        'Your Claim ID is usually provided by the issuer of the rewards. Check the communication or platform where the rewards were announced.'
-    }
-  ]
-}
-
 function MerkleClaims() {
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.merkle-claims')
   const { active, account } = useWeb3React()
   const { query } = useRouter()
   const [claimID, setClaimID] = useState('')
@@ -39,6 +23,20 @@ function MerkleClaims() {
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
   const [feedback, setFeedback] = useState({ color: 'text-black', message: '' })
   const { merkle } = useContext(PureContext)
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('what-are-question'),
+        answer: tHelperText('what-are-answer')
+      },
+      {
+        title: tHelperText('how-find-question'),
+        answer: tHelperText('how-find-answer')
+      }
+    ]
+  }
 
   const clearFeedback = () => setFeedback({ color: 'text-black', message: '' })
   const setErrorMessage = message =>
