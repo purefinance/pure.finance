@@ -1,66 +1,51 @@
 import { useWeb3React } from '@web3-react/core'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useContext } from 'react'
 
-import { usePathname } from '../navigation'
+import { Link } from '../navigation'
 import utilsConfig from '../utils/utilsConfig.json'
 
-import Tabs from './Tabs'
+import PureContext from './context/Pure'
 
 function UtilitiesTabs() {
   const { chainId } = useWeb3React()
+  const { utilities } = useContext(PureContext)
   const t = useTranslations()
   const pathname = usePathname()
-  const items = [
-    {
-      href: '/merkle-claims',
-      label: t('merkle-claims'),
-      selected: pathname === '/merkle-claims'
-    },
-    {
-      href: '/token-approvals',
-      label: t('token-approvals'),
-      selected: pathname === '/token-approvals'
-    },
-    {
-      href: '/token-revokes',
-      label: t('token-revokes'),
-      selected: pathname === '/token-revokes'
-    },
-    // Payment Streams should go here.
-    {
-      href: '/wrap-eth',
-      label: t('wrap-unwrap'),
-      selected: pathname === '/wrap-eth'
-    },
-    {
-      href: '/sign-message',
-      label: t('sign-message'),
-      selected: pathname === '/sign-message'
-    }
-    // Descending Price Auctions should go here.
-  ]
+
   // Add optional components starting with the last open to keep the array
   // positions constant.
   //
   // Add Descending Price Auctions if Uniswap v2 is supported.
   if (chainId && utilsConfig[chainId]?.dpAuctions.uniswapV2) {
-    items.splice(5, 0, {
+    utilities.splice(5, 0, {
       href: '/dp-auctions',
-      label: t('dp-auctions'),
+      title: t('dp-auctions'),
       selected: pathname === '/dp-auctions'
     })
   }
   // Add Payment Streams if ChainLink is supported.
   if (chainId && utilsConfig[chainId]?.paymentStreams?.chainLink) {
-    items.splice(3, 0, {
+    utilities.splice(3, 0, {
       href: '/payment-streams',
-      label: t('payment-streams'),
+      title: t('payment-streams'),
       selected: pathname === '/payment-streams'
     })
   }
   return (
-    <div className="flex justify-center">
-      <Tabs items={items} />
+    <div className="flex flex-col gap-6 justify-center mt-8 lg:flex-row lg:flex-wrap lg:py-8">
+      {utilities.map(({ title, text, href, onClick = () => null }) => (
+        <Link href={href} key={title} onClick={onClick}>
+          <div
+            className="border-slate-300 hover:bg-slate-100 flex flex-col gap-2 justify-start p-6 w-full h-32 border rounded-xl lg:w-96"
+            key={title}
+          >
+            <h4 className="text-black text-base">{title}</h4>
+            <p className="text-slate-500 text-sm">{text}</p>
+          </div>
+        </Link>
+      ))}
     </div>
   )
 }

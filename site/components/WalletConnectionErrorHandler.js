@@ -15,7 +15,7 @@ const getErrorKey = function (error) {
   } else if (error instanceof UserRejectedRequestErrorInjected) {
     return 'error-rejected-wallet-connection'
   }
-  console.error(error)
+
   return 'error-unknown'
 }
 

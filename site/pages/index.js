@@ -1,7 +1,7 @@
 import { useRedirectToDefaultLocale } from '../hooks/useRedirectToDefaultLocale'
 import { defaultLocale, locales } from '../navigation'
 
-export const homepageRedirect = '/merkle-claims'
+export const homepageRedirect = '/'
 
 function HomePage() {
   useRedirectToDefaultLocale({

@@ -1,23 +1,30 @@
 import { Link } from '../navigation'
 
-import { HemiLogoFull, HemiSymbol } from './HemiLogo'
+import { HemiLogoFull } from './HemiLogo'
+import Breadcrumb from './layout/Breadcrumb'
+import SvgContainer from './svg/SvgContainer'
 import Wallet from './Wallet'
 
-const Navbar = ({ walletConnection }) => (
-  <div className="flex flex-wrap items-center w-full md:h-16 xl:px-0">
-    <div className="w-1/3 md:block">
-      <Link href="/">
-        <div className="w-8 h-8 md:hidden">
-          <HemiSymbol />
+const Navbar = ({ title, walletConnection, breadcrumb }) => (
+  <div className="flex flex-col">
+    <div className="flex items-center justify-between p-8">
+      <div className="flex gap-2 items-center">
+        <Link href="/">
+          <div className="w-20">
+            <HemiLogoFull />
+          </div>
+        </Link>
+        <div className="w-20">
+          <SvgContainer name="tools" />
         </div>
-        <div className="hidden w-28 h-10 md:block">
-          <HemiLogoFull />
+        <div className="hidden md:block">
+          {breadcrumb && <Breadcrumb title={title} />}
         </div>
-      </Link>
+      </div>
+      <div>{walletConnection && <Wallet />}</div>
     </div>
-    <div className="hidden w-1/3 md:block" />
-    <div className="flex justify-center mt-4 w-full md:justify-end md:mt-0 md:w-1/3">
-      {walletConnection && <Wallet />}
+    <div className="md:hidden">
+      {breadcrumb && <Breadcrumb title={title} />}
     </div>
   </div>
 )

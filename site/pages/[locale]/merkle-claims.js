@@ -8,12 +8,14 @@ import watchAsset from 'wallet-watch-asset'
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
-import Layout from '../../components/Layout'
-import UtilFormBox from '../../components/UtilFormBox'
+import InputBalance from '../../components/InputBalance'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilFormBox from '../../components/layout/UtilFormBox'
 import { fromUnit, toFixed } from '../../utils'
 
 function MerkleClaims() {
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.merkle-claims')
   const { active, account } = useWeb3React()
   const { query } = useRouter()
   const [claimID, setClaimID] = useState('')
@@ -21,6 +23,20 @@ function MerkleClaims() {
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
   const [feedback, setFeedback] = useState({ color: 'text-black', message: '' })
   const { merkle } = useContext(PureContext)
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('what-are-question'),
+        answer: tHelperText('what-are-answer')
+      },
+      {
+        title: tHelperText('how-find-question'),
+        answer: tHelperText('how-find-answer')
+      }
+    ]
+  }
 
   const clearFeedback = () => setFeedback({ color: 'text-black', message: '' })
   const setErrorMessage = message =>
@@ -94,37 +110,45 @@ function MerkleClaims() {
   )
 
   return (
-    <Layout title={t('merkle-claims')} walletConnection>
-      <UtilFormBox title={t('merkle-claims')}>
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('merkle-claims')}
+      walletConnection
+    >
+      <UtilFormBox
+        text={t('utilities-text.merkle-claims')}
+        title={t('merkle-claims')}
+      >
         <Input
+          caption={feedback.message}
+          captionColor={feedback.color}
           disabled={!active || claimInProgress}
+          feedback={feedback}
           onChange={handleClaimIDChange}
           placeholder={t('enter-claim-id')}
           title={t('claim-id')}
           value={claimID}
         />
-        <Input
-          className="mb-8"
+        <InputBalance
           disabled
-          placeholder="0.0"
-          suffix={holding && holding.token && holding.token.symbol}
+          placeholder="-"
           title={t('balance')}
+          token={holding && holding.token && holding.token.symbol}
           value={
             holding.amount &&
             toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
           }
         />
         {/* TODO disable the button if not claimable! */}
-        <Button className="flex justify-center" onClick={handleClaimSubmit}>
+        <Button
+          className="flex justify-center mt-8"
+          onClick={handleClaimSubmit}
+        >
           {t('claim')}
         </Button>
-        {feedback.message && (
-          <p className={`text-center text-sm mt-6 ${feedback.color}`}>
-            {feedback.message}
-          </p>
-        )}
       </UtilFormBox>
-    </Layout>
+    </ToolsLayout>
   )
 }
 
