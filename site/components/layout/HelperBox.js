@@ -15,36 +15,40 @@ const HelperBox = ({ helperText, className = '' }) => {
       <div className="flex flex-col justify-between h-full">
         <div>
           {helperText.title && (
-            <h1 className="text-2xl font-normal">{helperText.title}</h1>
+            <h1 className="text-grayscale-950 text-2xl font-normal">
+              {helperText.title}
+            </h1>
           )}
           {helperText.text && (
-            <h4 className="text-slate-500 mt-4 text-sm">{helperText.text}</h4>
+            <h4 className="text-grayscale-500 mt-4 text-sm">
+              {helperText.text}
+            </h4>
           )}
         </div>
         <div className="mt-32">
-          <h4 className="text-slate-500 mb-4 pb-2 text-sm border-b">
+          <h4 className="border-grayscale-300/55 text-grayscale-400 mb-4 pb-2 text-sm border-b">
             {t('got-questions')}
           </h4>
           {helperText.questions.map(({ title, answer }) => (
             <div
-              className="border-slate-20 mt-2 px-4 py-3 border rounded-xl"
+              className="border-grayscale-300/55 mt-2 px-4 py-3 border rounded-xl"
               key={title}
             >
               <Dropdown
                 Selector={({ isOpen }) => (
-                  <div className="flex items-center justify-between text-black text-sm">
+                  <div className="text-grayscale-950 flex items-center justify-between text-sm">
                     {title}
                     <SvgContainer
-                      className={`w-6 h-6 fill-current ${
+                      className={`w-3 text-grayscale-950 ${
                         isOpen ? 'transform rotate-180' : ''
                       }`}
-                      name="caret"
+                      name="chevron"
                     />
                   </div>
                 )}
-                className="text-gray-600 cursor-pointer"
+                className="cursor-pointer"
               >
-                <div className="text-slate-500 py-4 text-sm">{answer}</div>
+                <div className="text-grayscale-500 py-4 text-sm">{answer}</div>
               </Dropdown>
             </div>
           ))}

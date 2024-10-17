@@ -38,11 +38,11 @@ function UtilitiesTabs() {
       {utilities.map(({ title, text, href, onClick = () => null }) => (
         <Link href={href} key={title} onClick={onClick}>
           <div
-            className="border-slate-300 hover:bg-slate-100 flex flex-col gap-2 justify-start p-6 w-full h-32 border rounded-xl lg:w-96"
+            className="border-grayscale-300/55 hover:bg-grayscale-50 shadow-grayscale-950 flex flex-col gap-2 justify-start p-6 w-full h-32 border rounded-xl shadow-sm lg:w-96"
             key={title}
           >
-            <h4 className="text-black text-base">{title}</h4>
-            <p className="text-slate-500 text-sm">{text}</p>
+            <h4 className="text-grayscale-950 text-base">{title}</h4>
+            <p className="text-grayscale-500 text-sm">{text}</p>
           </div>
         </Link>
       ))}
