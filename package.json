@@ -7,9 +7,9 @@
     "build": "npm run lerna:run build",
     "deps:check": "npm run lerna:run deps:check",
     "format:check": "prettier --check .",
+    "postinstall": "lerna bootstrap",
     "lerna:run": "lerna run --stream --concurrency 1",
     "lint": "eslint --cache --quiet .",
-    "postinstall": "lerna bootstrap",
     "test": "npm run lerna:run test",
     "test:e2e": "npm run lerna:run test:e2e"
   },
@@ -41,30 +41,30 @@
     ],
     "overrides": [
       {
-        "files": [
-          "packages/**/*.js"
-        ],
         "extends": [
           "bloq/node",
           "prettier"
+        ],
+        "files": [
+          "packages/**/*.js"
         ]
       },
       {
-        "files": [
-          "*.spec.js"
-        ],
         "extends": [
           "bloq/mocha",
           "prettier"
+        ],
+        "files": [
+          "*.spec.js"
         ]
       },
       {
-        "files": [
-          "site/**/*.js"
-        ],
         "extends": [
           "bloq/next",
           "prettier"
+        ],
+        "files": [
+          "site/**/*.js"
         ],
         "rules": {
           "@next/next/no-html-link-for-pages": [
