@@ -11,20 +11,20 @@ const Breadcrumb = function ({ title }) {
   const { utilities } = useContext(PureContext)
 
   return (
-    <div className="flex flex-row gap-2 items-center px-8 py-4 border md:gap-1 md:px-0 md:border-0">
+    <div className="flex flex-row gap-2 items-center px-8 py-4 border md:gap-1 md:px-0 md:py-0 md:border-0">
       <Link className="text-slate-600 text-sm" href="/">
         Pure Finance {t('tools')}
       </Link>
       <p className="text-slate-400">/</p>
       <Dropdown
         Selector={({ isOpen }) => (
-          <div className="text-orange-950 flex gap-1 items-center px-1 py-2 text-sm rounded-xl">
+          <div className="text-orange-950 flex gap-3 items-center px-1 py-2 text-sm rounded-xl">
             {title}
             <SvgContainer
-              className={`w-6 h-6 text-slate-400 ${
+              className={`w-3 text-grayscale-400 ${
                 isOpen ? 'transform rotate-180' : ''
               }`}
-              name="caret"
+              name="chevron"
             />
           </div>
         )}

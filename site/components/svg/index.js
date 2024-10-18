@@ -2,6 +2,7 @@ import arrows from './Arrows'
 import caret from './Caret'
 import check from './Check'
 import checkmark from './Checkmark'
+import chevron from './Chevron'
 import close from './Close'
 import coinbasewallet from './CoinbaseWallet'
 import copy from './Copy'
@@ -25,6 +26,7 @@ const icons = {
   caret,
   check,
   checkmark,
+  chevron,
   close,
   coinbasewallet,
   copy,

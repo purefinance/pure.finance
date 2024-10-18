@@ -1,9 +1,9 @@
 import { inter } from '../../fonts'
 import Navbar from '../Navbar'
 
-import Footer from './Footer'
 import Head from './Head'
 import HelperBox from './HelperBox'
+import ToolsFooter from './ToolsFooter'
 
 const ToolsLayout = ({
   children,
@@ -14,7 +14,7 @@ const ToolsLayout = ({
 }) => (
   <>
     <Head title={title} />
-    <div className={`w-full h-full ${inter.className} flex`}>
+    <div className={`w-full h-max min-h-screen ${inter.className} flex`}>
       <div className="flex flex-col justify-between lg:w-8/12 xl:w-7/12">
         <div>
           <Navbar
@@ -25,7 +25,7 @@ const ToolsLayout = ({
           <div className="container flex justify-center py-8">{children}</div>
           <HelperBox className="lg:hidden" helperText={helperText} />
         </div>
-        <Footer />
+        <ToolsFooter />
       </div>
       <HelperBox
         className="hidden lg:block lg:w-4/12 xl:w-5/12"

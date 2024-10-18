@@ -131,6 +131,7 @@ function MerkleClaims() {
           value={claimID}
         />
         <InputBalance
+          className="mt-4"
           disabled
           placeholder="-"
           title={t('balance')}
@@ -143,6 +144,7 @@ function MerkleClaims() {
         {/* TODO disable the button if not claimable! */}
         <Button
           className="flex justify-center mt-8"
+          disabled={!claimID}
           onClick={handleClaimSubmit}
         >
           {t('claim')}

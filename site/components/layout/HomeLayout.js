@@ -1,9 +1,9 @@
 import { inter } from '../../fonts'
 import Navbar from '../Navbar'
 
-import Footer from './Footer'
 import Head from './Head'
 import Hero from './Hero'
+import HomeFooter from './HomeFooter'
 
 const HomeLayout = ({ children, title }) => (
   <>
@@ -12,7 +12,9 @@ const HomeLayout = ({ children, title }) => (
       <Navbar />
       <Hero />
       <div className="container">{children}</div>
-      <Footer />
+      <div className="container">
+        <HomeFooter />
+      </div>
     </div>
   </>
 )
