@@ -1,17 +1,7 @@
 {
   "43111": {
-    "dp-auctions": {
-      "address": ""
-    },
-    "merkle": {
-      "address": ""
-    },
-    "payment-streams": {
-      "address": "",
-      "birthblock": ""
-    },
-    "sablier": {
-      "address": ""
+    "merkleClaim": {
+      "address": "0x112de51b708c77C628532120Ffe2c0200f067399"
     }
   },
   "743111": {
