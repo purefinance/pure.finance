@@ -56,13 +56,3 @@ Then run the tests:
 ```sh
 npm run test:e2e
 ```
-
-## Deployment
-
-```sh
-npm ci
-cd site
-npm run build
-```
-
-Then upload the folder `site/out` to the hosting server.
