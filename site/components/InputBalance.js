@@ -6,9 +6,9 @@ const Balance = ({ balance, showMax, setMax }) => {
   const t = useTranslations()
 
   return (
-    <div className="flex gap-1 items-center">
+    <div className="flex items-center gap-1">
       <span className="text-slate-500">{t('balance')}:</span>
-      <label className="text-black text-sm">{balance}</label>
+      <label className="text-sm text-black">{balance}</label>
       {showMax && (
         <label className="text-orange-950 ml-1 cursor-pointer" onClick={setMax}>
           {t('max')}
@@ -19,9 +19,9 @@ const Balance = ({ balance, showMax, setMax }) => {
 }
 
 const Token = ({ token }) => (
-  <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-2">
     <TokenContainer name={token} />
-    <label className="text-black text-base">{token}</label>
+    <label className="text-base text-black">{token}</label>
   </div>
 )
 
@@ -34,16 +34,16 @@ const InputBalance = ({
   setMax,
   ...props
 }) => (
-  <div className={`w-full bg-slate-50 px-6 py-6 rounded-xl ${className}`}>
+  <div className={`bg-slate-50 w-full rounded-xl px-6 py-6 ${className}`}>
     {title && (
-      <label className="text-md text-slate-500 block mb-2.5">{title}</label>
+      <label className="text-md text-slate-500 mb-2.5 block">{title}</label>
     )}
     <div className="flex items-center text-right">
       <input
-        className="bg-slate-50 placeholder-black w-full text-black text-4xl focus:outline-none"
+        className="bg-slate-50 focus:outline-none w-full text-4xl text-black placeholder-black"
         {...props}
       />
-      <div className="flex flex-col gap-2 items-end">
+      <div className="flex flex-col items-end gap-2">
         {token && <Token token={token} />}
         {balance && (
           <Balance balance={balance} setMax={setMax} showMax={showMax} />

@@ -5,7 +5,7 @@ import { HemiLogoDashed } from '../HemiLogo'
 const Hero = () => {
   const t = useTranslations()
   return (
-    <div className="border-orange-950 from-orange-opacity relative flex flex-col items-center justify-center -mt-24 pb-20 px-8 bg-gradient-to-t border-b overflow-hidden">
+    <div className="border-orange-950 from-orange-opacity relative -mt-24 flex flex-col items-center justify-center overflow-hidden border-b bg-gradient-to-t px-8 pb-20">
       <div className="relative flex justify-center">
         <div className="w-128 absolute">
           <HemiLogoDashed />

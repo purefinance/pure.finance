@@ -81,7 +81,7 @@ const SignMessageForm = function () {
         {...messageInput}
       />
       {signature && (
-        <div className="bg-slate-100 mt-4 pb-1 pt-2 px-1 break-all rounded-2xl">
+        <div className="bg-slate-100 mt-4 break-all rounded-2xl px-1 pb-1 pt-2">
           <div className="flex items-center justify-between px-2">
             <label className="text-slate-600">{t('signature')}</label>
             <SvgContainer
@@ -90,7 +90,7 @@ const SignMessageForm = function () {
               onClick={copySignatureToClipboard}
             />
           </div>
-          <div className="border-slate-100 mt-2 p-4 w-full bg-white border rounded-2xl">
+          <div className="border-slate-100 mt-2 w-full rounded-2xl border bg-white p-4">
             {signature}
           </div>
         </div>
@@ -98,22 +98,22 @@ const SignMessageForm = function () {
 
       <Button {...signButton}>{t('sign')}</Button>
 
-      <p className={`text-center text-sm mt-4 mb-8 ${feedback.color}`}>
+      <p className={`mb-8 mt-4 text-center text-sm ${feedback.color}`}>
         {feedback.message}
       </p>
-      <div className="flex gap-2 items-center justify-center w-full max-w-lg text-gray-400 text-xs">
+      <div className="flex w-full max-w-lg items-center justify-center gap-2 text-xs text-gray-400">
         <a
-          className="flex items-center hover:text-black rounded-full focus:outline-none"
+          className="focus:outline-none flex items-center rounded-full hover:text-black"
           href="https://etherscan.io/verifiedSignatures"
           rel="noreferrer"
           target="_blank"
         >
-          <SvgContainer className="inline-block mr-2" name="etherscan" />
+          <SvgContainer className="mr-2 inline-block" name="etherscan" />
           {t('verify-signature-etherscan')}
         </a>
         <span className="text-slate-200">|</span>
         <a
-          className="flex gap-1 items-center hover:text-black rounded-full focus:outline-none"
+          className="focus:outline-none flex items-center gap-1 rounded-full hover:text-black"
           href="https://github.com/hemilabs/pure.finance/blob/master/site/pages/[locale]/sign-message.js"
           rel="noreferrer"
           target="_blank"

@@ -175,7 +175,7 @@ const TokenApprovalsForm = function () {
       />
 
       <p
-        className="text-orange-950 hover:text-orange-500 text-right cursor-pointer"
+        className="text-orange-950 hover:text-orange-500 cursor-pointer text-right"
         {...infiniteButton}
       >
         {t('approve-infinite')}
@@ -186,7 +186,7 @@ const TokenApprovalsForm = function () {
       </Button>
 
       {feedback.message && (
-        <p className={`text-center text-sm mt-6 ${feedback.color}`}>
+        <p className={`mt-6 text-center text-sm ${feedback.color}`}>
           {feedback.message}
         </p>
       )}
