@@ -79,10 +79,10 @@ const createDPAuctionsLib = function (web3, options = {}) {
     auction.winner !== ZERO_ADDRESS
       ? 'won'
       : auction.stopped
-      ? 'stopped'
-      : currentPrice === auction.floor
-      ? 'floored'
-      : 'running'
+        ? 'stopped'
+        : currentPrice === auction.floor
+          ? 'floored'
+          : 'running'
 
   // Add useful information to the auction object such as details on the tokens
   // contained, the payment token, the current price, etc.

@@ -6,13 +6,13 @@ const commonInputStyles =
   'text-base px-4 py-3 rounded-xl bg-white placeholder-slate-400 border placeholder-capitalize'
 
 export const InputTitle = ({ children }) => (
-  <label className="text-md text-slate-500 block mb-2.5">{children}</label>
+  <label className="text-md text-slate-500 mb-2.5 block">{children}</label>
 )
 
 const SimpleInput = props => (
   <input
     {...props}
-    className={`${commonInputStyles} focus:outline-none text-base w-full`}
+    className={`${commonInputStyles} focus:outline-none w-full text-base`}
   />
 )
 
@@ -20,7 +20,7 @@ const SuffixedInput = ({ suffix, ...props }) => (
   <div className={`${commonInputStyles} flex w-full`}>
     <input
       {...props}
-      className="placeholder-capitalize flex-1 tabular-nums bg-transparent focus:outline-none"
+      className="placeholder-capitalize focus:outline-none flex-1 bg-transparent tabular-nums"
     />
     <div className="m-auto w-16">{suffix}</div>
   </div>
@@ -28,9 +28,9 @@ const SuffixedInput = ({ suffix, ...props }) => (
 
 const Caption = ({ caption, captionColor }) =>
   caption && (
-    <div className="absolute flex gap-1 items-center">
+    <div className="absolute flex items-center gap-1">
       <CaptionIcon captionColor={captionColor} />
-      <p className={` text-sm pr-4 ${captionColor}`}>{caption}</p>
+      <p className={`pr-4 text-sm ${captionColor}`}>{caption}</p>
     </div>
   )
 
@@ -45,7 +45,7 @@ const CaptionIcon = ({ captionColor }) => {
     name = 'check'
   }
 
-  return <SvgContainer className={`w-6 h-6`} name={name} />
+  return <SvgContainer className={`h-6 w-6`} name={name} />
 }
 
 const Input = ({
@@ -56,7 +56,7 @@ const Input = ({
   captionColor,
   ...props
 }) => (
-  <div className={`w-full flex items-center justify-end mb-6 ${className}`}>
+  <div className={`mb-6 flex w-full items-center justify-end ${className}`}>
     {suffix ? (
       <SuffixedInput suffix={suffix} {...props} placeholder={title} />
     ) : (
@@ -74,7 +74,7 @@ export const TextArea = ({
   captionColor,
   ...props
 }) => (
-  <div className={`w-full mb-6 ${className}`}>
+  <div className={`mb-6 w-full ${className}`}>
     {title && <InputTitle>{title}</InputTitle>}
     <textarea
       className={`${commonInputStyles} focus:outline-none w-full`}

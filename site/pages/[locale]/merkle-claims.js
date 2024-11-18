@@ -143,7 +143,7 @@ function MerkleClaims() {
         />
         {/* TODO disable the button if not claimable! */}
         <Button
-          className="flex justify-center mt-8"
+          className="mt-8 flex justify-center"
           disabled={!claimID}
           onClick={handleClaimSubmit}
         >

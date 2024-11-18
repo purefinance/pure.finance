@@ -8,7 +8,7 @@ import Wallet from './Wallet'
 const Navbar = ({ title, walletConnection, breadcrumb }) => (
   <div className="flex flex-col">
     <div className="flex items-center justify-between p-8">
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <Link href="/">
           <div className="w-20">
             <HemiLogoFull />

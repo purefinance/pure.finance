@@ -174,7 +174,7 @@ const WrapUnwrapEth = function () {
         title={t('wrap-unwrap-eth', { nativeTokenSymbol })}
       >
         <form className="mx-auto w-full max-w-lg" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-2 items-center justify-center w-full">
+          <div className="flex w-full flex-col items-center justify-center gap-2">
             <InputBalance
               balance={getBalance(originBalance)}
               onChange={e => setValue(e.target.value)}
@@ -216,12 +216,12 @@ const WrapUnwrapEth = function () {
           </Button>
         </form>
         {!!errorMessage && (
-          <p className="mt-6 text-center text-red-600 text-sm">
+          <p className="mt-6 text-center text-sm text-red-600">
             {errorMessage}
           </p>
         )}
         {!!successMessage && (
-          <p className="mt-6 text-center text-green-400 text-sm">
+          <p className="mt-6 text-center text-sm text-green-400">
             {successMessage}
           </p>
         )}

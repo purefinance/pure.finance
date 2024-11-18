@@ -1,6 +1,6 @@
 const UtilFormBox = ({ title, text, className, children }) => (
   <div
-    className={`bg-white rounded-2xl px-8 py-12 w-full border border-slate-100 md:max-w-lg ${className}`}
+    className={`border-slate-100 w-full rounded-2xl border bg-white px-8 py-12 md:max-w-lg ${className}`}
   >
     {title && (
       <h1 className="text-grayscale-950 text-2xl font-normal">{title}</h1>

@@ -147,7 +147,7 @@ const Wallet = function () {
       />
       {!active ? (
         <button
-          className="border-slate-200 flex gap-2 items-center px-2 py-2 text-black text-sm border rounded-lg"
+          className="border-slate-200 flex items-center gap-2 rounded-lg border px-2 py-2 text-sm text-black"
           onClick={() => setShowWalletConnector(true)}
         >
           <SvgContainer name="wallet" />
@@ -156,20 +156,20 @@ const Wallet = function () {
       ) : (
         <Dropdown
           Selector={({ isOpen }) => (
-            <div className="border-slate-20 flex items-center pl-2 pr-1 py-2 text-black text-sm border rounded-xl">
+            <div className="border-slate-20 flex items-center rounded-xl border py-2 pl-2 pr-1 text-sm text-black">
               {shortenedAccount}
               <SvgContainer
-                className={`w-6 h-6 fill-current ${
-                  isOpen ? 'transform rotate-180' : ''
+                className={`h-6 w-6 fill-current ${
+                  isOpen ? 'rotate-180 transform' : ''
                 }`}
                 name="caret"
               />
             </div>
           )}
-          className="text-gray-600 cursor-pointer"
+          className="cursor-pointer text-gray-600"
         >
           <ul
-            className="absolute z-10 mt-1 p-2 w-40 text-center bg-white rounded-xl shadow-lg"
+            className="absolute z-10 mt-1 w-40 rounded-xl bg-white p-2 text-center shadow-lg"
             onClick={deactivateConnector}
           >
             {t('disconnect')}
