@@ -3,7 +3,7 @@ import React from 'react'
 import SvgContainer from './svg/SvgContainer'
 
 const commonInputStyles =
-  'text-base px-4 py-3 rounded-xl bg-white placeholder-slate-400 border placeholder-capitalize'
+  'text-base bg-white placeholder-slate-400 placeholder-capitalize'
 
 export const InputTitle = ({ children }) => (
   <label className="text-md text-slate-500 mb-2.5 block">{children}</label>
@@ -28,9 +28,9 @@ const SuffixedInput = ({ suffix, ...props }) => (
 
 const Caption = ({ caption, captionColor }) =>
   caption && (
-    <div className="absolute flex items-center gap-1">
+    <div className="bg-slate-50 -mx-4 -my-3 flex items-center justify-center gap-1 rounded-r-xl border-l px-4">
       <CaptionIcon captionColor={captionColor} />
-      <p className={`pr-4 text-sm ${captionColor}`}>{caption}</p>
+      <p className={`text-center text-base ${captionColor}`}>{caption}</p>
     </div>
   )
 
@@ -56,7 +56,7 @@ const Input = ({
   captionColor,
   ...props
 }) => (
-  <div className={`mb-6 flex w-full items-center justify-end ${className}`}>
+  <div className={`mb-6 flex w-full rounded-xl border px-4 py-3 ${className}`}>
     {suffix ? (
       <SuffixedInput suffix={suffix} {...props} placeholder={title} />
     ) : (

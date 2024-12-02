@@ -54,7 +54,7 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
           .getInfo()
           .then(function (info) {
             onChange(info)
-            setTokenName(info.name)
+            setTokenName(info.symbol)
           })
           .catch(function () {
             if (allowAnyAddress) {
