@@ -14,7 +14,9 @@ const ToolsLayout = ({
 }) => (
   <>
     <Head title={title} />
-    <div className={`h-max min-h-screen w-full ${inter.className} flex`}>
+    <div
+      className={`h-max bg-grayscale-50 min-h-screen w-full ${inter.className} flex`}
+    >
       <div className="flex flex-col justify-between lg:w-8/12 xl:w-7/12">
         <div>
           <Navbar

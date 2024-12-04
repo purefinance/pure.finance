@@ -25,6 +25,7 @@
   "collection": "Collection {collectionId}",
   "connect-to-sync": "Please connect your wallet to search for approvals.",
   "connect-wallet": "Connect Wallet",
+  "connect-wallet-cta": "Connect your EVM Wallet",
   "contains": "Contains",
   "copyright": "© 2024 Hemi Labs, Inc.",
   "create-stream": "Create Stream",

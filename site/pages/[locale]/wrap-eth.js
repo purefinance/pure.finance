@@ -14,6 +14,7 @@ import UtilFormBox from '../../components/layout/UtilFormBox'
 import SvgContainer from '../../components/svg/SvgContainer'
 import { useBalance } from '../../hooks/useBalance'
 import { fromUnit, sweepDust, toFixed, toUnit } from '../../utils'
+import Wallet from '../../components/Wallet'
 
 const Operation = {
   Unwrap: 2,
@@ -201,19 +202,26 @@ const WrapUnwrapEth = function () {
               value={value || ''}
             />
           </div>
-          <Button
-            className="mt-7.5 normal-case"
-            disabled={
-              !active ||
-              !isValidNumber ||
-              (operation === Operation.Wrap && !canWrap) ||
-              (operation === Operation.Unwrap && !canUnwrap)
-            }
-          >
-            {t(operation === Operation.Wrap ? 'wrap' : 'unwrap', {
-              nativeTokenSymbol
-            })}
-          </Button>
+
+          <div className="mt-7.5">
+            {active ? (
+              <Button
+                className="normal-case"
+                disabled={
+                  !active ||
+                  !isValidNumber ||
+                  (operation === Operation.Wrap && !canWrap) ||
+                  (operation === Operation.Unwrap && !canUnwrap)
+                }
+              >
+                {t(operation === Operation.Wrap ? 'wrap' : 'unwrap', {
+                  nativeTokenSymbol
+                })}
+              </Button>
+            ) : (
+              <Wallet cta="true" />
+            )}
+          </div>
         </form>
         {!!errorMessage && (
           <p className="mt-6 text-center text-sm text-red-600">

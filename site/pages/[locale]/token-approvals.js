@@ -12,6 +12,7 @@ import UtilFormBox from '../../components/layout/UtilFormBox'
 import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
+import Wallet from '../../components/Wallet'
 
 const useAllowanceInput = function (
   token,
@@ -91,7 +92,7 @@ const useFeedback = function () {
 
 const TokenApprovalsForm = function () {
   const t = useTranslations()
-  const { account } = useWeb3React()
+  const { account, active } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
   const { query } = useRouter()
 
@@ -181,9 +182,13 @@ const TokenApprovalsForm = function () {
         {t('approve-infinite')}
       </p>
 
-      <Button {...approveButton} className="mt-4">
-        {t('approve-allowance')}
-      </Button>
+      <div className="mt-4">
+        {active ? (
+          <Button {...approveButton}>{t('approve-allowance')}</Button>
+        ) : (
+          <Wallet cta="true" />
+        )}
+      </div>
 
       {feedback.message && (
         <p className={`mt-6 text-center text-sm ${feedback.color}`}>

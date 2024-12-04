@@ -9,6 +9,7 @@ import Dropdown from './Dropdown'
 import SvgContainer from './svg/SvgContainer'
 import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'
+import Button from './Button'
 const persistLastConnectorKey = 'lastConnector'
 
 const persistLastConnector = connectorName =>
@@ -18,7 +19,25 @@ const getLastConnector = () =>
 const removeLastConnector = () =>
   window.localStorage.removeItem(persistLastConnectorKey)
 
-const Wallet = function () {
+const WalletButton = function ({ cta = false, onClick }) {
+  const t = useTranslations()
+
+  if (cta) {
+    return <Button onClick={onClick}>{t('connect-wallet-cta')}</Button>
+  }
+
+  return (
+    <button
+      className="border-slate-200 flex items-center gap-2 rounded-lg border px-2 py-2 text-sm text-black"
+      onClick={onClick}
+    >
+      <SvgContainer name="wallet" />
+      {t('connect-wallet')}
+    </button>
+  )
+}
+
+const Wallet = function ({ cta = false }) {
   const { account, active, activate, connector, deactivate, error, setError } =
     useWeb3React()
   const t = useTranslations()
@@ -146,13 +165,7 @@ const Wallet = function () {
         onRequestClose={() => setErrorModalOpen(false)}
       />
       {!active ? (
-        <button
-          className="border-slate-200 flex items-center gap-2 rounded-lg border px-2 py-2 text-sm text-black"
-          onClick={() => setShowWalletConnector(true)}
-        >
-          <SvgContainer name="wallet" />
-          {t('connect-wallet')}
-        </button>
+        <WalletButton cta={cta} onClick={() => setShowWalletConnector(true)} />
       ) : (
         <Dropdown
           Selector={({ isOpen }) => (
