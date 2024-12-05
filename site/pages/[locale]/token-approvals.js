@@ -12,7 +12,7 @@ import UtilFormBox from '../../components/layout/UtilFormBox'
 import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
-import Wallet from '../../components/Wallet'
+import CallToAction from '../../components/CallToAction'
 
 const useAllowanceInput = function (
   token,
@@ -92,7 +92,7 @@ const useFeedback = function () {
 
 const TokenApprovalsForm = function () {
   const t = useTranslations()
-  const { account, active } = useWeb3React()
+  const { account } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
   const { query } = useRouter()
 
@@ -183,11 +183,9 @@ const TokenApprovalsForm = function () {
       </p>
 
       <div className="mt-4">
-        {active ? (
+        <CallToAction>
           <Button {...approveButton}>{t('approve-allowance')}</Button>
-        ) : (
-          <Wallet cta="true" />
-        )}
+        </CallToAction>
       </div>
 
       {feedback.message && (

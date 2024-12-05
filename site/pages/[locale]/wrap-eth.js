@@ -14,7 +14,7 @@ import UtilFormBox from '../../components/layout/UtilFormBox'
 import SvgContainer from '../../components/svg/SvgContainer'
 import { useBalance } from '../../hooks/useBalance'
 import { fromUnit, sweepDust, toFixed, toUnit } from '../../utils'
-import Wallet from '../../components/Wallet'
+import CallToAction from '../../components/CallToAction'
 
 const Operation = {
   Unwrap: 2,
@@ -204,7 +204,7 @@ const WrapUnwrapEth = function () {
           </div>
 
           <div className="mt-7.5">
-            {active ? (
+            <CallToAction>
               <Button
                 className="normal-case"
                 disabled={
@@ -218,9 +218,7 @@ const WrapUnwrapEth = function () {
                   nativeTokenSymbol
                 })}
               </Button>
-            ) : (
-              <Wallet cta="true" />
-            )}
+            </CallToAction>
           </div>
         </form>
         {!!errorMessage && (

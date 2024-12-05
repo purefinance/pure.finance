@@ -23,12 +23,12 @@ const WalletButton = function ({ cta = false, onClick }) {
   const t = useTranslations()
 
   if (cta) {
-    return <Button onClick={onClick}>{t('connect-wallet-cta')}</Button>
+    return <Button onClick={onClick}>{t('connect-wallet')}</Button>
   }
 
   return (
     <button
-      className="border-slate-200 flex items-center gap-2 rounded-lg border px-2 py-2 text-sm text-black"
+      className="border-slate-200 flex items-center gap-2 rounded-lg border p-2 text-sm text-black"
       onClick={onClick}
     >
       <SvgContainer name="wallet" />
@@ -37,7 +37,7 @@ const WalletButton = function ({ cta = false, onClick }) {
   )
 }
 
-const Wallet = function ({ cta = false }) {
+const Wallet = function ({ cta }) {
   const { account, active, activate, connector, deactivate, error, setError } =
     useWeb3React()
   const t = useTranslations()
