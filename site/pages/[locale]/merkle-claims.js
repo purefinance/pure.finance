@@ -12,6 +12,7 @@ import InputBalance from '../../components/InputBalance'
 import ToolsLayout from '../../components/layout/ToolsLayout'
 import UtilFormBox from '../../components/layout/UtilFormBox'
 import { fromUnit, toFixed } from '../../utils'
+import CallToAction from '../../components/CallToAction'
 
 function MerkleClaims() {
   const t = useTranslations()
@@ -142,13 +143,17 @@ function MerkleClaims() {
           }
         />
         {/* TODO disable the button if not claimable! */}
-        <Button
-          className="mt-8 flex justify-center"
-          disabled={!claimID}
-          onClick={handleClaimSubmit}
-        >
-          {t('claim')}
-        </Button>
+        <div className="mt-8">
+          <CallToAction>
+            <Button
+              className="flex justify-center"
+              disabled={!claimID}
+              onClick={handleClaimSubmit}
+            >
+              {t('claim')}
+            </Button>
+          </CallToAction>
+        </div>
       </UtilFormBox>
     </ToolsLayout>
   )

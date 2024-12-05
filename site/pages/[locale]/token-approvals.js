@@ -12,6 +12,7 @@ import UtilFormBox from '../../components/layout/UtilFormBox'
 import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
+import CallToAction from '../../components/CallToAction'
 
 const useAllowanceInput = function (
   token,
@@ -181,9 +182,11 @@ const TokenApprovalsForm = function () {
         {t('approve-infinite')}
       </p>
 
-      <Button {...approveButton} className="mt-4">
-        {t('approve-allowance')}
-      </Button>
+      <div className="mt-4">
+        <CallToAction>
+          <Button {...approveButton}>{t('approve-allowance')}</Button>
+        </CallToAction>
+      </div>
 
       {feedback.message && (
         <p className={`mt-6 text-center text-sm ${feedback.color}`}>

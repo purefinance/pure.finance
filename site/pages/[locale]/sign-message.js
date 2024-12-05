@@ -8,6 +8,7 @@ import { TextArea } from '../../components/Input'
 import ToolsLayout from '../../components/layout/ToolsLayout'
 import UtilFormBox from '../../components/layout/UtilFormBox'
 import SvgContainer from '../../components/svg/SvgContainer'
+import CallToAction from '../../components/CallToAction'
 
 const useFeedback = function () {
   const { account, active } = useWeb3React()
@@ -96,7 +97,9 @@ const SignMessageForm = function () {
         </div>
       )}
 
-      <Button {...signButton}>{t('sign')}</Button>
+      <CallToAction>
+        <Button {...signButton}>{t('sign')}</Button>
+      </CallToAction>
 
       <p className={`mb-8 mt-4 text-center text-sm ${feedback.color}`}>
         {feedback.message}
