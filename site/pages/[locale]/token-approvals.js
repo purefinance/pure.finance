@@ -18,28 +18,13 @@ import CallToAction from '../../components/CallToAction'
 const decimalRegex = /^(([1-9][0-9]*)?[0-9](\.[0-9]*)?|\.[0-9]+)$/
 const infiniteSymbol = '∞'
 
-const isInfinite = function (allowance, token) {
-  if (!allowance || !token) {
-    return false
-  }
-
-  if (allowance === infiniteSymbol) {
-    return true
-  }
-
-  if (decimalRegex.test(allowance)) {
-    return new Big(allowance).gt(token.totalSupply)
-  }
-
-  return false
-}
-
 const useAllowanceInput = function (
   token,
   spender,
   allowance,
   setAllowance,
-  setFeedback
+  setFeedback,
+  setIsInfinite
 ) {
   const { account, active, chainId } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
@@ -48,9 +33,20 @@ const useAllowanceInput = function (
   useEffect(
     function () {
       setAllowance('')
+      setIsInfinite(false)
     },
     [active, token, spender]
   )
+
+  const setAllowanceInfinity = function (allowance) {
+    const isInfinite =
+      decimalRegex.test(allowance) && new Big(allowance).gt(token.totalSupply)
+
+    setIsInfinite(isInfinite)
+    setAllowance(
+      isInfinite ? infiniteSymbol : fromUnit(allowance, token.decimals)
+    )
+  }
 
   useEffect(
     function () {
@@ -61,11 +57,8 @@ const useAllowanceInput = function (
       tokenApprovals
         .allowance(token.address, account, spender.address)
         .then(function (currentAllowance) {
-          setAllowance(
-            isInfinite(currentAllowance, token)
-              ? infiniteSymbol
-              : fromUnit(currentAllowance, token.decimals)
-          )
+          ;``
+          setAllowanceInfinity(currentAllowance)
         })
         .catch(function (err) {
           setFeedback('error', err.message)
@@ -76,9 +69,8 @@ const useAllowanceInput = function (
 
   const handleChange = function (e) {
     if (e.target.value === '' || decimalRegex.test(e.target.value)) {
-      setAllowance(
-        isInfinite(e.target.value, token) ? infiniteSymbol : e.target.value
-      )
+      setIsInfinite(false)
+      setAllowance(e.target.value)
     }
   }
 
@@ -127,13 +119,15 @@ const TokenApprovalsForm = function () {
 
   const [allowance, setAllowance] = useState('')
   const [feedback, setFeedback] = useFeedback()
+  const [isInfinite, setIsInfinite] = useState(false)
 
   const allowanceInput = useAllowanceInput(
     token,
     spender,
     allowance,
     setAllowance,
-    setFeedback
+    setFeedback,
+    setIsInfinite
   )
 
   // Depending on the progress state of the approval operation, set the feedback
@@ -157,7 +151,7 @@ const TokenApprovalsForm = function () {
   const approveButton = useFormButton(
     approveDisabled,
     () =>
-      isInfinite(allowance, token)
+      isInfinite
         ? tokenApprovals.approveInfinite(token.address, spender.address)
         : tokenApprovals.approve(
             token.address,
@@ -166,6 +160,11 @@ const TokenApprovalsForm = function () {
           ),
     onProgress
   )
+
+  const allowInfinite = function () {
+    setIsInfinite(true)
+    setAllowance(infiniteSymbol)
+  }
 
   return (
     <UtilFormBox
@@ -192,7 +191,7 @@ const TokenApprovalsForm = function () {
       <div className="flex justify-end">
         <button
           disabled={approveDisabled}
-          onClick={() => setAllowance(infiniteSymbol)}
+          onClick={allowInfinite}
           className={`${
             !approveDisabled
               ? 'text-orange-950 hover:text-orange-500 cursor-pointer'
