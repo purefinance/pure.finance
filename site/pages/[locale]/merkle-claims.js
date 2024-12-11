@@ -142,12 +142,11 @@ function MerkleClaims() {
             toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
           }
         />
-        {/* TODO disable the button if not claimable! */}
         <div className="mt-8">
           <CallToAction>
             <Button
               className="flex justify-center"
-              disabled={!claimID}
+              disabled={!holding.isClaimable}
               onClick={handleClaimSubmit}
             >
               {t('claim')}
