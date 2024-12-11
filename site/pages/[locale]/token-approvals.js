@@ -57,7 +57,6 @@ const useAllowanceInput = function (
       tokenApprovals
         .allowance(token.address, account, spender.address)
         .then(function (currentAllowance) {
-          ;``
           setAllowanceInfinity(currentAllowance)
         })
         .catch(function (err) {
