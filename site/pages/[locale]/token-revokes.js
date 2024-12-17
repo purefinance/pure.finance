@@ -398,6 +398,7 @@ const TokenRevokes = function () {
       <TableBox
         text={t('utilities-text.token-revokes')}
         title={t('list-and-revoke-token-approvals')}
+        className="shadow-lg"
       >
         <div className="w-100 md:w-150 overflow-auto lg:w-full">
           <table className="w-150">
@@ -428,7 +429,6 @@ const TokenRevokes = function () {
                     </td>
                     <td className="px-2 py-4">
                       <Button
-                        className=""
                         disabled={!active}
                         onClick={() => handleRevoke(address, spender)}
                       >
