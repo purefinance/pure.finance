@@ -399,10 +399,10 @@ const TokenRevokes = function () {
         text={t('utilities-text.token-revokes')}
         title={t('list-and-revoke-token-approvals')}
       >
-        <div className="w-100 md:w-150 overflow-scroll lg:w-full">
+        <div className="w-100 md:w-150 overflow-auto lg:w-full">
           <table className="w-150">
-            <thead className="">
-              <tr className="bg-slate-50 text-slate-600 border-slate-200 rounded-xl border text-left text-sm font-light">
+            <thead>
+              <tr className="bg-slate-50 text-slate-600 border-slate-200 rounded-xl border text-left text-sm">
                 <th className="w-10 px-2 py-4 font-medium">{t('token')}</th>
                 <th className="w-14 font-medium">{t('allowance')}</th>
                 <th className="w-14 font-medium">{t('balance')}</th>
@@ -411,34 +411,33 @@ const TokenRevokes = function () {
               </tr>
             </thead>
             <tbody>
-              {tokenApprovals.length > 0 &&
-                tokenApprovals.map(
-                  ({ address, allowance, transactionHash, spender }) => (
-                    <tr className="border-b" key={transactionHash}>
-                      <td className="px-2 py-4">
-                        <Token address={address} />
-                      </td>
-                      <td>
-                        <Allowance address={address} data={allowance} />
-                      </td>
-                      <td>
-                        <Balance address={address} />
-                      </td>
-                      <td>
-                        <Token address={spender} />
-                      </td>
-                      <td className="px-2 py-4">
-                        <Button
-                          className=""
-                          disabled={!active}
-                          onClick={() => handleRevoke(address, spender)}
-                        >
-                          {t('revoke')}
-                        </Button>
-                      </td>
-                    </tr>
-                  )
-                )}
+              {tokenApprovals.map(
+                ({ address, allowance, transactionHash, spender }) => (
+                  <tr className="border-b" key={transactionHash}>
+                    <td className="px-2 py-4">
+                      <Token address={address} />
+                    </td>
+                    <td>
+                      <Allowance address={address} data={allowance} />
+                    </td>
+                    <td>
+                      <Balance address={address} />
+                    </td>
+                    <td>
+                      <Token address={spender} />
+                    </td>
+                    <td className="px-2 py-4">
+                      <Button
+                        className=""
+                        disabled={!active}
+                        onClick={() => handleRevoke(address, spender)}
+                      >
+                        {t('revoke')}
+                      </Button>
+                    </td>
+                  </tr>
+                )
+              )}
 
               {!active && (
                 <Status icon="exclamation" message={t('connect-to-sync')}>
