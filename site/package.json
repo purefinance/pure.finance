@@ -6,6 +6,8 @@
     "build": "next build",
     "dev": "concurrently --kill-others --names \"Fork,Next\" \"node utils/fork.js\" \"next dev\"",
     "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --ignore-module next-secure-headers --ignore-module eslint-config-next --no-dev ./pages/*.js ./pages/*/*.js ./pages/*/*/*.js ./pages/*/*/*/*.js",
+    "generate:htaccess": "node ./scripts/generateHeaders.js",
+    "postbuild": "npm run generate:htaccess",
     "postinstall": "patch-package || true",
     "preserve": "npm run build",
     "serve": "serve out"
