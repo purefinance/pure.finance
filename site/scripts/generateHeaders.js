@@ -4,9 +4,10 @@ const path = require('path')
 const fontsSrc = ['fonts.gstatic.com']
 
 // The sha256 values represents the hashing of the
-// CSS files after the build and can be obtained
+// Tailwind CSS files after the build and can be obtained
 // by running the application with [npm run serve] and
 // checking the error messages in the web browser console
+// more details in https://github.com/hemilabs/pure.finance/pull/65
 const styleSrc = [
   'fonts.googleapis.com',
   `'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='`,
