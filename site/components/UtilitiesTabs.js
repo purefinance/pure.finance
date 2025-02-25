@@ -18,7 +18,7 @@ function UtilitiesTabs() {
   // positions constant.
   //
   // Add Descending Price Auctions if Uniswap v2 is supported.
-  if (chainId && utilsConfig[chainId]?.dpAuctions.uniswapV2) {
+  if (chainId && utilsConfig[chainId]?.dpAuctions?.uniswapV2) {
     utilities.splice(5, 0, {
       href: '/dp-auctions',
       title: t('dp-auctions'),
