@@ -1,11 +1,11 @@
 import { useWeb3React } from '@web3-react/core'
-import { util } from 'erc-20-lib'
 import debounce from 'lodash.debounce'
 import { useTranslations } from 'next-intl'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { isAddress, isHexStrict } from 'web3-utils'
+import { isHexStrict } from 'web3-utils'
 
 import PureContext from '../components/context/Pure'
+import { resolveAddress } from '../utils/resolveAddress'
 
 const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
   const t = useTranslations()
@@ -27,15 +27,7 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
     debounce(function (value) {
       setTokenError('')
 
-      const addressPromise = isAddress(value)
-        ? Promise.resolve(value)
-        : Promise.resolve(
-            util.tokenAddress(value, chainId) ||
-              library.eth.ens.getAddress(value)
-          ).catch(function (err) {
-            console.log(err)
-            return null
-          })
+      const addressPromise = resolveAddress(library, value)
 
       // eslint-disable-next-line promise/catch-or-return
       addressPromise.then(function (addressFound) {
