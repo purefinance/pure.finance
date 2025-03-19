@@ -16,12 +16,15 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
   const [tokenError, setTokenError] = useState('')
   const [tokenName, setTokenName] = useState('')
 
-  useEffect(() => {
-    onChange(null)
-    setTokenAddress('')
-    setTokenName('')
-    setTokenError('')
-  }, [active, chainId])
+  useEffect(
+    function () {
+      onChange(null)
+      setTokenAddress('')
+      setTokenName('')
+      setTokenError('')
+    },
+    [active, chainId, onChange]
+  )
 
   const delayedGetTokenInfo = useCallback(
     debounce(function (value) {
@@ -58,23 +61,26 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
           })
       })
     }, 1000),
-    [erc20]
+    [allowAnyAddress, erc20, library, onChange, t]
   )
 
-  const handleChange = function (e) {
-    const { value } = e.target
+  const handleChange = useCallback(
+    function (e) {
+      const { value } = e.target
 
-    const re = /^[0-9a-zA-Z.]*$/
-    if (!re.test(e.target.value)) {
-      return
-    }
+      const re = /^[0-9a-zA-Z.]*$/
+      if (!re.test(e.target.value)) {
+        return
+      }
 
-    setTokenAddress(value)
-    setTokenName('')
-    setTokenError('')
+      setTokenAddress(value)
+      setTokenName('')
+      setTokenError('')
 
-    delayedGetTokenInfo(value)
-  }
+      delayedGetTokenInfo(value)
+    },
+    [delayedGetTokenInfo]
+  )
 
   useEffect(
     function () {
@@ -83,7 +89,7 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
       }
       handleChange({ target: { value: address } })
     },
-    [address, erc20]
+    [address, erc20, handleChange]
   )
 
   return {
