@@ -1,14 +1,13 @@
+import hemiSocials from 'hemi-socials'
+
 import SocialIconLink from './SocialIconLink'
 
 const Socials = () => (
   <div className="flex gap-3">
-    <SocialIconLink href="https://x.com/hemi_xyz" iconName="twitter" />
-    <SocialIconLink href="https://discord.gg/hemixyz" iconName="discord" />
-    <SocialIconLink href="https://github.com/hemilabs" iconName="github" />
-    <SocialIconLink
-      href="https://www.linkedin.com/company/hemi-labs"
-      iconName="linkedin"
-    />
+    <SocialIconLink href={hemiSocials.twitterUrl} iconName="twitter" />
+    <SocialIconLink href={hemiSocials.discordUrl} iconName="discord" />
+    <SocialIconLink href={hemiSocials.githubUrl} iconName="github" />
+    <SocialIconLink href={hemiSocials.linkedinUrl} iconName="linkedin" />
   </div>
 )
 
