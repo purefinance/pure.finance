@@ -163,6 +163,13 @@ const WrapUnwrapEth = function () {
     setValue(getBalance(originBalance))
   }
 
+  const decimalRegex = /^(([1-9][0-9]*)?[0-9](\.[0-9]*)?|\.[0-9]+)$/
+  const handleChange = function (e) {
+    if (e.target.value === '' || decimalRegex.test(e.target.value)) {
+      setValue(e.target.value)
+    }
+  }
+
   return (
     <ToolsLayout
       breadcrumb
@@ -178,7 +185,7 @@ const WrapUnwrapEth = function () {
           <div className="flex w-full flex-col items-center justify-center gap-2">
             <InputBalance
               balance={getBalance(originBalance)}
-              onChange={e => setValue(e.target.value)}
+              onChange={handleChange}
               placeholder="-"
               setMax={setMax}
               showMax={true}
