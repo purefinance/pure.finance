@@ -77,7 +77,6 @@ const SignMessageForm = function () {
       title={t('sign-message')}
     >
       <TextArea
-        className="rounded-xl border px-4 py-3"
         placeholder={t('message-placeholder')}
         rows={3}
         {...messageInput}
