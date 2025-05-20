@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import React from 'react'
 
 import Button from '../../components/Button'
+import CallToAction from '../../components/CallToAction'
 import { TextArea } from '../../components/Input'
 import ToolsLayout from '../../components/layout/ToolsLayout'
 import UtilFormBox from '../../components/layout/UtilFormBox'
 import SvgContainer from '../../components/svg/SvgContainer'
-import CallToAction from '../../components/CallToAction'
 
 const useFeedback = function () {
   const { account, active } = useWeb3React()
@@ -51,8 +51,8 @@ const SignMessageForm = function () {
   }
 
   const signButton = {
-    disabled: !active || !message,
     className: 'mt-4',
+    disabled: !active || !message,
     onClick() {
       web3.eth.personal
         .sign(message, account)
@@ -67,7 +67,7 @@ const SignMessageForm = function () {
     }
   }
 
-  const copySignatureToClipboard = () => {
+  function copySignatureToClipboard() {
     navigator.clipboard.writeText(signature)
   }
 
@@ -135,14 +135,14 @@ const SignMessage = function () {
   const tHelperText = useTranslations('helper-text.sign-message')
 
   const helperText = {
-    title: tHelperText('title'),
-    text: tHelperText('text'),
     questions: [
       {
-        title: tHelperText('how-verify-question'),
-        answer: tHelperText('how-verify-answer')
+        answer: tHelperText('how-verify-answer'),
+        title: tHelperText('how-verify-question')
       }
-    ]
+    ],
+    text: tHelperText('text'),
+    title: tHelperText('title')
   }
 
   return (

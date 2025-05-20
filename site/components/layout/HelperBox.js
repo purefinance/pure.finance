@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import Dropdown from '../Dropdown'
 import SvgContainer from '../svg/SvgContainer'
 
-const HelperBox = ({ helperText, className = '' }) => {
+function HelperBox({ helperText, className = '' }) {
   const t = useTranslations()
 
   return (
