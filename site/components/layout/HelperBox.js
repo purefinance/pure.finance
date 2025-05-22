@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import Dropdown from '../Dropdown'
 import SvgContainer from '../svg/SvgContainer'
 
-const HelperBox = ({ helperText, className = '' }) => {
+function HelperBox({ helperText, className = '' }) {
   const t = useTranslations()
 
   return (
@@ -29,7 +29,7 @@ const HelperBox = ({ helperText, className = '' }) => {
           </h4>
           {helperText.questions.map(({ title, answer }) => (
             <div
-              className="border-grayscale-300/55 mt-2 rounded-xl border px-4 py-3"
+              className="border-grayscale-300/55 mt-2 rounded-xl border bg-white px-4 py-3 shadow-sm"
               key={title}
             >
               <Dropdown

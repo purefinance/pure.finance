@@ -7,6 +7,7 @@ import { findTokenBySymbol } from 'token-list'
 import watchAsset from 'wallet-watch-asset'
 
 import Button from '../../components/Button'
+import CallToAction from '../../components/CallToAction'
 import PureContext from '../../components/context/Pure'
 import InputBalance from '../../components/InputBalance'
 import ToolsLayout from '../../components/layout/ToolsLayout'
@@ -14,7 +15,6 @@ import UtilFormBox from '../../components/layout/UtilFormBox'
 import SvgContainer from '../../components/svg/SvgContainer'
 import { useBalance } from '../../hooks/useBalance'
 import { fromUnit, sweepDust, toFixed, toUnit } from '../../utils'
-import CallToAction from '../../components/CallToAction'
 
 const Operation = {
   Unwrap: 2,
@@ -27,7 +27,7 @@ const useTemporalMessage = function () {
   useEffect(
     function () {
       if (!text) {
-        return
+        return undefined
       }
       const CLEANUP_TEXT_MS = 5000
       const timeoutId = setTimeout(() => setText(undefined), CLEANUP_TEXT_MS)
@@ -56,7 +56,20 @@ const WrapUnwrapEth = function () {
   const [successMessage, setSuccessMessage] = useTemporalMessage()
   const { nativeTokenSymbol = 'ETH' } = findByChainId(chainId)
   const helperText = {
-    title: tHelperText('title'),
+    questions: [
+      {
+        answer: tHelperText('what-is-answer'),
+        title: tHelperText('what-is-question')
+      },
+      {
+        answer: tHelperText('why-wrap-answer'),
+        title: tHelperText('why-wrap-question')
+      },
+      {
+        answer: tHelperText('fee-answer'),
+        title: tHelperText('fee-question')
+      }
+    ],
     text: (
       <>
         <p>
@@ -69,20 +82,7 @@ const WrapUnwrapEth = function () {
         </p>
       </>
     ),
-    questions: [
-      {
-        title: tHelperText('what-is-question'),
-        answer: tHelperText('what-is-answer')
-      },
-      {
-        title: tHelperText('why-wrap-question'),
-        answer: tHelperText('why-wrap-answer')
-      },
-      {
-        title: tHelperText('fee-question'),
-        answer: tHelperText('fee-answer')
-      }
-    ]
+    title: tHelperText('title')
   }
 
   const isValidNumber =
@@ -132,7 +132,7 @@ const WrapUnwrapEth = function () {
       .catch(err => setErrorMessage(err.message))
   }
 
-  const getBalance = balance => {
+  function getBalance(balance) {
     const Decimals = 6
 
     if (!active || !Big(balance).gt) {
@@ -151,7 +151,7 @@ const WrapUnwrapEth = function () {
   const canWrap = Big(ethBalance ? ethBalance : '0').gt(valueInWei)
   const canUnwrap = Big(wEthBalance ? wEthBalance : '-1').gte(valueInWei)
 
-  const toogleOperation = () => {
+  function toogleOperation() {
     if (operation === Operation.Wrap) {
       setOperation(Operation.Unwrap)
     } else {
@@ -159,8 +159,15 @@ const WrapUnwrapEth = function () {
     }
   }
 
-  const setMax = () => {
+  function setMax() {
     setValue(getBalance(originBalance))
+  }
+
+  const decimalRegex = /^(([1-9][0-9]*)?[0-9](\.[0-9]*)?|\.[0-9]+)$/
+  const handleChange = function (e) {
+    if (e.target.value === '' || decimalRegex.test(e.target.value)) {
+      setValue(e.target.value)
+    }
   }
 
   return (
@@ -178,7 +185,7 @@ const WrapUnwrapEth = function () {
           <div className="flex w-full flex-col items-center justify-center gap-2">
             <InputBalance
               balance={getBalance(originBalance)}
-              onChange={e => setValue(e.target.value)}
+              onChange={handleChange}
               placeholder="-"
               setMax={setMax}
               showMax={true}

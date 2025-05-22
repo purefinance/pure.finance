@@ -77,7 +77,7 @@ export const TextArea = ({
   <div className={`mb-6 w-full ${className}`}>
     {title && <InputTitle>{title}</InputTitle>}
     <textarea
-      className={`${commonInputStyles} focus:outline-none w-full`}
+      className={`${commonInputStyles} focus:outline-none w-full rounded-xl border px-4 py-3`}
       {...props}
     />
     {caption && <Caption caption={caption} captionColor={captionColor} />}
