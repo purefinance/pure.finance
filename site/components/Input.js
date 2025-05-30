@@ -26,26 +26,21 @@ const SuffixedInput = ({ suffix, ...props }) => (
   </div>
 )
 
-const Caption = ({ caption, captionColor }) =>
-  caption && (
-    <div className="bg-slate-50 -mx-4 -my-3 flex items-center justify-center gap-1 rounded-r-xl border-l px-4">
-      <CaptionIcon captionColor={captionColor} />
-      <p className={`text-center text-base ${captionColor}`}>{caption}</p>
-    </div>
-  )
+const Caption = ({ caption, captionColor }) => (
+  <div className="mt-2 flex items-center px-4">
+    <CaptionIcon captionColor={captionColor} />
+    <p className={`text-sm ${captionColor}`}>{caption}</p>
+  </div>
+)
 
-const CaptionIcon = ({ captionColor }) => {
-  let name = ''
+function CaptionIcon({ captionColor }) {
+  const name = captionColor.includes('red')
+    ? 'error'
+    : captionColor.includes('green')
+      ? 'check'
+      : ''
 
-  if (captionColor.includes('red')) {
-    name = 'error'
-  }
-
-  if (captionColor.includes('green')) {
-    name = 'check'
-  }
-
-  return <SvgContainer className={`h-6 w-6`} name={name} />
+  return name && <SvgContainer className={`mr-2 h-4 w-4`} name={name} />
 }
 
 const Input = ({
@@ -56,13 +51,15 @@ const Input = ({
   captionColor,
   ...props
 }) => (
-  <div className={`mb-6 flex w-full rounded-xl border px-4 py-3 ${className}`}>
-    {suffix ? (
-      <SuffixedInput suffix={suffix} {...props} placeholder={title} />
-    ) : (
-      <SimpleInput {...props} placeholder={title} />
-    )}
-    {caption && <Caption caption={caption} captionColor={captionColor} />}
+  <div className={`mb-6 w-full ${className}`}>
+    <div className={`flex w-full rounded-xl border px-4 py-3`}>
+      {suffix ? (
+        <SuffixedInput suffix={suffix} {...props} placeholder={title} />
+      ) : (
+        <SimpleInput {...props} placeholder={title} />
+      )}
+    </div>
+    {<Caption caption={caption || '-'} captionColor={captionColor} />}
   </div>
 )
 

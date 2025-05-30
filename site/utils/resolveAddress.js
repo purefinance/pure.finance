@@ -30,7 +30,7 @@ export async function resolveAddress(web3, string) {
   try {
     web3.eth.ens.registryAddress =
       web3.eth.ens.registryAddress || extraEnsRegistries[chainId]
-    return web3.eth.ens.getAddress(string)
+    return await web3.eth.ens.getAddress(string)
   } catch (err) {
     console.error(err) // eslint-disable-line no-console
     return null
