@@ -1,6 +1,5 @@
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import { findByChainId } from 'chain-list'
 import { useTranslations } from 'next-intl'
 import { useContext, useEffect, useState } from 'react'
 import { findTokenBySymbol } from 'token-list'
@@ -54,7 +53,7 @@ const WrapUnwrapEth = function () {
   const tHelperText = useTranslations('helper-text.wrap-unwrap')
   const [errorMessage, setErrorMessage] = useTemporalMessage()
   const [successMessage, setSuccessMessage] = useTemporalMessage()
-  const { nativeTokenSymbol = 'ETH' } = findByChainId(chainId)
+  const nativeTokenSymbol = 'ETH'
   const helperText = {
     questions: [
       {
