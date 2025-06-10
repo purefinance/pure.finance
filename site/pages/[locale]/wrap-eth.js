@@ -150,7 +150,7 @@ const WrapUnwrapEth = function () {
   const canWrap = Big(ethBalance ? ethBalance : '0').gt(valueInWei)
   const canUnwrap = Big(wEthBalance ? wEthBalance : '-1').gte(valueInWei)
 
-  function toogleOperation() {
+  function toggleOperation() {
     if (operation === Operation.Wrap) {
       setOperation(Operation.Unwrap)
     } else {
@@ -196,7 +196,7 @@ const WrapUnwrapEth = function () {
             <SvgContainer
               className="absolute cursor-pointer"
               name="arrows"
-              onClick={toogleOperation}
+              onClick={toggleOperation}
             />
 
             <InputBalance
