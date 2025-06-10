@@ -39,7 +39,7 @@ const useTemporalMessage = function () {
 }
 
 const WrapUnwrapEth = function () {
-  const { active, account, chainId } = useWeb3React()
+  const { active, account, chainId, library } = useWeb3React()
   const { erc20 } = useContext(PureContext)
   const [operation, setOperation] = useState(Operation.Wrap)
   const { data: ethBalance, mutate: reloadEthBalance } = useBalance({
@@ -113,7 +113,7 @@ const WrapUnwrapEth = function () {
         })
         .then(() =>
           Promise.all([
-            watchAsset({ account, token: weth }),
+            watchAsset(library.currentProvider, account, weth, localStorage),
             reloadEthBalance(),
             reloadWethBalance()
           ])
