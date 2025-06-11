@@ -17,7 +17,7 @@ import CallToAction from '../../components/CallToAction'
 function MerkleClaims() {
   const t = useTranslations()
   const tHelperText = useTranslations('helper-text.merkle-claims')
-  const { active, account } = useWeb3React()
+  const { active, account, library } = useWeb3React()
   const { query } = useRouter()
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
@@ -90,7 +90,14 @@ function MerkleClaims() {
       })
       .catch(e => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
-      .then(() => watchAsset({ account, token: holding.token }))
+      .then(() =>
+        watchAsset(
+          library.currentProvider,
+          account,
+          holding.token,
+          localStorage
+        )
+      )
   }
 
   useEffect(

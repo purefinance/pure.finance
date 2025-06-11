@@ -39,7 +39,7 @@ const useTemporalMessage = function () {
 }
 
 const WrapUnwrapEth = function () {
-  const { active, account, chainId } = useWeb3React()
+  const { active, account, chainId, library } = useWeb3React()
   const { erc20 } = useContext(PureContext)
   const [operation, setOperation] = useState(Operation.Wrap)
   const { data: ethBalance, mutate: reloadEthBalance } = useBalance({
@@ -113,7 +113,7 @@ const WrapUnwrapEth = function () {
         })
         .then(() =>
           Promise.all([
-            watchAsset({ account, token: weth }),
+            watchAsset(library.currentProvider, account, weth, localStorage),
             reloadEthBalance(),
             reloadWethBalance()
           ])
@@ -150,7 +150,7 @@ const WrapUnwrapEth = function () {
   const canWrap = Big(ethBalance ? ethBalance : '0').gt(valueInWei)
   const canUnwrap = Big(wEthBalance ? wEthBalance : '-1').gte(valueInWei)
 
-  function toogleOperation() {
+  function toggleOperation() {
     if (operation === Operation.Wrap) {
       setOperation(Operation.Unwrap)
     } else {
@@ -196,7 +196,7 @@ const WrapUnwrapEth = function () {
             <SvgContainer
               className="absolute cursor-pointer"
               name="arrows"
-              onClick={toogleOperation}
+              onClick={toggleOperation}
             />
 
             <InputBalance
