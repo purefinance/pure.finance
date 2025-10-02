@@ -14,22 +14,22 @@
     "test:e2e": "npm run lerna:run test:e2e"
   },
   "devDependencies": {
-    "@types/mocha": "^9.0.0",
-    "chai": "^4.3.4",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.5.0",
     "dependency-check": "^4.1.0",
-    "eslint": "^7.29.0",
-    "eslint-config-bloq": "^4.0.2",
+    "eslint": "^8.57.1",
+    "eslint-config-bloq": "^4.7.0",
     "husky": "^4.3.8",
     "lerna": "^4.0.0",
     "lint-staged": "^10.5.4",
-    "mocha": "^9.0.3",
-    "next": "^14.0.0",
-    "node-gyp": "^10.0.0",
+    "mocha": "^9.2.2",
+    "next": "^14.2.32",
+    "node-gyp": "^10.3.1",
     "nyc": "^15.1.0",
-    "precinct": "^8.1.0",
-    "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.8",
-    "tailwindcss": "^2.2.7"
+    "precinct": "^8.3.1",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "tailwindcss": "^2.2.19"
   },
   "workspaces": [
     "packages/*",
