@@ -8,7 +8,6 @@
     "deps:check": "npm run lerna:run deps:check",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
-    "postinstall": "lerna bootstrap",
     "lerna:run": "lerna run --stream --concurrency 1",
     "lint": "eslint --cache --quiet .",
     "test": "npm run lerna:run test",
@@ -31,5 +30,9 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^2.2.7"
-  }
+  },
+  "workspaces": [
+    "packages/*",
+    "site"
+  ]
 }
