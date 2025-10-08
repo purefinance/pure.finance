@@ -1,7 +1,7 @@
 ---
 name: Issue report
 about: Create a new issue report
-title: "[DATE]: [FEATURE NAME]"
+title: '[DATE]: [FEATURE NAME]'
 ---
 
 Issue tracker is **ONLY** used for reporting bugs.

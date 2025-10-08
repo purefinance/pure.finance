@@ -83,8 +83,8 @@ Before submitting an enhancement suggestion, check if there is already a filed o
 
 First of all, you can validate it with the community, our official channels are:
 
-- [Telegram group](https://t.me/vesperfinance/)
-- [Discord](https://discord.com/invite/Pm8UDaazsK)
+- [Discord](https://discord.gg/hemixyz)
+- [X](https://x.com/hemi_xyz)
 
 How Do I Submit A (Good) Enhancement Suggestion?
 
