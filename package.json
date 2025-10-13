@@ -10,6 +10,7 @@
     "format:write": "prettier --write .",
     "lerna:run": "lerna run --stream --concurrency 1",
     "lint": "eslint --cache --quiet .",
+    "postinstall": "patch-package || true",
     "test": "npm run lerna:run test",
     "test:e2e": "npm run lerna:run test:e2e"
   },
@@ -26,6 +27,7 @@
     "next": "^14.2.32",
     "node-gyp": "^10.3.1",
     "nyc": "^15.1.0",
+    "patch-package": "8.0.0",
     "precinct": "^8.3.1",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
