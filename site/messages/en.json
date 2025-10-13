@@ -60,7 +60,7 @@
   "message": "Message",
   "message-placeholder": "Type the message to sign here",
   "new-auction": "New Auction",
-  "no-approvals": "There's no token approval to revoke.",
+  "no-approvals": "There are no token approvals to revoke.",
   "no-auctions": "No auctions",
   "of-value": "of current value",
   "payment-streams": "Payment Streams",
