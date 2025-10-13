@@ -1,6 +1,6 @@
 import { util } from 'erc-20-lib'
 
-const extraEnsRegistries = {
+const ensRegistryOverrides = {
   43111: '0x099Fee7f2EF53eB7CCC0e465a32f3aEfa8D703C5' // getheminames.me
 }
 
@@ -29,7 +29,7 @@ export async function resolveAddress(web3, string) {
 
   try {
     web3.eth.ens.registryAddress =
-      web3.eth.ens.registryAddress || extraEnsRegistries[chainId]
+      ensRegistryOverrides[chainId] || web3.eth.ens.registryAddress
     return await web3.eth.ens.getAddress(string)
   } catch (err) {
     console.error(err) // eslint-disable-line no-console
