@@ -1,4 +1,18 @@
 {
+  "1": {
+    "dpAuctions": {
+      "address": "0x164D41ceB60489D2e054394Fc05ED1894Db3898a",
+      "uniswapV2": true
+    },
+    "merkleClaim": {
+      "address": "0xe67516417a934b27cf0c14868f8165b1bc94bf73"
+    },
+    "paymentStreams": {
+      "address": "0xf47853220BF59C682CCBd28e7cFF4D4E603a4Ca6",
+      "birthblock": "13495981",
+      "chainLink": true
+    }
+  },
   "43111": {
     "merkleClaim": {
       "address": "0x112de51b708c77C628532120Ffe2c0200f067399"

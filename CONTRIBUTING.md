@@ -55,9 +55,9 @@ Use [Markdown](https://daringfireball.net/projects/markdown)
 ### 3. Reporting bugs
 
 First of all make sure that the bug was not already reported by searching on GitHub under `Issues`.
-When you are creating a bug report, please include as many details as possible by filling out our required [Issue Template](https://github.com/hemilabs/pure.finance/blob/master/.github/ISSUE_TEMPLATE/issue_report.md).
+When you are creating a bug report, please include as many details as possible by filling out our required [Issue Template](https://github.com/purefinance/pure.finance/blob/master/.github/ISSUE_TEMPLATE/issue_report.md).
 Due to the funds management nature of Pure Finance app, any security vulnerability must be treated as confidental, do not open up a GitHub issue if the bug is a security vulnerability, and instead refer to our security policy here:
-[Security Policy](https://github.com/hemilabs/pure.finance/blob/master/SECURITY.md)
+[Security Policy](https://github.com/purefinance/pure.finance/blob/master/SECURITY.md)
 
 General tips:
 
@@ -71,7 +71,7 @@ General tips:
 - Specify the name and version of the OS/Browser/other applicable software you're using.
 
 Then, you can file a new issue by using a template:
-[Issue Template](https://github.com/hemilabs/pure.finance/blob/master/.github/ISSUE_TEMPLATE/issue_report.md)
+[Issue Template](https://github.com/purefinance/pure.finance/blob/master/.github/ISSUE_TEMPLATE/issue_report.md)
 
 ### 4. Suggesting Enhancements
 
@@ -99,7 +99,7 @@ General tips:
 - Specify the name and version of the OS/Browser/other applicable software you're using.
 
 Then, you can file a new feature by using a template:
-[Feature Request template](https://github.com/hemilabs/pure.finance/blob/master/.github/ISSUE_TEMPLATE/feature_request.md)
+[Feature Request template](https://github.com/purefinance/pure.finance/blob/master/.github/ISSUE_TEMPLATE/feature_request.md)
 
 ### 5. Pull Requests
 
@@ -112,7 +112,7 @@ The process described here has several goals:
 
 Please follow these steps to have your contribution considered by the maintainers:
 
-- Follow all instructions in the [Pull Request Template](https://github.com/hemilabs/pure.finance/blob/master/.github/PULL_REQUEST_TEMPLATE.md)
+- Follow all instructions in the [Pull Request Template](https://github.com/purefinance/pure.finance/blob/master/.github/PULL_REQUEST_TEMPLATE.md)
 - Follow the styleguides as stated in step [#2](#2-code-styleguides)
 - If the pull request features a UI improvement, please include a screenshot in order to let maintainers to have a glimpse of it.
 - After you submit your pull request, verify that all [status checks](https://help.github.com/articles/about-status-checks/) are passing.

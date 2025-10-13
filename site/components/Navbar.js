@@ -1,6 +1,6 @@
 import { Link } from '../navigation'
 
-import { HemiLogoFull } from './HemiLogo'
+import PureLogo from './svg/Pure'
 import Breadcrumb from './layout/Breadcrumb'
 import SvgContainer from './svg/SvgContainer'
 import Wallet from './Wallet'
@@ -11,7 +11,7 @@ const Navbar = ({ title, walletConnection, breadcrumb }) => (
       <div className="flex items-center gap-2">
         <Link href="/">
           <div className="w-20">
-            <HemiLogoFull />
+            <PureLogo />
           </div>
         </Link>
         <div className="w-20">
