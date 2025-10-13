@@ -7,11 +7,14 @@ const capitalizeFirst = plugin(function ({ addUtilities }) {
       textTransform: 'uppercase'
     }
   }
-  addUtilities(newUtilities, ['responsive', 'hover'])
+  addUtilities(newUtilities)
 })
 
 module.exports = {
-  purge: ['./components/**/*.{js,ts,jsx,tsx}', './pages/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './components/**/*.{js,ts,jsx,tsx}',
+    './pages/**/*.{js,ts,jsx,tsx}'
+  ],
   theme: {
     extend: {
       spacing: {
@@ -85,6 +88,5 @@ module.exports = {
       }
     }
   },
-  variants: {},
   plugins: [capitalizeFirst]
 }
