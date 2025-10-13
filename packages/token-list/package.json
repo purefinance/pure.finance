@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@hemilabs/token-list": "^2.0.0",
-    "@sushiswap/default-token-list": "^18.3.0",
-    "@uniswap/default-token-list": "^2.1.0",
+    "@sushiswap/default-token-list": "^43.3.0",
+    "@uniswap/default-token-list": "^13.47.0",
     "lodash": "^4.17.21",
-    "vesper-metadata": "^2.95.0",
+    "vesper-metadata": "^2.112.0",
     "web3-utils": "^1.10.4"
   },
   "engines": {
