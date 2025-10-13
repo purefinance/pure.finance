@@ -9,7 +9,7 @@ import utilsConfig from '../utils/utilsConfig.json'
 import PureContext from './context/Pure'
 
 function UtilitiesTabs() {
-  const { chainId } = useWeb3React()
+  const { chainId = 1 } = useWeb3React()
   const { utilities } = useContext(PureContext)
   const t = useTranslations()
   const pathname = usePathname()
