@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react'
 import React from 'react'
 
 import Button from '../../components/Button'
-import Layout from '../../components/Layout'
+import CallToAction from '../../components/CallToAction'
+import { TextArea } from '../../components/Input'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilFormBox from '../../components/layout/UtilFormBox'
+import SvgContainer from '../../components/svg/SvgContainer'
 
 const useFeedback = function () {
   const { account, active } = useWeb3React()
@@ -47,6 +51,7 @@ const SignMessageForm = function () {
   }
 
   const signButton = {
+    className: 'mt-4',
     disabled: !active || !message,
     onClick() {
       web3.eth.personal
@@ -62,58 +67,92 @@ const SignMessageForm = function () {
     }
   }
 
+  function copySignatureToClipboard() {
+    navigator.clipboard.writeText(signature)
+  }
+
   return (
-    <>
-      <div className="flex flex-wrap justify-center mt-10 mx-auto w-full max-w-lg space-y-4">
-        <textarea
-          className="w-full border-2"
-          placeholder={t('message-placeholder')}
-          rows={5}
-          title={`${t('message')}:`}
-          {...messageInput}
-        />
-      </div>
-      <div className="mt-7.5 flex justify-center">
-        <Button {...signButton}>{t('sign').toUpperCase()}</Button>
-      </div>
+    <UtilFormBox
+      text={t('utilities-text.sign-message')}
+      title={t('sign-message')}
+    >
+      <TextArea
+        placeholder={t('message-placeholder')}
+        rows={3}
+        {...messageInput}
+      />
       {signature && (
-        <div className="flex-wrap mt-6 w-full text-center text-sm">
-          {t('signature')}:
-          <br />
-          {signature}
+        <div className="bg-slate-100 mt-4 break-all rounded-2xl px-1 pb-1 pt-2">
+          <div className="flex items-center justify-between px-2">
+            <label className="text-slate-600">{t('signature')}</label>
+            <SvgContainer
+              className="w-5 cursor-pointer"
+              name="copy"
+              onClick={copySignatureToClipboard}
+            />
+          </div>
+          <div className="border-slate-100 mt-2 w-full rounded-2xl border bg-white p-4">
+            {signature}
+          </div>
         </div>
       )}
-      <p className={`text-center text-sm mt-6 ${feedback.color}`}>
+
+      <CallToAction>
+        <Button {...signButton}>{t('sign')}</Button>
+      </CallToAction>
+
+      <p className={`mb-8 mt-4 text-center text-sm ${feedback.color}`}>
         {feedback.message}
       </p>
-      <div className="flex justify-between mx-auto w-full max-w-lg">
+      <div className="flex w-full max-w-lg items-center justify-center gap-2 text-xs text-gray-400">
         <a
-          className="hover:text-black text-gray-400 focus:outline-none"
-          href="https://github.com/purefinance/pure.finance/blob/master/site/pages/sign-message.js"
-          rel="noreferrer"
-          target="_blank"
-        >
-          {t('view-source-code')}
-        </a>
-        <a
-          className="hover:text-black text-gray-400 focus:outline-none"
+          className="focus:outline-none flex items-center rounded-full hover:text-black"
           href="https://etherscan.io/verifiedSignatures"
           rel="noreferrer"
           target="_blank"
         >
+          <SvgContainer className="mr-2 inline-block" name="etherscan" />
           {t('verify-signature-etherscan')}
         </a>
+        <span className="text-slate-200">|</span>
+        <a
+          className="focus:outline-none flex items-center gap-1 rounded-full hover:text-black"
+          href="https://github.com/hemilabs/pure.finance/blob/master/site/pages/[locale]/sign-message.js"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <SvgContainer className="inline-block" name="Github" />
+          {t('view-source-code')}
+        </a>
       </div>
-    </>
+    </UtilFormBox>
   )
 }
 
 const SignMessage = function () {
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.sign-message')
+
+  const helperText = {
+    questions: [
+      {
+        answer: tHelperText('how-verify-answer'),
+        title: tHelperText('how-verify-question')
+      }
+    ],
+    text: tHelperText('text'),
+    title: tHelperText('title')
+  }
+
   return (
-    <Layout title={t('sign-message')} walletConnection>
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('sign-message')}
+      walletConnection
+    >
       <SignMessageForm />
-    </Layout>
+    </ToolsLayout>
   )
 }
 

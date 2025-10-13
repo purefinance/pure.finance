@@ -7,97 +7,32 @@
     "build": "npm run lerna:run build",
     "deps:check": "npm run lerna:run deps:check",
     "format:check": "prettier --check .",
-    "postinstall": "lerna bootstrap",
+    "format:write": "prettier --write .",
     "lerna:run": "lerna run --stream --concurrency 1",
     "lint": "eslint --cache --quiet .",
     "test": "npm run lerna:run test",
     "test:e2e": "npm run lerna:run test:e2e"
   },
   "devDependencies": {
-    "@types/mocha": "^9.0.0",
-    "chai": "^4.3.4",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.5.0",
     "dependency-check": "^4.1.0",
-    "eslint": "^7.29.0",
-    "eslint-config-bloq": "^4.0.2",
+    "eslint": "^8.57.1",
+    "eslint-config-bloq": "^4.7.0",
     "husky": "^4.3.8",
     "lerna": "^4.0.0",
     "lint-staged": "^10.5.4",
-    "mocha": "^9.0.3",
-    "next": "^14.0.0",
-    "node-gyp": "^10.0.0",
+    "mocha": "^9.2.2",
+    "next": "^14.2.32",
+    "node-gyp": "^10.3.1",
     "nyc": "^15.1.0",
-    "precinct": "^8.1.0",
-    "prettier": "^2.3.1",
-    "prettier-plugin-tailwind": "^2.2.12",
-    "tailwindcss": "^2.2.7"
+    "precinct": "^8.3.1",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "tailwindcss": "^2.2.19"
   },
-  "eslintConfig": {
-    "extends": [
-      "bloq",
-      "prettier"
-    ],
-    "ignorePatterns": [
-      "site/out"
-    ],
-    "overrides": [
-      {
-        "extends": [
-          "bloq/node",
-          "prettier"
-        ],
-        "files": [
-          "packages/**/*.js"
-        ]
-      },
-      {
-        "extends": [
-          "bloq/mocha",
-          "prettier"
-        ],
-        "files": [
-          "*.spec.js"
-        ]
-      },
-      {
-        "extends": [
-          "bloq/next",
-          "prettier"
-        ],
-        "files": [
-          "site/**/*.js"
-        ],
-        "rules": {
-          "@next/next/no-html-link-for-pages": [
-            "warn",
-            "site/pages"
-          ]
-        }
-      }
-    ],
-    "rules": {
-      "promise/no-nesting": "off"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run test && npm run deps:check"
-    }
-  },
-  "lint-staged": {
-    "!(*.js)": [
-      "prettier --ignore-unknown --write"
-    ],
-    "*.js": [
-      "eslint --cache --fix --quiet",
-      "prettier --write"
-    ]
-  },
-  "prettier": {
-    "arrowParens": "avoid",
-    "semi": false,
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "none"
-  }
+  "workspaces": [
+    "packages/*",
+    "site"
+  ]
 }

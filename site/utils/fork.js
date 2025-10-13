@@ -4,8 +4,8 @@
 
 require('dotenv').config({ path: '.env.fork.local' })
 
-const { promisify } = require('util')
 const ganache = require('ganache-core')
+const { promisify } = require('util')
 const Web3 = require('web3')
 
 const port = process.env.PORT

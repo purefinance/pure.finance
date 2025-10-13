@@ -15,7 +15,7 @@ const getErrorKey = function (error) {
   } else if (error instanceof UserRejectedRequestErrorInjected) {
     return 'error-rejected-wallet-connection'
   }
-  console.error(error)
+
   return 'error-unknown'
 }
 
@@ -23,7 +23,7 @@ const ErrorHandler = function ({ error, modalIsOpen, onRequestClose }) {
   const t = useTranslations()
   return error ? (
     <Modal
-      className="p-10 max-w-2xl text-center bg-white rounded-md"
+      className="max-w-2xl rounded-md bg-white p-10 text-center"
       modalIsOpen={modalIsOpen}
       onRequestClose={onRequestClose}
     >

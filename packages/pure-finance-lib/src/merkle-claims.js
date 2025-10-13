@@ -30,7 +30,12 @@ const createMerkleClaims = function (web3, options) {
 
   debug('Creating Merkle Claims for %s', from || 'read-only')
 
-  const merkleBoxAddress = createMerkleBox.addresses.mainnet
+  const merkleBoxAddress = options.address
+
+  if (!merkleBoxAddress) {
+    throw new Error('No Merkle Claim contract address was provided')
+  }
+
   const merkleBox = createMerkleBox(web3, merkleBoxAddress, options)
 
   const getHolding = function (claimGroupId) {
@@ -78,10 +83,10 @@ const createMerkleClaims = function (web3, options) {
       .then(function ([token, amount, proof, isClaimable]) {
         debug('Claim is%s claimable', isClaimable ? '' : ' NOT')
         return {
-          token,
           amount,
+          isClaimable,
           proof,
-          isClaimable
+          token
         }
       })
       .catch(tryParseEvmError)
@@ -105,8 +110,8 @@ const createMerkleClaims = function (web3, options) {
       .catch(tryParseEvmError)
 
   return {
-    getHolding,
-    claim
+    claim,
+    getHolding
   }
 }
 

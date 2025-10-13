@@ -3,14 +3,20 @@ const Button = function ({
   className = '',
   disabled,
   onClick,
-  width = 'w-63',
+  width = 'w-full',
   ...props
 }) {
-  const boxStyle = `py-3 rounded-3xl ${width} focus:outline-none`
-  const textStyle = 'font-bold text-center text-sm text-white uppercase'
+  const boxStyle = `py-3 rounded-xl ${width} focus:outline-none`
+  const textCase = className
+    .split(' ')
+    .filter(Boolean)
+    .some(c => ['lowercase', 'normal-case', 'uppercase'].includes(c))
+    ? ''
+    : 'capitalize'
+  const textStyle = `text-center text-base text-white ${textCase}`
   const stateStyle = disabled
-    ? 'bg-gray-200 cursor-not-allowed'
-    : 'bg-black hover:bg-gray-800'
+    ? 'bg-orange-300 cursor-not-allowed'
+    : 'bg-orange-950 hover:bg-orange-500'
   return (
     <button
       {...props}

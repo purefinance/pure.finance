@@ -10,7 +10,7 @@ const LanguageSelector = function () {
   const pathname = usePathname()
   const t = useTranslations()
   return (
-    <ul className="flex text-sm space-x-1">
+    <ul className="flex space-x-1 text-sm">
       {locales.map((localeOption, idx) => (
         <li key={localeOption}>
           <Link

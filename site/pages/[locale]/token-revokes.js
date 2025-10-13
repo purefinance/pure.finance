@@ -7,9 +7,13 @@ import useSWR from 'swr'
 
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
-import { EtherscanLink } from '../../components/EtherscanLink'
-import Layout from '../../components/Layout'
+import { ExplorerLink } from '../../components/ExplorerLink'
+import TableBox from '../../components/layout/TableBox'
+import ToolsLayout from '../../components/layout/ToolsLayout'
 import { fromUnit } from '../../utils'
+import SvgContainer from '../../components/svg/SvgContainer'
+import Wallet from '../../components/Wallet'
+import { Link } from '../../navigation'
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
 const APPROVAL_TOPIC =
@@ -170,8 +174,7 @@ function useTokenApprovals() {
             setSyncStatus(SyncStatus.Finished)
           }
 
-          // @ts-ignore
-          setSyncBlock(prev => {
+          setSyncBlock(function (prev) {
             const newTokenApprovals = getNewestApprovals({
               library,
               logs: parseLogs(logs),
@@ -290,7 +293,7 @@ const Allowance = function ({ address, data }) {
   const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
     <span
-      className="m-auto w-full whitespace-nowrap overflow-hidden overflow-ellipsis"
+      className="m-auto w-full overflow-hidden overflow-ellipsis whitespace-nowrap"
       title={formatter.format(value)}
     >
       {isUnlimited ? t('unlimited') : formatter.format(value)}
@@ -313,21 +316,65 @@ const Balance = function ({ address }) {
 }
 
 const Token = function ({ address }) {
+  const { chainId } = useWeb3React()
   const { data: token } = useErc20Token(address)
   if (!token) {
-    return <EtherscanLink address={address} />
+    return <ExplorerLink address={address} chainId={chainId} />
   }
   const { symbol } = token
-  return <EtherscanLink address={address} text={symbol} />
+  return <ExplorerLink address={address} chainId={chainId} text={symbol} />
+}
+
+const Status = function ({ icon, message, children }) {
+  return (
+    <>
+      <tr>
+        <td colSpan={5} className="pb-6 pt-12 text-center">
+          <div className="bg-grayscale-50 border-grayscale-300 m-auto flex h-8 w-8 items-center justify-center rounded-full border">
+            <SvgContainer className="w-5 cursor-pointer" name={icon} />
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colSpan={5} className="text-center">
+          <h3 className="text-grayscale-500">{message}</h3>
+        </td>
+      </tr>
+      <tr>
+        <td colSpan={5} className="pb-12 pt-4">
+          <div className="flex items-center justify-center">{children}</div>
+        </td>
+      </tr>
+    </>
+  )
 }
 
 const TokenRevokes = function () {
   const { active } = useWeb3React()
   const { erc20 } = useContext(PureContext)
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.token-revokes')
   const [isRevoking, setIsRevoking] = useState(false)
 
   const { tokenApprovals, syncStatus, setSyncStatus } = useTokenApprovals()
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('why-review-question'),
+        answer: tHelperText('why-review-answer')
+      },
+      {
+        title: tHelperText('how-revoke-question'),
+        answer: tHelperText('how-revoke-answer')
+      },
+      {
+        title: tHelperText('fee-question'),
+        answer: tHelperText('fee-answer')
+      }
+    ]
+  }
 
   const handleRevoke = function (address, spender) {
     if (!active) {
@@ -342,75 +389,88 @@ const TokenRevokes = function () {
   }
 
   return (
-    <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
-      {tokenApprovals.length > 0 && (
-        <section className="flex flex-col overflow-x-auto">
-          <div className="grid-cols-approval-sm md:grid-cols-approval grid gap-x-12 gap-y-5 place-content-center my-6">
-            <span className="m-auto text-gray-600 font-bold">{t('token')}</span>
-            <span className="hidden m-auto text-gray-600 font-bold md:block">
-              {t('spender-address')}
-            </span>
-            <span className="m-auto text-gray-600 font-bold">
-              {t('allowance')} / {t('balance')}
-            </span>
-            <span className="m-auto text-gray-600 font-bold">
-              {t('actions')}
-            </span>
-            {tokenApprovals.map(
-              ({ address, allowance, transactionHash, spender }) => (
-                <React.Fragment key={transactionHash}>
-                  <Token address={address} />
-                  <div className="hidden my-auto md:block">
-                    <Token address={spender} />
-                  </div>
-                  <div className="my-auto">
-                    <Allowance address={address} data={allowance} />
-                    <span> / </span>
-                    <Balance address={address} />
-                  </div>
-                  <Button
-                    className="hidden md:block"
-                    disabled={!active}
-                    onClick={() => handleRevoke(address, spender)}
-                    width="w-28"
-                  >
-                    {t('revoke')}
-                  </Button>
-                  <Button
-                    className="flex justify-center mx-auto md:hidden"
-                    disabled={!active}
-                    onClick={() => handleRevoke(address, spender)}
-                    width="w-10"
-                  >
-                    <svg
-                      className="md:hidden"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      width="18"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
-                        fill="white"
-                      />
-                    </svg>
-                  </Button>
-                </React.Fragment>
-              )
-            )}
-          </div>
-        </section>
-      )}
-      {!active && <h3>{t('connect-to-sync')}</h3>}
-      {active && syncStatus === SyncStatus.Syncing && (
-        <h3>{t('syncing-your-approvals')}</h3>
-      )}
-      {active && isRevoking && <h3>{t('revoking-approval')}</h3>}
-      {syncStatus === SyncStatus.Error && <h3>{t('generic-error')}</h3>}
-      {tokenApprovals.length === 0 && syncStatus === SyncStatus.Finished && (
-        <p>{t('no-approvals')}</p>
-      )}
-    </Layout>
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('list-and-revoke-token-approvals')}
+      walletConnection
+    >
+      <TableBox
+        text={t('utilities-text.token-revokes')}
+        title={t('list-and-revoke-token-approvals')}
+        className="shadow-lg"
+      >
+        <div className="w-100 md:w-150 overflow-auto lg:w-full">
+          <table className="w-150">
+            <thead>
+              <tr className="bg-slate-50 text-slate-600 border-slate-200 rounded-xl border text-left text-sm">
+                <th className="w-10 px-2 py-4 font-medium">{t('token')}</th>
+                <th className="w-14 font-medium">{t('allowance')}</th>
+                <th className="w-14 font-medium">{t('balance')}</th>
+                <th className="w-24 font-medium">{t('spender-address')}</th>
+                <th className="w-10 font-medium">{t('actions')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tokenApprovals.map(
+                ({ address, allowance, transactionHash, spender }) => (
+                  <tr className="border-b" key={transactionHash}>
+                    <td className="px-2 py-4">
+                      <Token address={address} />
+                    </td>
+                    <td>
+                      <Allowance address={address} data={allowance} />
+                    </td>
+                    <td>
+                      <Balance address={address} />
+                    </td>
+                    <td>
+                      <Token address={spender} />
+                    </td>
+                    <td className="px-2 py-4">
+                      <Button
+                        disabled={!active}
+                        onClick={() => handleRevoke(address, spender)}
+                      >
+                        {t('revoke')}
+                      </Button>
+                    </td>
+                  </tr>
+                )
+              )}
+
+              {!active && (
+                <Status icon="exclamation" message={t('connect-to-sync')}>
+                  <Wallet />
+                </Status>
+              )}
+
+              {active && syncStatus === SyncStatus.Syncing && (
+                <Status icon="loading" message={t('syncing-your-approvals')} />
+              )}
+
+              {active && isRevoking && (
+                <Status icon="exclamation" message={t('revoking-approval')} />
+              )}
+
+              {syncStatus === SyncStatus.Error && (
+                <Status icon="error" message={t('generic-error')} />
+              )}
+
+              {active &&
+                tokenApprovals.length === 0 &&
+                syncStatus === SyncStatus.Finished && (
+                  <Status icon="exclamation" message={t('no-approvals')}>
+                    <Link className="text-orange-hemi" href="/token-approvals">
+                      {t('token-approvals')}
+                    </Link>
+                  </Status>
+                )}
+            </tbody>
+          </table>
+        </div>
+      </TableBox>
+    </ToolsLayout>
   )
 }
 
