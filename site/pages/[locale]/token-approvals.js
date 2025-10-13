@@ -193,8 +193,8 @@ const TokenApprovalsForm = function () {
           onClick={allowInfinite}
           className={`${
             !approveDisabled
-              ? 'text-orange-950 hover:text-orange-500 cursor-pointer'
-              : 'text-orange-500 cursor-not-allowed'
+              ? 'text-grayscale-950 hover:text-grayscale-500 cursor-pointer'
+              : 'text-grayscale-500 cursor-not-allowed'
           }`}
         >
           {t('allow-infinite')}

@@ -31,22 +31,6 @@ module.exports = {
       },
       colors: {
         vesper: '#4138AC',
-        orange: {
-          1: '#FF4D00',
-          50: '#FFFBF8',
-          100: '#FFF0E8',
-          200: '#FFE2D0',
-          300: '#FFD3B9',
-          400: '#FFC4A1',
-          500: '#FFB58A',
-          600: '#FFA773',
-          700: '#FF985B',
-          800: '#FF7D33',
-          900: '#FF7B2C',
-          950: '#FF6C15',
-          hemi: '#FF5F00',
-          opacity: '#FF6C1510'
-        },
         slate: {
           50: '#F7F7F7',
           100: '#E5E6E6',
@@ -76,7 +60,7 @@ module.exports = {
       },
       gridTemplateColumns: {
         'approval-sm': 'minmax(0, 3.75rem) minmax(0, 1fr) max-content',
-        approval:
+        'approval':
           'minmax(0, 3.75rem) minmax(3.75rem, 1fr) minmax(0, 1fr) max-content'
       },
       fontFamily: {

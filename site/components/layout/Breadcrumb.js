@@ -12,7 +12,7 @@ const Breadcrumb = function ({ title }) {
     <div className="flex flex-row items-center gap-2 border px-8 py-4 md:gap-1 md:border-0 md:px-0 md:py-0">
       <Dropdown
         Selector={({ isOpen }) => (
-          <div className="text-orange-950 flex items-center gap-3 rounded-xl px-1 py-2 text-sm">
+          <div className="text-grayscale-950 flex items-center gap-3 rounded-xl px-1 py-2 text-sm">
             {title}
             <SvgContainer
               className={`text-grayscale-400 w-3 ${

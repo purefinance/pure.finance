@@ -461,7 +461,7 @@ const TokenRevokes = function () {
                 tokenApprovals.length === 0 &&
                 syncStatus === SyncStatus.Finished && (
                   <Status icon="exclamation" message={t('no-approvals')}>
-                    <Link className="text-orange-hemi" href="/token-approvals">
+                    <Link className="underline" href="/token-approvals">
                       {t('token-approvals')}
                     </Link>
                   </Status>
