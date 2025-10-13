@@ -27,7 +27,7 @@ function UtilitiesTabs() {
   }
   // Add Payment Streams if ChainLink is supported.
   if (chainId && utilsConfig[chainId]?.paymentStreams?.chainLink) {
-    utilities.splice(3, 0, {
+    utilities.splice(4, 0, {
       href: '/payment-streams',
       title: t('payment-streams'),
       selected: pathname === '/payment-streams'
