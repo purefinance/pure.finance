@@ -19,6 +19,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        error: '#dc2626', // red.600
         grayscale: {
           50: '#FAFAFA',
           100: '#E5E6E6',
@@ -33,6 +34,7 @@ module.exports = {
           950: '#0A0A0A'
         },
         hemi: '#FF5F00',
+        info: '#000000', // black
         slate: {
           50: '#F7F7F7',
           100: '#E5E6E6',
@@ -46,6 +48,7 @@ module.exports = {
           900: '#1A1B1B',
           950: '#000202'
         },
+        success: '#16a34a', // green.600
         vesper: '#4138AC'
       },
       container: {
