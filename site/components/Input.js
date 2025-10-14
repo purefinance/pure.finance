@@ -2,8 +2,7 @@ import React from 'react'
 
 import SvgContainer from './svg/SvgContainer'
 
-const commonInputStyles =
-  'text-base bg-white placeholder-slate-400 placeholder-capitalize'
+const commonInputStyles = 'text-base bg-white placeholder-slate-400'
 
 export const InputTitle = ({ children }) => (
   <label className="text-md text-slate-500 mb-2.5 block">{children}</label>
