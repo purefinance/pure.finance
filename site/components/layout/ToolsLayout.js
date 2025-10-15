@@ -25,14 +25,18 @@ const ToolsLayout = ({
             walletConnection={walletConnection}
           />
           <div className="container flex justify-center py-8">{children}</div>
-          <HelperBox className="lg:hidden" helperText={helperText} />
+          {helperText && (
+            <HelperBox className="lg:hidden" helperText={helperText} />
+          )}
         </div>
         <ToolsFooter />
       </div>
-      <HelperBox
-        className="hidden lg:block lg:w-4/12 xl:w-5/12"
-        helperText={helperText}
-      />
+      {helperText && (
+        <HelperBox
+          className="hidden lg:block lg:w-4/12 xl:w-5/12"
+          helperText={helperText}
+        />
+      )}
     </div>
   </>
 )

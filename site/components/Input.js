@@ -34,9 +34,9 @@ const Caption = ({ caption, captionColor }) => (
 )
 
 function CaptionIcon({ captionColor }) {
-  const name = captionColor.includes('red')
+  const name = captionColor?.includes('red')
     ? 'error'
-    : captionColor.includes('green')
+    : captionColor?.includes('green')
       ? 'check'
       : ''
 

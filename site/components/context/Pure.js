@@ -30,32 +30,32 @@ export const PureContextProvider = function ({ children }) {
       href: '/merkle-claims',
       title: t('merkle-claims'),
       text: tUtilitiesText('merkle-claims'),
-      selected: pathname.includes('/merkle-claims')
+      selected: pathname?.includes('/merkle-claims')
     },
     {
       href: '/token-approvals',
       title: t('token-approvals'),
       text: tUtilitiesText('token-approvals'),
-      selected: pathname.includes('/token-approvals')
+      selected: pathname?.includes('/token-approvals')
     },
     {
       href: '/token-revokes',
       title: t('token-revokes'),
       text: tUtilitiesText('token-revokes'),
-      selected: pathname.includes('/token-revokes')
+      selected: pathname?.includes('/token-revokes')
     },
     // Payment Streams should go here.
     {
       href: '/wrap-eth',
       title: t('wrap-unwrap'),
       text: tUtilitiesText('wrap-unwrap'),
-      selected: pathname.includes('/wrap-eth')
+      selected: pathname?.includes('/wrap-eth')
     },
     {
       href: '/sign-message',
       title: t('sign-message'),
       text: tUtilitiesText('sign-message'),
-      selected: pathname.includes('/sign-message')
+      selected: pathname?.includes('/sign-message')
     }
     // Descending Price Auctions should go here.
   ]
