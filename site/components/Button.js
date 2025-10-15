@@ -15,8 +15,8 @@ const Button = function ({
     : 'capitalize'
   const textStyle = `text-center text-base text-white ${textCase}`
   const stateStyle = disabled
-    ? 'bg-orange-300 cursor-not-allowed'
-    : 'bg-orange-950 hover:bg-orange-500'
+    ? 'bg-grayscale-300 cursor-not-allowed'
+    : 'bg-grayscale-950 hover:bg-grayscale-500'
   return (
     <button
       {...props}

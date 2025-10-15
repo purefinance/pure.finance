@@ -8,7 +8,7 @@ function HelperBox({ helperText, className = '' }) {
 
   return (
     <div
-      className={`border-slate-200 from-orange-opacity border bg-gradient-to-br via-white to-white p-8 md:m-2 md:rounded-xl md:px-16 md:py-36 ${className}`}
+      className={`border-slate-200 from-grayscale-950/10 border bg-gradient-to-br via-white to-white p-8 md:m-2 md:rounded-xl md:px-16 md:py-36 ${className}`}
     >
       <div className="flex h-full flex-col justify-between">
         <div>

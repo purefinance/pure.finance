@@ -2,6 +2,7 @@
   "arrowParens": "avoid",
   "semi": false,
   "plugins": ["prettier-plugin-tailwindcss"],
+  "quoteProps": "consistent",
   "singleQuote": true,
   "trailingComma": "none"
 }

@@ -293,7 +293,7 @@ const Allowance = function ({ address, data }) {
   const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
     <span
-      className="m-auto w-full overflow-hidden overflow-ellipsis whitespace-nowrap"
+      className="m-auto w-full overflow-hidden text-ellipsis whitespace-nowrap"
       title={formatter.format(value)}
     >
       {isUnlimited ? t('unlimited') : formatter.format(value)}
@@ -461,7 +461,7 @@ const TokenRevokes = function () {
                 tokenApprovals.length === 0 &&
                 syncStatus === SyncStatus.Finished && (
                   <Status icon="exclamation" message={t('no-approvals')}>
-                    <Link className="text-orange-hemi" href="/token-approvals">
+                    <Link className="underline" href="/token-approvals">
                       {t('token-approvals')}
                     </Link>
                   </Status>

@@ -10,7 +10,10 @@ const Balance = ({ balance, showMax, setMax }) => {
       <span className="text-slate-500">{t('balance')}:</span>
       <label className="text-sm text-black">{balance}</label>
       {showMax && (
-        <label className="text-orange-950 ml-1 cursor-pointer" onClick={setMax}>
+        <label
+          className="text-grayscale-950 ml-1 cursor-pointer"
+          onClick={setMax}
+        >
           {t('max')}
         </label>
       )}
