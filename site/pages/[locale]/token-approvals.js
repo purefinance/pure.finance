@@ -9,7 +9,7 @@ import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
 import InputBalance from '../../components/InputBalance'
 import ToolsLayout from '../../components/layout/ToolsLayout'
-import UtilFormBox from '../../components/layout/UtilFormBox'
+import UtilityForm from '../../components/layout/UtilityForm'
 import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
@@ -166,7 +166,7 @@ const TokenApprovalsForm = function () {
   }
 
   return (
-    <UtilFormBox
+    <UtilityForm
       text={t('utilities-text.token-approvals')}
       title={t('token-approvals')}
     >
@@ -212,7 +212,7 @@ const TokenApprovalsForm = function () {
           {feedback.message}
         </p>
       )}
-    </UtilFormBox>
+    </UtilityForm>
   )
 }
 
