@@ -211,7 +211,7 @@
       "fee-answer": "There is a transaction fee when wrapping and unwrapping ETH, with the fee amount varying depending on market conditions."
     },
     "sign-message": {
-      "title": "How Does a Sign Message Work?",
+      "title": "How Sign Message Works?",
       "text": "Signing a message creates a unique cryptographic signature using your wallet's private key. This signature can be used to verify that you are the owner of the wallet without revealing your private key. Enter your message, sign it, and share the signature for verification.",
       "how-verify-question": "How can I verify a signed message?",
       "how-verify-answer": "To verify a signed message, use the signature and the original message with any signature verification tool. Etherscan offers one such tool, but there are many options available, including web-based platforms and command-line interfaces (CLIs)."
