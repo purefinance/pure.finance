@@ -1,8 +1,7 @@
+import { findTokenBySymbol } from 'token-list'
 import Image from 'next/image'
 
 import Ether from './tokens/Ether'
-
-const { findTokenBySymbol } = require('token-list')
 
 const TokenContainer = function ({ chainId = 1, name, ...props }) {
   if (!name) {
