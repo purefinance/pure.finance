@@ -28,7 +28,7 @@ const WalletButton = function ({ cta = false, onClick }) {
 
   return (
     <button
-      className="border-slate-200 flex items-center gap-2 rounded-lg border p-2 text-sm text-black"
+      className="border-slate-100 flex items-center gap-2 rounded-xl border p-2 text-sm text-black"
       onClick={onClick}
     >
       <SvgContainer name="wallet" />
@@ -169,7 +169,7 @@ const Wallet = function ({ cta }) {
       ) : (
         <Dropdown
           Selector={({ isOpen }) => (
-            <div className="border-slate-20 flex items-center rounded-xl border py-2 pl-2 pr-1 text-sm text-black">
+            <div className="border-slate-100 flex items-center rounded-xl border py-2 pl-2 pr-1 text-sm text-black">
               {shortenedAccount}
               <SvgContainer
                 className={`h-6 w-6 fill-current ${

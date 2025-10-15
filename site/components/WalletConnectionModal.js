@@ -11,7 +11,7 @@ const WalletConnectionModal = function ({
   const t = useTranslations()
   return (
     <Modal
-      className="rounded-md bg-white"
+      className="rounded-xl bg-white"
       modalIsOpen={modalIsOpen}
       onRequestClose={onRequestClose}
     >
@@ -22,7 +22,7 @@ const WalletConnectionModal = function ({
         {wallets.map(w => (
           <div className="p-4" key={w.name}>
             <button
-              className="focus:outline-none flex w-60 items-center justify-center rounded border px-4 py-2 font-semibold focus:ring"
+              className="focus:outline-none flex w-60 items-center justify-center rounded rounded-xl border px-4 py-2 font-semibold focus:ring"
               onClick={() => w.handleConnection()}
             >
               <SvgContainer

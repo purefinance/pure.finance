@@ -5,7 +5,7 @@ const TableBox = ({ title, text, className, children }) => (
       {text && <h4 className="text-slate-500 mt-4 text-sm">{text}</h4>}
     </div>
     <div
-      className={`border-slate-100 mt-4 w-full rounded-2xl border bg-white p-3 ${className}`}
+      className={`border-slate-100 mt-4 w-full rounded-xl border bg-white p-3 ${className}`}
     >
       {children}
     </div>
