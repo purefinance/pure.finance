@@ -105,7 +105,7 @@
   "update-funding-address": "Update Funding Address",
   "update-funding-rate": "Update Funding Rate",
   "unpause-stream": "Unpause Stream",
-  "unwrap-weth-success": "You unwrapped {value} WETH successfully!",
+  "unwrap-weth-success": "You unwrapped {value} {wrappedTokenSymbol} successfully!",
   "unwrap": "Unwrap {nativeTokenSymbol}",
   "value": "Value",
   "verify-signature-etherscan": "Verify on Etherscan",
