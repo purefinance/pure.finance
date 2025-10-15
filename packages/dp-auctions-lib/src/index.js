@@ -9,7 +9,6 @@ const pTap = require('p-tap').default
 const { findToken } = require('./token-list')
 const dpaAbi = require('./abi.json')
 
-const DPA_ADDRESS = '0x164D41ceB60489D2e054394Fc05ED1894Db3898a' // Chain ID 1
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const UNLIMITED = (2n ** 256n - 1n).toString()
@@ -19,7 +18,11 @@ const createDPAuctionsLib = function (web3, options = {}) {
 
   debug('Creating Descending Price Auction helper library')
 
-  const dpa = new web3.eth.Contract(dpaAbi, DPA_ADDRESS)
+  const dpaAddress = options.address
+  if (!dpaAddress) {
+    throw new Error('No DP Auctions contract address was provided')
+  }
+  const dpa = new web3.eth.Contract(dpaAbi, dpaAddress)
   const router = getRouterContract(web3) // This only works for chainId 1
 
   const execTransactions = createExecutor({ web3, overestimation: gasFactor })
@@ -76,10 +79,10 @@ const createDPAuctionsLib = function (web3, options = {}) {
     auction.winner !== ZERO_ADDRESS
       ? 'won'
       : auction.stopped
-      ? 'stopped'
-      : currentPrice === auction.floor
-      ? 'floored'
-      : 'running'
+        ? 'stopped'
+        : currentPrice === auction.floor
+          ? 'floored'
+          : 'running'
 
   // Add useful information to the auction object such as details on the tokens
   // contained, the payment token, the current price, etc.
@@ -207,7 +210,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
         const erc20 = new web3.eth.Contract(erc20Abi, address)
         debug('Checking allowance for %s %s', amount, address)
         return erc20.methods
-          .allowance(from, DPA_ADDRESS)
+          .allowance(from, dpaAddress)
           .call()
           .then(function (allowance) {
             if (BigInt(allowance) >= BigInt(amount)) {
@@ -216,7 +219,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
             }
             debug('Allowance %s is not enough', allowance)
             return {
-              method: erc20.methods.approve(DPA_ADDRESS, amount),
+              method: erc20.methods.approve(dpaAddress, amount),
               suffix: 'approve',
               gas: 50000
             }
@@ -260,7 +263,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
       .then(function ([auction, currentPrice]) {
         const token = new web3.eth.Contract(erc20Abi, auction.paymentToken)
         return token.methods
-          .allowance(from, DPA_ADDRESS)
+          .allowance(from, dpaAddress)
           .call()
           .then(function (allowance) {
             const approvalNeeded = BigInt(allowance) < BigInt(currentPrice)
@@ -269,7 +272,7 @@ const createDPAuctionsLib = function (web3, options = {}) {
               ? [
                   {
                     // Approve unlimited (2^256 - 1)
-                    method: token.methods.approve(DPA_ADDRESS, UNLIMITED),
+                    method: token.methods.approve(dpaAddress, UNLIMITED),
                     suffix: 'approve',
                     gas: 50000
                   }

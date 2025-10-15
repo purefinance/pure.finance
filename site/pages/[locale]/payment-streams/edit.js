@@ -1,11 +1,19 @@
-import EditStream from '../../../components/payment-streams/EditStream'
-import PaymentStreamsLayout from '../../../components/PaymentStreamsLayout'
+import { useTranslations } from 'next-intl'
 
-const PaymentStreamsEdit = () => (
-  <PaymentStreamsLayout>
-    <EditStream />
-  </PaymentStreamsLayout>
-)
+import PaymentStreamsLayout from '../../../components/layout/PaymentStreamsLayout'
+import UtilFormBox from '../../../components/layout/UtilFormBox'
+import EditStream from '../../../components/payment-streams/EditStream'
+
+const PaymentStreamsEdit = () => {
+  const t = useTranslations()
+  return (
+    <PaymentStreamsLayout>
+      <UtilFormBox title={t('payment-streams')}>
+        <EditStream />
+      </UtilFormBox>
+    </PaymentStreamsLayout>
+  )
+}
 
 export { getStaticProps, getStaticPaths } from '../../../utils/staticProps'
 export default PaymentStreamsEdit

@@ -1,3 +1,4 @@
+import Big from 'big.js'
 import { useWeb3React } from '@web3-react/core'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
@@ -6,29 +7,46 @@ import { useContext, useEffect, useState } from 'react'
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
-import Layout from '../../components/Layout'
+import InputBalance from '../../components/InputBalance'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilFormBox from '../../components/layout/UtilFormBox'
 import { useFormButton } from '../../hooks/useFormButton'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
+import CallToAction from '../../components/CallToAction'
+
+const decimalRegex = /^(([1-9][0-9]*)?[0-9](\.[0-9]*)?|\.[0-9]+)$/
+const infiniteSymbol = '∞'
 
 const useAllowanceInput = function (
   token,
   spender,
   allowance,
   setAllowance,
-  setFeedback
+  setFeedback,
+  setIsInfinite
 ) {
   const { account, active, chainId } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
-
   const disabled = !token || !spender || !active || !tokenApprovals
 
   useEffect(
     function () {
       setAllowance('')
+      setIsInfinite(false)
     },
     [active, token, spender]
   )
+
+  const setAllowanceInfinity = function (allowance) {
+    const isInfinite =
+      decimalRegex.test(allowance) && new Big(allowance).gt(token.totalSupply)
+
+    setIsInfinite(isInfinite)
+    setAllowance(
+      isInfinite ? infiniteSymbol : fromUnit(allowance, token.decimals)
+    )
+  }
 
   useEffect(
     function () {
@@ -39,7 +57,7 @@ const useAllowanceInput = function (
       tokenApprovals
         .allowance(token.address, account, spender.address)
         .then(function (currentAllowance) {
-          setAllowance(fromUnit(currentAllowance, token.decimals))
+          setAllowanceInfinity(currentAllowance)
         })
         .catch(function (err) {
           setFeedback('error', err.message)
@@ -49,8 +67,8 @@ const useAllowanceInput = function (
   )
 
   const handleChange = function (e) {
-    const re = /^(([1-9][0-9]*)?[0-9](\.[0-9]*)?|\.[0-9]+)$/ // Decimal number
-    if (e.target.value === '' || re.test(e.target.value)) {
+    if (e.target.value === '' || decimalRegex.test(e.target.value)) {
+      setIsInfinite(false)
       setAllowance(e.target.value)
     }
   }
@@ -58,7 +76,7 @@ const useAllowanceInput = function (
   return {
     disabled,
     onChange: handleChange,
-    suffix: token && token.symbol,
+    token: token && token.symbol,
     value: allowance
   }
 }
@@ -89,7 +107,6 @@ const useFeedback = function () {
 
 const TokenApprovalsForm = function () {
   const t = useTranslations()
-  const { account } = useWeb3React()
   const { tokenApprovals } = useContext(PureContext)
   const { query } = useRouter()
 
@@ -100,14 +117,17 @@ const TokenApprovalsForm = function () {
   const spenderInput = useTokenInput(query.spender, setSpender, true)
 
   const [allowance, setAllowance] = useState('')
+  const [feedback, setFeedback] = useFeedback()
+  const [isInfinite, setIsInfinite] = useState(false)
+
   const allowanceInput = useAllowanceInput(
     token,
     spender,
     allowance,
-    setAllowance
+    setAllowance,
+    setFeedback,
+    setIsInfinite
   )
-
-  const [feedback, setFeedback] = useFeedback()
 
   // Depending on the progress state of the approval operation, set the feedback
   // color and message.
@@ -130,72 +150,100 @@ const TokenApprovalsForm = function () {
   const approveButton = useFormButton(
     approveDisabled,
     () =>
-      tokenApprovals.approve(
-        token.address,
-        spender.address,
-        toUnit(allowance, token.decimals)
-      ),
-    onProgress
-  )
-  const infiniteButton = useFormButton(
-    approveDisabled,
-    () =>
-      tokenApprovals
-        .approveInfinite(token.address, spender.address)
-        .then(() =>
-          tokenApprovals
-            .allowance(token.address, account, spender.address)
-            .then(setAllowance)
-        ),
+      isInfinite
+        ? tokenApprovals.approveInfinite(token.address, spender.address)
+        : tokenApprovals.approve(
+            token.address,
+            spender.address,
+            toUnit(allowance, token.decimals)
+          ),
     onProgress
   )
 
+  const allowInfinite = function () {
+    setIsInfinite(true)
+    setAllowance(infiniteSymbol)
+  }
+
   return (
-    <>
-      <div className="flex flex-wrap justify-center mt-10 mx-auto w-full max-w-lg space-y-4">
-        <div className="w-full h-24">
-          <Input
-            placeholder={t('token-address-placeholder')}
-            title={`${t('token-address')}:`}
-            {...tokenInput}
-          />
-        </div>
-        <div className="w-full h-24">
-          <Input
-            placeholder={t('spender-address-placeholder')}
-            title={`${t('spender-address')}:`}
-            {...spenderInput}
-          />
-        </div>
-        <Input
-          suffix={token && token.symbol}
-          title={`${t('allowance')}:`}
-          {...allowanceInput}
-        />
+    <UtilFormBox
+      text={t('utilities-text.token-approvals')}
+      title={t('token-approvals')}
+    >
+      <Input
+        placeholder={t('token-address-placeholder')}
+        title={t('token-address')}
+        {...tokenInput}
+      />
+      <Input
+        placeholder={t('spender-address-placeholder')}
+        title={t('spender-address')}
+        {...spenderInput}
+      />
+      <InputBalance
+        className="mb-4"
+        suffix={token && token.symbol}
+        title={t('allowance')}
+        {...allowanceInput}
+      />
+
+      <div className="flex justify-end">
+        <button
+          disabled={approveDisabled}
+          onClick={allowInfinite}
+          className={`${
+            !approveDisabled
+              ? 'text-orange-950 hover:text-orange-500 cursor-pointer'
+              : 'text-orange-500 cursor-not-allowed'
+          }`}
+        >
+          {t('allow-infinite')}
+        </button>
       </div>
-      <div className="mt-7.5 flex justify-center">
-        <Button {...approveButton}>
-          {t('approve-allowance').toUpperCase()}
-        </Button>
+
+      <div className="mt-4">
+        <CallToAction>
+          <Button {...approveButton}>{t('approve-allowance')}</Button>
+        </CallToAction>
       </div>
-      <div className="mt-7.5 flex justify-center">
-        <Button {...infiniteButton}>
-          {t('approve-infinite').toUpperCase()}
-        </Button>
-      </div>
-      <p className={`text-center text-sm mt-6 ${feedback.color}`}>
-        {feedback.message}
-      </p>
-    </>
+
+      {feedback.message && (
+        <p className={`mt-6 text-center text-sm ${feedback.color}`}>
+          {feedback.message}
+        </p>
+      )}
+    </UtilFormBox>
   )
 }
 
 const TokenApprovals = function () {
   const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.token-approvals')
+
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('how-grant-question'),
+        answer: tHelperText('how-grant-answer')
+      },
+      {
+        title: tHelperText('fee-question'),
+        answer: tHelperText('fee-answer')
+      }
+    ]
+  }
+
   return (
-    <Layout title={t('token-approvals')} walletConnection>
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('token-approvals')}
+      walletConnection
+    >
       <TokenApprovalsForm />
-    </Layout>
+    </ToolsLayout>
   )
 }
 

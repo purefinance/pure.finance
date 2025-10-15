@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react'
 import shortAccount from '../utils/account'
 import { injected, walletlink } from '../utils/connectors'
 
+import Dropdown from './Dropdown'
+import SvgContainer from './svg/SvgContainer'
 import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'
+import Button from './Button'
 const persistLastConnectorKey = 'lastConnector'
 
 const persistLastConnector = connectorName =>
@@ -16,7 +19,25 @@ const getLastConnector = () =>
 const removeLastConnector = () =>
   window.localStorage.removeItem(persistLastConnectorKey)
 
-const Wallet = function () {
+const WalletButton = function ({ cta = false, onClick }) {
+  const t = useTranslations()
+
+  if (cta) {
+    return <Button onClick={onClick}>{t('connect-wallet')}</Button>
+  }
+
+  return (
+    <button
+      className="border-slate-200 flex items-center gap-2 rounded-lg border p-2 text-sm text-black"
+      onClick={onClick}
+    >
+      <SvgContainer name="wallet" />
+      {t('connect-wallet')}
+    </button>
+  )
+}
+
+const Wallet = function ({ cta }) {
   const { account, active, activate, connector, deactivate, error, setError } =
     useWeb3React()
   const t = useTranslations()
@@ -144,30 +165,29 @@ const Wallet = function () {
         onRequestClose={() => setErrorModalOpen(false)}
       />
       {!active ? (
-        <button
-          className="hover:text-gray-400 font-semibold focus:outline-none"
-          onClick={() => setShowWalletConnector(true)}
-        >
-          {t('connect-wallet')}
-        </button>
+        <WalletButton cta={cta} onClick={() => setShowWalletConnector(true)} />
       ) : (
-        <div className="text-center font-semibold md:text-right">
-          <p className="text-gray-400 text-xs">{t('address')}:</p>
-          <div>
-            <div className="font-bold focus:outline-none">
+        <Dropdown
+          Selector={({ isOpen }) => (
+            <div className="border-slate-20 flex items-center rounded-xl border py-2 pl-2 pr-1 text-sm text-black">
               {shortenedAccount}
+              <SvgContainer
+                className={`h-6 w-6 fill-current ${
+                  isOpen ? 'rotate-180 transform' : ''
+                }`}
+                name="caret"
+              />
             </div>
-          </div>
-          <div>
-            <button
-              className={`text-sm ${!account && 'hidden'}
-              font-semibold focus:outline-none text-gray-400 hover:text-black`}
-              onClick={deactivateConnector}
-            >
-              {t('disconnect')}
-            </button>
-          </div>
-        </div>
+          )}
+          className="cursor-pointer text-gray-600"
+        >
+          <ul
+            className="absolute z-10 mt-1 w-40 rounded-xl bg-white p-2 text-center shadow-lg"
+            onClick={deactivateConnector}
+          >
+            {t('disconnect')}
+          </ul>
+        </Dropdown>
       )}
     </>
   )

@@ -8,18 +8,36 @@ import watchAsset from 'wallet-watch-asset'
 import Button from '../../components/Button'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
-import Layout from '../../components/Layout'
+import InputBalance from '../../components/InputBalance'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilFormBox from '../../components/layout/UtilFormBox'
 import { fromUnit, toFixed } from '../../utils'
+import CallToAction from '../../components/CallToAction'
 
 function MerkleClaims() {
   const t = useTranslations()
-  const { active, account } = useWeb3React()
+  const tHelperText = useTranslations('helper-text.merkle-claims')
+  const { active, account, library } = useWeb3React()
   const { query } = useRouter()
   const [claimID, setClaimID] = useState('')
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
   const [feedback, setFeedback] = useState({ color: 'text-black', message: '' })
   const { merkle } = useContext(PureContext)
+  const helperText = {
+    title: tHelperText('title'),
+    text: tHelperText('text'),
+    questions: [
+      {
+        title: tHelperText('what-are-question'),
+        answer: tHelperText('what-are-answer')
+      },
+      {
+        title: tHelperText('how-find-question'),
+        answer: tHelperText('how-find-answer')
+      }
+    ]
+  }
 
   const clearFeedback = () => setFeedback({ color: 'text-black', message: '' })
   const setErrorMessage = message =>
@@ -34,7 +52,7 @@ function MerkleClaims() {
     merkle.getHolding &&
     merkle
       .getHolding(cID)
-      .then(h => {
+      .then(function (h) {
         if (h.isClaimable) {
           clearFeedback()
         } else {
@@ -49,16 +67,19 @@ function MerkleClaims() {
     [merkle]
   )
 
-  const handleClaimIDChange = function (e) {
-    const re = /^[0-9\b]+$/
-    if (e.target.value === '' || re.test(e.target.value)) {
-      clearFeedback()
-      setClaimID(e.target.value)
-      delayedClaimID(e.target.value)
-    }
-  }
+  const handleClaimIDChange = useCallback(
+    function (e) {
+      const re = /^[0-9\b]+$/
+      if (e.target.value === '' || re.test(e.target.value)) {
+        clearFeedback()
+        setClaimID(e.target.value)
+        delayedClaimID(e.target.value)
+      }
+    },
+    [delayedClaimID]
+  )
 
-  const handleClaimSubmit = () => {
+  const handleClaimSubmit = function () {
     setClaimInProgress(true)
     setInfoMessage(t('claim-in-progress'))
     return merkle
@@ -69,13 +90,23 @@ function MerkleClaims() {
       })
       .catch(e => setErrorMessage(e.message))
       .finally(() => setClaimInProgress(false))
-      .then(() => watchAsset({ account, token: holding.token }))
+      .then(() =>
+        watchAsset(
+          library.currentProvider,
+          account,
+          holding.token,
+          localStorage
+        )
+      )
   }
 
-  useEffect(() => {
-    clearFeedback()
-    setClaimID('')
-  }, [active, account])
+  useEffect(
+    function () {
+      clearFeedback()
+      setClaimID('')
+    },
+    [active, account]
+  )
 
   useEffect(() => setHolding({ amount: '', isClaimable: false }), [claimID])
 
@@ -83,41 +114,54 @@ function MerkleClaims() {
     function setClaimIdFromQueryOnLoad() {
       handleClaimIDChange({ target: { value: query.id } })
     },
-    [merkle, query]
+    [handleClaimIDChange, merkle, query]
   )
 
   return (
-    <Layout title={t('merkle-claims')} walletConnection>
-      <div className="flex flex-wrap justify-center mt-10 mx-auto w-full max-w-lg space-y-3">
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('merkle-claims')}
+      walletConnection
+    >
+      <UtilFormBox
+        text={t('utilities-text.merkle-claims')}
+        title={t('merkle-claims')}
+      >
         <Input
+          caption={feedback.message}
+          captionColor={feedback.color}
           disabled={!active || claimInProgress}
+          feedback={feedback}
           onChange={handleClaimIDChange}
-          title={`${t('claim-id')}:`}
+          placeholder={t('enter-claim-id')}
+          title={t('claim-id')}
           value={claimID}
         />
-        <Input
+        <InputBalance
+          className="mt-4"
           disabled
-          suffix={holding && holding.token && holding.token.symbol}
-          title={`${t('balance')}:`}
+          placeholder="-"
+          title={t('balance')}
+          token={holding && holding.token && holding.token.symbol}
           value={
             holding.amount &&
             toFixed(fromUnit(holding.amount, holding.token.decimals), 6)
           }
         />
-      </div>
-      <div className="mt-7.5 flex justify-center">
-        <Button
-          className="mt-7.5 flex justify-center"
-          disabled={!active || !holding.isClaimable || claimInProgress}
-          onClick={handleClaimSubmit}
-        >
-          {t('claim').toUpperCase()}
-        </Button>
-      </div>
-      <p className={`text-center text-sm mt-6 ${feedback.color}`}>
-        {feedback.message}
-      </p>
-    </Layout>
+        <div className="mt-8">
+          <CallToAction>
+            <Button
+              className="flex justify-center"
+              disabled={!holding.isClaimable}
+              onClick={handleClaimSubmit}
+            >
+              {t('claim')}
+            </Button>
+          </CallToAction>
+        </div>
+      </UtilFormBox>
+    </ToolsLayout>
   )
 }
 

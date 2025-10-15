@@ -7,15 +7,13 @@ import { VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory'
 import watchAsset from 'wallet-watch-asset'
 
 import Button from '../../../../components/Button'
-import TransactionsContext, {
-  TransactionsContextProvider
-} from '../../../../components/context/Transactions'
-import { EtherscanLink } from '../../../../components/EtherscanLink'
-import Layout from '../../../../components/Layout'
+import TransactionsContext from '../../../../components/context/Transactions'
+import { DPAuctionsContext } from '../../../../components/DPAuctionsContext'
+import { ExplorerLink } from '../../../../components/ExplorerLink'
+import DPAuctionsLayout from '../../../../components/layout/DPAuctionsLayout'
 import TokenAmount from '../../../../components/TokenAmount'
 import Transactions from '../../../../components/Transactions'
 import { fromUnit } from '../../../../utils'
-import dpa from '../../../../utils/dp-auctions'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -69,10 +67,10 @@ const DPAuctionPriceChart = function ({ auction }) {
     auction.status === 'running'
       ? [startPoint, currentPoint, endPoint]
       : auction.status === 'stopped'
-      ? [startPoint, stoppingPoint, endPoint]
-      : auction.status === 'won'
-      ? [startPoint, winningPoint, endPoint]
-      : [startPoint, currentPoint, endPoint]
+        ? [startPoint, stoppingPoint, endPoint]
+        : auction.status === 'won'
+          ? [startPoint, winningPoint, endPoint]
+          : [startPoint, currentPoint, endPoint]
 
   const plotData = basePlotData
     .map(({ block, price }) => ({
@@ -195,7 +193,7 @@ const DPAuctionTokens = function ({ auction }) {
   return (
     <table className="w-full border-collapse">
       <thead>
-        <tr className="font-bold bg-gray-200">
+        <tr className="bg-gray-200 font-bold">
           <td className="border-2">{t('token')}</td>
           <td className="border-2">{t('value')}</td>
         </tr>
@@ -228,6 +226,7 @@ const DPAuctionBuyControl = function ({ auction }) {
   const t = useTranslations()
   const { account, active } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionsContext)
+  const dpa = useContext(DPAuctionsContext)
 
   const [canBid, setCanBid] = useState(false)
   useEffect(
@@ -245,7 +244,7 @@ const DPAuctionBuyControl = function ({ auction }) {
         })
         .then(setCanBid)
     },
-    [account, auction, active]
+    [account, auction, active, dpa]
   )
 
   const handleBuyAuctionClick = function () {
@@ -261,7 +260,7 @@ const DPAuctionBuyControl = function ({ auction }) {
           opId,
           received: auction.tokens.map(token => ({
             symbol: token.symbol,
-            value: fromUnit(token.amount, token.decilams)
+            value: fromUnit(token.amount, token.decimals)
           })),
           sent: fromUnit(auction.currentPrice, auction.paymentToken.decimals),
           sentSymbol: auction.paymentToken.symbol,
@@ -345,12 +344,14 @@ const DPAuctionBuyControl = function ({ auction }) {
 
 // This component shows the end status of the auction.
 const DPAuctionEndStatus = function ({ auction }) {
+  const { chainId } = useWeb3React()
   const t = useTranslations()
 
   return auction.status === 'won' ? (
     <>
       <div>
-        {t('won-by')}: <EtherscanLink address={auction.winner} />
+        {t('won-by')}:{' '}
+        <ExplorerLink address={auction.winner} chainId={chainId} />
       </div>
       <div>
         {t('winning-price')}:{' '}
@@ -364,6 +365,7 @@ const DPAuctionEndStatus = function ({ auction }) {
 
 // This component renders the details view of an auction.
 const DPAuction = function ({ auction }) {
+  const { chainId } = useWeb3React()
   const t = useTranslations()
 
   if (!auction) {
@@ -377,12 +379,13 @@ const DPAuction = function ({ auction }) {
         </div>
         <div className="ml-4 w-1/2">
           <div className="mb-2">
-            {t('seller')}: <EtherscanLink address={auction.payee} />
+            {t('seller')}:{' '}
+            <ExplorerLink address={auction.payee} chainId={chainId} />
           </div>
           <DPAuctionTokens auction={auction} />
         </div>
       </div>
-      <div className="flex mt-8">
+      <div className="mt-8 flex">
         <div className="mr-4 w-1/2">
           <DPAuctionBuyControl auction={auction} />
         </div>
@@ -401,6 +404,7 @@ export default function DPAuctionsDetails({ initialData, error }) {
   const {
     query: { id: auctionId = 0 }
   } = useRouter()
+  const dpa = useContext(DPAuctionsContext)
 
   const { data: auction } = useSWR(
     `dp-auctions-${auctionId}`,
@@ -413,24 +417,22 @@ export default function DPAuctionsDetails({ initialData, error }) {
   )
 
   return (
-    <TransactionsContextProvider>
-      <Layout title={t('dp-auctions')} walletConnection>
-        <div className="mt-10 w-full">
-          <div className="mb-1.5 text-gray-600 font-bold">
-            {t('auction')} {auctionId}
-          </div>
-          {auction ? (
-            <DPAuction auction={auction} />
-          ) : (
-            <>
-              <div>{t('error-getting-auction')}:</div>
-              <div>{error}</div>
-            </>
-          )}
+    <DPAuctionsLayout>
+      <div className="mt-10 w-full">
+        <div className="mb-1.5 font-bold text-gray-600">
+          {t('auction')} {auctionId}
         </div>
-        <Transactions />
-      </Layout>
-    </TransactionsContextProvider>
+        {auction ? (
+          <DPAuction auction={auction} />
+        ) : (
+          <>
+            <div>{t('error-getting-auction')}:</div>
+            <div>{error}</div>
+          </>
+        )}
+      </div>
+      <Transactions />
+    </DPAuctionsLayout>
   )
 }
 

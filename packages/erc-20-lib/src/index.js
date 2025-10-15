@@ -14,6 +14,12 @@ const createErc20 = function (web3, address, options = {}) {
 
   const contract = new web3.eth.Contract(abi, address)
 
+  const chainIdPromise = web3.eth.getChainId()
+
+  const wethContractPromise = chainIdPromise.then(chainId =>
+    weth.getContract(web3, chainId)
+  )
+
   const safeGas = gas => Math.ceil(gas * gasFactor)
 
   const estimateGasAndSend = (method, transactionOptions) =>
@@ -31,6 +37,8 @@ const createErc20 = function (web3, address, options = {}) {
   const totalSupply = () => contract.methods.totalSupply().call()
 
   return {
+    getAddress: () => contract.options.address,
+
     getInfo: () =>
       Promise.all([
         contract.methods.symbol().call(),
@@ -73,40 +81,45 @@ const createErc20 = function (web3, address, options = {}) {
     totalSupply,
 
     wrapEther: value =>
-      estimateGasAndSend(weth.getContract(web3).methods.deposit(), {
-        from,
-        gasPrice,
-        value
-      }),
+      wethContractPromise.then(wethContract =>
+        estimateGasAndSend(wethContract.methods.deposit(), {
+          from,
+          gasPrice,
+          value
+        })
+      ),
 
     unwrapEther: value =>
-      estimateGasAndSend(weth.getContract(web3).methods.withdraw(value), {
-        from,
-        gasPrice
-      }),
+      wethContractPromise.then(wethContract =>
+        estimateGasAndSend(wethContract.methods.withdraw(value), {
+          from,
+          gasPrice
+        })
+      ),
 
     wrappedEtherBalanceOf: address =>
-      weth
-        .getContract(web3)
-        .methods.balanceOf(address || from)
-        .call(),
+      wethContractPromise.then(wethContract =>
+        wethContract.methods.balanceOf(address || from).call()
+      ),
 
     swapEther: value =>
-      estimateGasAndSend(
-        uniswap
-          .getRouterContract(web3)
-          .methods.swapExactETHForTokens(
-            '1',
-            [tokenAddress('WETH'), address],
+      chainIdPromise.then(chainId =>
+        estimateGasAndSend(
+          uniswap
+            .getRouterContract(web3)
+            .methods.swapExactETHForTokens(
+              '1',
+              [tokenAddress('WETH', chainId), address],
+              from,
+              Math.round(Date.now() / 1000) + 60
+            ),
+          {
             from,
-            Math.round(Date.now() / 1000) + 60
-          ),
-        {
-          from,
-          gas: safeGas(100000),
-          gasPrice,
-          value: value.toString()
-        }
+            gas: safeGas(100000),
+            gasPrice,
+            value: value.toString()
+          }
+        )
       )
   }
 }

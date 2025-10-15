@@ -6,7 +6,7 @@ import Vesper from './svg/Vesper'
 const Footer = function () {
   const t = useTranslations()
   return (
-    <div className="flex flex-wrap justify-center mt-20 w-full">
+    <div className="mt-20 flex w-full flex-wrap justify-center">
       <div className="w-full">
         <p className="text-vesper text-center text-xs font-semibold opacity-75">
           {t('sponsored-by').toUpperCase()}
@@ -17,7 +17,7 @@ const Footer = function () {
           <Vesper />
         </a>
       </div>
-      <div className="flex justify-between mt-20 pt-3 w-full text-gray-500 text-xs border-t-2 space-x-4">
+      <div className="mt-20 flex w-full justify-between space-x-4 border-t-2 pt-3 text-xs text-gray-500">
         <div className="w-1/2">
           <p>{t('copyright')}</p>
         </div>

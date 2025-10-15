@@ -1,13 +1,18 @@
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { WalletLinkConnector } from '@web3-react/walletlink-connector'
 
+import utilsConfig from './utilsConfig.json'
+
+const supportedChainIds = Object.keys(utilsConfig).map(k => Number.parseInt(k))
+
 const environment = process.env.NEXT_PUBLIC_ENVIRONMENT
 const nodeUrl = process.env.NEXT_PUBLIC_NODE_URL
 export const injected = new InjectedConnector({
-  supportedChainIds: [1, 137, 1337, 31337, 43114]
+  supportedChainIds
 })
 
 export const walletlink = new WalletLinkConnector({
-  url: nodeUrl,
-  appName: `Pure Finance${environment ? ` ${environment}` : ''}`
+  appName: `Pure Finance${environment ? ` ${environment}` : ''}`,
+  supportedChainIds,
+  url: nodeUrl
 })

@@ -1,12 +1,11 @@
 import { useWeb3React } from '@web3-react/core'
-import { util } from 'erc-20-lib'
 import debounce from 'lodash.debounce'
 import { useTranslations } from 'next-intl'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import vesperTokens from 'vesper-metadata/src/vesper.tokenlist.json'
-import { isAddress, isHexStrict } from 'web3-utils'
+import { isHexStrict } from 'web3-utils'
 
 import PureContext from '../components/context/Pure'
+import { resolveAddress } from '../utils/resolveAddress'
 
 const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
   const t = useTranslations()
@@ -17,26 +16,21 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
   const [tokenError, setTokenError] = useState('')
   const [tokenName, setTokenName] = useState('')
 
-  useEffect(() => {
-    onChange(null)
-    setTokenAddress('')
-    setTokenName('')
-    setTokenError('')
-  }, [active, chainId])
+  useEffect(
+    function () {
+      onChange(null)
+      setTokenAddress('')
+      setTokenName('')
+      setTokenError('')
+    },
+    [active, chainId, onChange]
+  )
 
   const delayedGetTokenInfo = useCallback(
     debounce(function (value) {
       setTokenError('')
 
-      const addressPromise = isAddress(value)
-        ? Promise.resolve(value)
-        : Promise.resolve(
-            util.tokenAddress(value, vesperTokens.tokens) ||
-              library.eth.ens.getAddress(value)
-          ).catch(function (err) {
-            console.log(err)
-            return null
-          })
+      const addressPromise = resolveAddress(library, value)
 
       // eslint-disable-next-line promise/catch-or-return
       addressPromise.then(function (addressFound) {
@@ -55,7 +49,7 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
           .getInfo()
           .then(function (info) {
             onChange(info)
-            setTokenName(info.name)
+            setTokenName(info.symbol)
           })
           .catch(function () {
             if (allowAnyAddress) {
@@ -67,23 +61,26 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
           })
       })
     }, 1000),
-    [erc20]
+    [allowAnyAddress, erc20, library, onChange, t]
   )
 
-  const handleChange = function (e) {
-    const { value } = e.target
+  const handleChange = useCallback(
+    function (e) {
+      const { value } = e.target
 
-    const re = /^[0-9a-zA-Z.]*$/
-    if (!re.test(e.target.value)) {
-      return
-    }
+      const re = /^[0-9a-zA-Z.]*$/
+      if (!re.test(e.target.value)) {
+        return
+      }
 
-    setTokenAddress(value)
-    setTokenName('')
-    setTokenError('')
+      setTokenAddress(value)
+      setTokenName('')
+      setTokenError('')
 
-    delayedGetTokenInfo(value)
-  }
+      delayedGetTokenInfo(value)
+    },
+    [delayedGetTokenInfo]
+  )
 
   useEffect(
     function () {
@@ -92,7 +89,7 @@ const useTokenInput = function (address, onChange = () => {}, allowAnyAddress) {
       }
       handleChange({ target: { value: address } })
     },
-    [address, erc20]
+    [address, erc20, handleChange]
   )
 
   return {

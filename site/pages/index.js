@@ -1,13 +1,14 @@
 import { useRedirectToDefaultLocale } from '../hooks/useRedirectToDefaultLocale'
 import { defaultLocale, locales } from '../navigation'
 
-const HomePage = () => {
+export const homepageRedirect = '/'
+
+function HomePage() {
   useRedirectToDefaultLocale({
     defaultLocale,
     locales,
-    redirectPage: '/'
+    redirectPage: homepageRedirect
   })
-
   return null
 }
 

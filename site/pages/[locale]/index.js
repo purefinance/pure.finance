@@ -1,14 +1,17 @@
-import Layout from '../../components/Layout'
-import Utilities from '../../components/Utilities'
+import { useTranslations } from 'next-intl'
 
-const HomePage = () => (
-  <Layout>
-    <div className="mb-14 w-full">
-      <Utilities />
-    </div>
-  </Layout>
-)
+import HomeLayout from '../../components/layout/HomeLayout'
+import UtilitiesTabs from '../../components/UtilitiesTabs'
+
+function HomePage() {
+  const t = useTranslations()
+
+  return (
+    <HomeLayout title={t('tools')}>
+      <UtilitiesTabs />
+    </HomeLayout>
+  )
+}
 
 export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
-
 export default HomePage

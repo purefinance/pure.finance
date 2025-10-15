@@ -1,0 +1,149 @@
+{
+  "name": "Custom Token List",
+  "tokens": [
+    {
+      "address": "0x4d224452801ACEd8B2F0aebE155379bb5D594381",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://etherscan.io/token/images/apecoin_32.png",
+      "name": "ApeCoin",
+      "symbol": "APE"
+    },
+    {
+      "address": "0x85f138bfEE4ef8e540890CFb48F620571d67Eda3",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://etherscan.io/token/images/wormholewrappedavax_32.png",
+      "name": "Wrapped AVAX",
+      "symbol": "WAVAX"
+    },
+    {
+      "address": "0x269616D549D7e8Eaa82DFb17028d0B212D11232A",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://assets.coingecko.com/coins/images/17018/large/Punk.png",
+      "name": "CryptoPunks",
+      "symbol": "PUNK"
+    },
+    {
+      "address": "0x4b1D0b9F081468D780Ca1d5d79132b64301085d1",
+      "chainId": 1,
+      "decimals": 8,
+      "logoURI": "https://assets.coingecko.com/coins/images/24593/large/Lumerin-icon.png",
+      "name": "Lumerin",
+      "symbol": "LMR"
+    },
+    {
+      "address": "0x927E6f04609A45B107C789aF34BA90Ebbf479f7f",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://saddle.exchange/static/icons/svg/saddle_lp_token.svg",
+      "name": "Saddle USDC/FRAX LP Token",
+      "symbol": "FRAXBP"
+    },
+    {
+      "address": "0x5cdA6590162a095Fd7C55B1482574dD8635e3f97",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://zapper.fi/images/VSP-icon.png",
+      "name": "Mock VSP",
+      "symbol": "mVSP"
+    },
+    {
+      "address": "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5",
+      "chainId": 43114,
+      "decimals": 18,
+      "logoURI": "https://snowtrace.io/token/images/benqi_32.png",
+      "name": "BENQI",
+      "symbol": "QI"
+    },
+    {
+      "address": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      "chainId": 43114,
+      "decimals": 6,
+      "logoURI": "https://snowtrace.io/token/images/usdc_32.png",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    {
+      "address": "0xac3E018457B222d93114458476f3E3416Abbe38F",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://etherscan.io/token/images/sfrxeth_32.png",
+      "name": "Staked Frax Ether",
+      "symbol": "sfrxETH"
+    },
+    {
+      "address": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://etherscan.io/token/images/cbeth_32.png",
+      "name": "Coinbase Wrapped Staked ETH",
+      "symbol": "cbETH"
+    },
+    {
+      "address": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://etherscan.io/token/images/rocketpooleth_32.png",
+      "name": "Rocket Pool ETH",
+      "symbol": "rETH"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000042",
+      "chainId": 10,
+      "decimals": 18,
+      "logoURI": "https://optimistic.etherscan.io/token/images/optimism_32.png",
+      "name": "Optimism",
+      "symbol": "OP"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000006",
+      "chainId": 10,
+      "decimals": 18,
+      "logoURI": "https://optimistic.etherscan.io/token/images/weth_28.png",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    {
+      "address": "0x19382707d5a47E74f60053b652Ab34b6e30Febad",
+      "chainId": 10,
+      "decimals": 18,
+      "logoURI": "",
+      "name": "vaOP Pool",
+      "symbol": "vaOP"
+    },
+    {
+      "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+      "chainId": 10,
+      "decimals": 6,
+      "logoURI": "https://optimistic.etherscan.io/token/images/usdc_32.png",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    {
+      "address": "0xdd63ae655b388Cd782681b7821Be37fdB6d0E78d",
+      "chainId": 10,
+      "decimals": 18,
+      "logoURI": "",
+      "name": "vawstETH Pool",
+      "symbol": "vawstETH"
+    },
+    {
+      "address": "0x2Ebd53d035150f328bd754D6DC66B99B0eDB89aa",
+      "chainId": 1,
+      "decimals": 18,
+      "logoURI": "https://zapper.fi/images/MET-icon.png",
+      "name": "Metronome2",
+      "symbol": "MET"
+    },
+    {
+      "address": "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
+      "chainId": 10,
+      "decimals": 18,
+      "logoURI": "https://optimistic.etherscan.io/images/main/empty-token.png",
+      "name": "Wrapped liquid staked Ether",
+      "symbol": "wstETH"
+    }
+  ]
+}

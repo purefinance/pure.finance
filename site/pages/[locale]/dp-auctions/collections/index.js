@@ -2,16 +2,17 @@ import orderBy from 'lodash.orderby'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import useSWR from 'swr'
 
+import { DPAuctionsContext } from '../../../../components/DPAuctionsContext'
 import Dropdown from '../../../../components/Dropdown'
-import Layout from '../../../../components/Layout'
+import DPAuctionsLayout from '../../../../components/layout/DPAuctionsLayout'
+import UtilFormBox from '../../../../components/layout/UtilFormBox'
 import SvgContainer from '../../../../components/svg/SvgContainer'
 import TokenAmount from '../../../../components/TokenAmount'
 import { useUpdatingState } from '../../../../hooks/useUpdatingState'
 import { Link } from '../../../../navigation'
-import dpa from '../../../../utils/dp-auctions'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum
 
@@ -78,7 +79,7 @@ const DPAuctionsTable = function ({ auctions }) {
       {sortedAuctions.length ? (
         <table className="w-full border-collapse">
           <thead>
-            <tr className="font-bold bg-gray-200">
+            <tr className="bg-gray-200 font-bold">
               <th className="border-2">{t('id')}</th>
               <th className="border-2">{t('contains')}</th>
               <th className="border-2">{t('price')}</th>
@@ -122,7 +123,7 @@ const createCollectionSelector = collectionId =>
       <div className="font-bold">
         {t('collection', { collectionId })}
         <SvgContainer
-          className={`absolute inline w-6 h-6 fill-current ${rotate}`}
+          className={`absolute inline h-6 w-6 fill-current ${rotate}`}
           name="caret"
         />
       </div>
@@ -139,9 +140,9 @@ const DPAuctionsCollectionSelector = function ({ count, collectionId }) {
     <div className="flex justify-center">
       <Dropdown
         Selector={Selector}
-        className="mb-4 w-48 text-gray-600 cursor-pointer"
+        className="mb-4 w-48 cursor-pointer text-gray-600"
       >
-        <ul className="absolute z-10 mt-1 w-48 bg-white border-2 shadow-lg">
+        <ul className="absolute z-10 mt-1 w-40 rounded-xl bg-white p-2 text-center shadow-lg">
           {new Array(count).fill(null).map((_, i) =>
             Number.parseInt(collectionId) === i ? (
               <li className={'font-bold'} key={i}>
@@ -175,6 +176,8 @@ export default function DPAuctions({
     query: { id: collectionId = process.env.NEXT_PUBLIC_DEFAULT_COLLECTION_ID }
   } = useRouter()
 
+  const dpa = useContext(DPAuctionsContext)
+
   // The amount of collections is managed by SWR. It is set to revalidate aprox.
   // every block (15 seconds).
   const { data: count } = useSWR(
@@ -204,21 +207,23 @@ export default function DPAuctions({
   )
 
   return (
-    <Layout title={t('dp-auctions')} walletConnection>
-      <div className="mt-10 w-full">
-        <DPAuctionsCollectionSelector
-          collectionId={collectionId}
-          count={count}
-        />
-        {error ? (
-          <div>
-            {t('error-getting-auctions')}: {error}
-          </div>
-        ) : (
-          <DPAuctionsTable auctions={auctions} />
-        )}
-      </div>
-    </Layout>
+    <DPAuctionsLayout>
+      <UtilFormBox className="md:w-200" title={t('dp-auctions')}>
+        <div className="mt-10 w-full">
+          <DPAuctionsCollectionSelector
+            collectionId={collectionId}
+            count={count}
+          />
+          {error ? (
+            <div>
+              {t('error-getting-auctions')}: {error}
+            </div>
+          ) : (
+            <DPAuctionsTable auctions={auctions} />
+          )}
+        </div>
+      </UtilFormBox>
+    </DPAuctionsLayout>
   )
 }
 

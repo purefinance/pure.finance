@@ -7,7 +7,6 @@ const erc20Abi = require('erc-20-abi')
 const pTap = require('p-tap').default
 
 const { findToken } = require('./token-list')
-const contracts = require('./contracts.json')
 const createExecutor = require('eth-exec-txs')
 const paymentStreamAbi = require('./abis/PaymentStream.json')
 const paymentStreamFactoryAbi = require('./abis/PaymentStreamFactory.json')
@@ -29,17 +28,15 @@ const createPaymentStreams = function (web3, options = {}) {
     .getChainId()
     // .then((chainId) => (chainId === 1337 ? 1 : chainId)) // Ganache hack
     .then(function (chainId) {
-      const contract = contracts.PaymentStreamFactory.find(
-        c => c.chainId === chainId
-      )
-      if (!contract) {
-        throw new Error(`PaymentStreams not available in chain ${chainId}`)
+      const contractAddress = options.address
+      if (!contractAddress) {
+        throw new Error('No PaymentStreams contract address was provided')
       }
       const instance = new web3.eth.Contract(
         paymentStreamFactoryAbi,
-        contract.address
+        contractAddress
       )
-      instance.options.birthblock = contract.birthblock
+      instance.options.birthblock = options.birthblock
       instance.options.chainId = chainId
       return instance
     })
@@ -169,7 +166,7 @@ const createPaymentStreams = function (web3, options = {}) {
   // the node takes too long to respond.
   const getPastEventsInChunks = function (contract, event, pastEventOptions) {
     const {
-      fromBlock = contract.options.birthblock,
+      fromBlock = options.birthblock,
       toBlock: _toBlock,
       ...restOfPastEventOptions
     } = pastEventOptions
