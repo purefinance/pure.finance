@@ -117,7 +117,7 @@ const SignMessageForm = function () {
         <span className="text-slate-200">|</span>
         <a
           className="focus:outline-none flex items-center gap-1 rounded-full hover:text-black"
-          href="https://github.com/hemilabs/pure.finance/blob/master/site/pages/[locale]/sign-message.js"
+          href="https://github.com/purefinance/pure.finance/blob/master/site/pages/[locale]/sign-message.js"
           rel="noreferrer"
           target="_blank"
         >

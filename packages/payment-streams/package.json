@@ -11,7 +11,6 @@
   "repository": "purefinance/pure.finance",
   "scripts": {
     "deps:check": "dependency-check --no-dev .",
-    "postinstall": "patch-package || true",
     "test:e2e": "DEBUG=*,-mocha*,-babel* DEBUG_COLORS=true E2E=true FORCE_COLOR=true mocha --bail --exit test/e2e.spec.js",
     "coverage:e2e": "nyc npm run test:e2e"
   },
@@ -28,7 +27,6 @@
   "devDependencies": {
     "dotenv": "^10.0.0",
     "ganache-core": "^2.13.2",
-    "patch-package": "^8.0.0",
     "web3": "^1.10.4"
   },
   "engines": {
