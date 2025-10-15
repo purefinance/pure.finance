@@ -293,7 +293,7 @@ const Allowance = function ({ address, data }) {
   const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
     <span
-      className="m-auto w-full overflow-hidden overflow-ellipsis whitespace-nowrap"
+      className="m-auto w-full overflow-hidden text-ellipsis whitespace-nowrap"
       title={formatter.format(value)}
     >
       {isUnlimited ? t('unlimited') : formatter.format(value)}
