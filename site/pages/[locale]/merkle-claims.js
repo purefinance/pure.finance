@@ -25,10 +25,7 @@ function MerkleClaimsForm() {
   const [claimInProgress, setClaimInProgress] = useState(false)
   const [feedback, setFeedback] = useState({ color: 'text-black', message: '' })
   const [holding, setHolding] = useState({ amount: '', isClaimable: false })
-  const [result, setResult] = useEphemeralState({
-    color: 'text-black',
-    message: ''
-  })
+  const [result, setResult] = useEphemeralState({ value: '' })
 
   useEffect(
     function resetForm() {
@@ -86,11 +83,11 @@ function MerkleClaimsForm() {
     event.preventDefault()
 
     setClaimInProgress(true)
-    setResult({ color: 'text-info', message: t('claim-in-progress') })
+    setResult({ color: 'text-info', value: t('claim-in-progress') })
     return merkle
       .claim(claimId, holding.amount, holding.proof)
       .then(function () {
-        setResult({ color: 'text-success', message: t('claim-succeeded') })
+        setResult({ color: 'text-success', value: t('claim-succeeded') })
         setClaimId('')
         watchAsset(
           library.currentProvider,
@@ -100,8 +97,7 @@ function MerkleClaimsForm() {
         ).catch(() => null) // Ignore errors from watchAsset
       })
       .catch(function (err) {
-        const message = err.message.split('\n')[0]
-        setResult({ color: 'text-error', message })
+        setResult({ color: 'text-error', value: err.message.split('\n')[0] })
       })
       .finally(function () {
         setClaimInProgress(false)
@@ -138,7 +134,7 @@ function MerkleClaimsForm() {
           {t('claim')}
         </Button>
       </CallToAction>
-      <TextLabel color={result.color} value={result.message} />
+      <TextLabel {...result} />
     </UtilityForm>
   )
 }

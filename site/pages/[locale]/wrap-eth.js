@@ -36,10 +36,7 @@ function WrapUnwrapEthForm() {
   const t = useTranslations()
 
   const [operation, setOperation] = useState(Operation.Wrap)
-  const [result, setResult] = useEphemeralState({
-    color: 'text-black',
-    message: ''
-  })
+  const [result, setResult] = useEphemeralState({ value: '' })
   const [value, setValue] = useState('')
 
   const decimalNumber = /^(0|[1-9]\d*)(\.\d+)?$/
@@ -99,14 +96,13 @@ function WrapUnwrapEthForm() {
 
     return operationPromise
       .then(function (message) {
-        setResult({ color: 'text-success', message })
+        setResult({ color: 'text-success', value: message })
         setValue('')
         reloadEthBalance()
         reloadWethBalance()
       })
       .catch(function (err) {
-        const message = err.message.split('\n')[0]
-        setResult({ color: 'text-error', message })
+        setResult({ color: 'text-error', value: err.message.split('\n')[0] })
       })
   }
 
@@ -157,7 +153,7 @@ function WrapUnwrapEthForm() {
           })}
         </Button>
       </CallToAction>
-      <TextLabel color={result.color} value={result.message} />
+      <TextLabel {...result} />
     </UtilityForm>
   )
 }
