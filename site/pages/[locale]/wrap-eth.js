@@ -56,8 +56,11 @@ function WrapUnwrapEthForm() {
   const canUnwrap = wethBalance && value && Big(wethBalance).gte(toUnit(value))
 
   const onAmountChange = function (event) {
-    const decimalRegex = /^(([1-9]\d*)?\d(\.\d*)?|\.\d+)$/
-    if (event.target.value === '' || decimalRegex.test(event.target.value)) {
+    const inputDecimalNumber = /^(([1-9]\d*)?\d(\.\d*)?|\.\d+)$/
+    if (
+      event.target.value === '' ||
+      inputDecimalNumber.test(event.target.value)
+    ) {
       setValue(event.target.value)
     }
   }
