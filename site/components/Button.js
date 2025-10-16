@@ -3,6 +3,7 @@ const Button = function ({
   className = '',
   disabled,
   onClick,
+  type = 'button',
   width = 'w-full',
   ...props
 }) {
@@ -23,6 +24,7 @@ const Button = function ({
       className={`${boxStyle} ${textStyle} ${stateStyle} ${className}`}
       disabled={disabled}
       onClick={onClick}
+      type={type}
     >
       {children}
     </button>
