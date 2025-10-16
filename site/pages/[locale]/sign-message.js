@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import Button from '../../components/Button'
 import CallToAction from '../../components/CallToAction'
+import { ExternalLink } from '../../components/ExternalLink'
 import { TextArea } from '../../components/Input'
 import ToolsLayout from '../../components/layout/ToolsLayout'
 import UtilityForm from '../../components/layout/UtilityForm'
@@ -11,17 +12,6 @@ import SvgContainer from '../../components/svg/SvgContainer'
 import { TextLabel } from '../../components/TextLabel'
 import { TextOutput } from '../../components/TextOutput'
 import { useEphemeralState } from '../../hooks/useEphemeralState'
-
-const ExternalLink = ({ children, href }) => (
-  <a
-    className="focus:outline-none flex items-center rounded-full text-gray-400 hover:text-black"
-    href={href}
-    rel="noreferrer"
-    target="_blank"
-  >
-    {children}
-  </a>
-)
 
 function SignatureVerificationLinks() {
   const t = useTranslations()
@@ -34,7 +24,7 @@ function SignatureVerificationLinks() {
       </ExternalLink>
       <span className="text-slate-200">|</span>
       <ExternalLink href="https://github.com/purefinance/pure.finance/blob/master/site/pages/[locale]/sign-message.js">
-        <SvgContainer className="mr-2 inline-block" name="github" />
+        <SvgContainer className="mr-2 inline-block text-black" name="github" />
         {t('view-source-code')}
       </ExternalLink>
     </div>

@@ -1,3 +1,5 @@
+import { ExternalLink } from './ExternalLink'
+
 const formatShort = text => `${text.substr(0, 6)}...${text.slice(-4)}`
 
 const explorerUrls = {
@@ -29,14 +31,12 @@ export const ExplorerLink = function ({
   const url = `${baseUrl}${address ? `/address/${address}` : `/tx/${tx}`}`
   const hash = address ?? tx
   return (
-    <a
-      className="focus:outline-none m-auto font-semibold text-black hover:text-gray-400"
+    <ExternalLink
+      className="m-auto font-semibold"
       href={url}
-      rel="noreferrer"
-      target="_blank"
       title={long ? undefined : text}
     >
       {text ?? (long ? hash : formatShort(hash))}
-    </a>
+    </ExternalLink>
   )
 }
