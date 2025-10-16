@@ -8,23 +8,9 @@ import JustifiedBetweenRow from './JustifiedBetweenRow'
 import Modal from './Modal'
 import SvgContainer from './svg/SvgContainer'
 
-const TransactionModalRow = ({ text, value, tipLink = '' }) => (
+const TransactionModalRow = ({ text, value }) => (
   <JustifiedBetweenRow
-    keyComponent={
-      tipLink ? (
-        <a
-          className={'text-gray-350 flex justify-between text-sm'}
-          href={tipLink}
-          rel="noreferrer"
-          target={'_blank'}
-        >
-          {text}
-          <SvgContainer className="ml-1" name="questionmark" />
-        </a>
-      ) : (
-        <p className={'text-gray-350 text-sm'}>{text}</p>
-      )
-    }
+    keyComponent={<p className={'text-gray-350 text-sm'}>{text}</p>}
     valueComponent={<p className="text-sm font-semibold">{value}</p>}
   />
 )
