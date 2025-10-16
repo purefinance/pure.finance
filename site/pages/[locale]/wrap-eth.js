@@ -116,7 +116,7 @@ function WrapUnwrapEthForm() {
       subtitle={t('utilities-text.wrap-unwrap')}
       title={t('wrap-unwrap-eth', { nativeTokenSymbol })}
     >
-      <div className="mb-8 flex w-full flex-col items-center justify-center gap-2">
+      <div className="flex w-full flex-col items-center justify-center gap-2">
         <InputBalance
           balance={fromBalance && fromUnit(fromBalance, 18, 6)}
           onChange={onAmountChange}

@@ -124,7 +124,7 @@ function MerkleClaimsForm() {
         value={claimId}
       />
       <InputBalance
-        className="mb-8 mt-4"
+        className="mt-4"
         disabled
         placeholder="-"
         title={t('balance')}
