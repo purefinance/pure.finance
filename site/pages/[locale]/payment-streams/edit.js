@@ -1,16 +1,16 @@
 import { useTranslations } from 'next-intl'
 
 import PaymentStreamsLayout from '../../../components/layout/PaymentStreamsLayout'
-import UtilFormBox from '../../../components/layout/UtilFormBox'
+import UtilityForm from '../../../components/layout/UtilityForm'
 import EditStream from '../../../components/payment-streams/EditStream'
 
 const PaymentStreamsEdit = () => {
   const t = useTranslations()
   return (
     <PaymentStreamsLayout>
-      <UtilFormBox title={t('payment-streams')}>
+      <UtilityForm title={t('payment-streams')}>
         <EditStream />
-      </UtilFormBox>
+      </UtilityForm>
     </PaymentStreamsLayout>
   )
 }

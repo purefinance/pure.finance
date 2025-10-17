@@ -1,14 +1,14 @@
 import { useWeb3React } from '@web3-react/core'
+
 import Wallet from './Wallet'
 
-const CallToAction = function ({ children }) {
+const CallToAction = function ({ children, className = '' }) {
   const { active } = useWeb3React()
-
-  if (!active) {
-    return <Wallet cta={true} />
-  }
-
-  return children
+  return (
+    <div className={`mt-8 ${className}`}>
+      {!active ? <Wallet cta={true} /> : children}
+    </div>
+  )
 }
 
 export default CallToAction

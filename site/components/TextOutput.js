@@ -19,7 +19,7 @@ export const TextOutput = function ({ label, value }) {
           onClick={copySignatureToClipboard}
         />
       </div>
-      <div className="mb-8 mt-2 w-full rounded-xl border px-4 py-3">
+      <div className="mt-2 w-full rounded-xl border px-4 py-3">
         {value || '-'}
       </div>
     </div>

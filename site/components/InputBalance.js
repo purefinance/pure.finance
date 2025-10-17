@@ -1,23 +1,15 @@
 import { useTranslations } from 'next-intl'
 
 import TokenContainer from './svg/TokenContainer'
+import { TextButton } from './TextButton'
 
 const Balance = function ({ balance, setMax, showMax }) {
   const t = useTranslations()
-
   return (
     <div className="flex items-center gap-1">
       <span className="text-slate-500">{t('balance')}:</span>
       <span className="text-sm text-black">{balance}</span>
-      {showMax && (
-        <button
-          className="text-grayscale-950 ml-1 cursor-pointer"
-          onClick={setMax}
-          type="button"
-        >
-          {t('max')}
-        </button>
-      )}
+      {showMax && <TextButton onClick={setMax}>{t('max')}</TextButton>}
     </div>
   )
 }
