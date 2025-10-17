@@ -112,6 +112,7 @@
   "no-approvals": "没有可撤销的令牌批准",
   "no-auctions": "没有拍卖",
   "of-value": "当前值",
+  "operation-successful": "操作已成功完成",
   "pause-stream": "Pause Stream",
   "payment-streams": "支付流",
   "payment-streams-util": {

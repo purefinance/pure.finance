@@ -45,7 +45,7 @@
   "error-unsupported-network": "Only Hemi networks are supported.",
   "estimated-tx-fee": "Estimated network fee",
   "floored": "Floored",
-  "generic-error": "An error has ocurred",
+  "generic-error": "An error has occurred.",
   "global-tx-status": "Operation status",
   "got-questions": "Got questions?",
   "helper-text": {
@@ -112,6 +112,7 @@
   "no-approvals": "There are no token approvals to revoke.",
   "no-auctions": "No auctions",
   "of-value": "of current value",
+  "operation-successful": "Operation completed successfully",
   "pause-stream": "Pause Stream",
   "payment-streams": "Payment Streams",
   "payment-streams-util": {
