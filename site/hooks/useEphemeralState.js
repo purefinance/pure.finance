@@ -1,25 +1,27 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
-export const useEphemeralState = function (initialState, delay = 5000) {
+export function useEphemeralState(initialState, delay = 5000) {
   const [state, setState] = useState(initialState)
+  const initialStateRef = useRef(initialState)
   const timeoutRef = useRef(/** @type {NodeJS.Timeout | null} */ (null))
 
   function stopTimeout() {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
     }
   }
 
-  function resetState() {
-    setState(initialState)
-  }
-
-  function setTempState(newState) {
-    stopTimeout()
-    setState(newState)
-    timeoutRef.current = setTimeout(resetState, delay)
-  }
+  const setTempState = useCallback(
+    function (newState) {
+      stopTimeout()
+      setState(newState)
+      timeoutRef.current = setTimeout(function () {
+        setState(initialStateRef.current)
+        timeoutRef.current = null
+      }, delay)
+    },
+    [delay]
+  )
 
   useEffect(() => stopTimeout, [])
 
