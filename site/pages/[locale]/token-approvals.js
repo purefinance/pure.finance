@@ -1,173 +1,110 @@
-import Big from 'big.js'
 import { useWeb3React } from '@web3-react/core'
+import Big from 'big.js'
 import { useRouter } from 'next/router'
 import { useTranslations } from 'next-intl'
 import { useContext, useEffect, useState } from 'react'
 
 import Button from '../../components/Button'
+import CallToAction from '../../components/CallToAction'
 import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
 import InputBalance from '../../components/InputBalance'
 import ToolsLayout from '../../components/layout/ToolsLayout'
 import UtilityForm from '../../components/layout/UtilityForm'
-import { useFormButton } from '../../hooks/useFormButton'
+import { TextButton } from '../../components/TextButton'
+import { TextLabel } from '../../components/TextLabel'
+import { useEphemeralState } from '../../hooks/useEphemeralState'
+import { useFormProgress } from '../../hooks/useFormProgress'
 import { useTokenInput } from '../../hooks/useTokenInput'
 import { fromUnit, toUnit } from '../../utils'
-import CallToAction from '../../components/CallToAction'
 
-const decimalRegex = /^(([1-9][0-9]*)?[0-9](\.[0-9]*)?|\.[0-9]+)$/
+const inputDecimalNumber = /^(([1-9]\d*)?\d(\.\d*)?|\.\d+)$/
 const infiniteSymbol = '∞'
 
-const useAllowanceInput = function (
-  token,
-  spender,
-  allowance,
-  setAllowance,
-  setFeedback,
-  setIsInfinite
-) {
+const TokenApprovalsForm = function () {
   const { account, active, chainId } = useWeb3React()
+  const { query } = useRouter()
   const { tokenApprovals } = useContext(PureContext)
-  const disabled = !token || !spender || !active || !tokenApprovals
+  const t = useTranslations()
+
+  const [allowance, setAllowance] = useState('')
+  const [result, setResult] = useEphemeralState({ value: '' })
+  const [spender, setSpender] = useState(null)
+  const [token, setToken] = useState(null)
+  const spenderInput = useTokenInput(query.spender, setSpender, true)
+  const tokenInput = useTokenInput(query.token, setToken)
+
+  const canRefreshAllowance = tokenApprovals && token && spender
+  const canApprove = tokenApprovals && token && spender && allowance
+  const isInfinite = allowance === infiniteSymbol
 
   useEffect(
-    function () {
+    function resetForm() {
       setAllowance('')
-      setIsInfinite(false)
     },
-    [active, token, spender]
+    [account, active, chainId]
   )
 
-  const setAllowanceInfinity = function (allowance) {
-    const isInfinite =
-      decimalRegex.test(allowance) && new Big(allowance).gt(token.totalSupply)
-
-    setIsInfinite(isInfinite)
-    setAllowance(
-      isInfinite ? infiniteSymbol : fromUnit(allowance, token.decimals)
-    )
-  }
-
   useEffect(
-    function () {
-      if (disabled) {
+    function refreshAllowance() {
+      if (!canRefreshAllowance) {
         return
       }
 
       tokenApprovals
         .allowance(token.address, account, spender.address)
         .then(function (currentAllowance) {
-          setAllowanceInfinity(currentAllowance)
+          if (Big(currentAllowance).lte(token.totalSupply)) {
+            setAllowance(fromUnit(currentAllowance, token.decimals))
+          } else {
+            setAllowance(infiniteSymbol)
+          }
         })
         .catch(function (err) {
-          setFeedback('error', err.message)
+          setResult({ color: 'text-error', value: err.message })
         })
     },
-    [token, spender, account, chainId]
+    [account, canRefreshAllowance, setResult, spender, token, tokenApprovals]
   )
 
-  const handleChange = function (e) {
-    if (e.target.value === '' || decimalRegex.test(e.target.value)) {
-      setIsInfinite(false)
+  const onAllowanceChange = function (e) {
+    if (e.target.value === '' || inputDecimalNumber.test(e.target.value)) {
       setAllowance(e.target.value)
     }
   }
 
-  return {
-    disabled,
-    onChange: handleChange,
-    token: token && token.symbol,
-    value: allowance
-  }
-}
-
-const useFeedback = function () {
-  const { account, active } = useWeb3React()
-
-  const [feedback, _setFeedback] = useState({ message: '' })
-
-  useEffect(
-    function () {
-      _setFeedback({ message: '' })
-    },
-    [account, active]
-  )
-
-  const setFeedback = function (type, message) {
-    const colors = {
-      error: 'text-red-600',
-      success: 'text-green-600'
-    }
-    const color = colors[type] || 'text-black'
-    _setFeedback({ color, message })
-  }
-
-  return [feedback, setFeedback]
-}
-
-const TokenApprovalsForm = function () {
-  const t = useTranslations()
-  const { tokenApprovals } = useContext(PureContext)
-  const { query } = useRouter()
-
-  const [token, setToken] = useState(null)
-  const tokenInput = useTokenInput(query.token, setToken)
-
-  const [spender, setSpender] = useState(null)
-  const spenderInput = useTokenInput(query.spender, setSpender, true)
-
-  const [allowance, setAllowance] = useState('')
-  const [feedback, setFeedback] = useFeedback()
-  const [isInfinite, setIsInfinite] = useState(false)
-
-  const allowanceInput = useAllowanceInput(
-    token,
-    spender,
-    allowance,
-    setAllowance,
-    setFeedback,
-    setIsInfinite
-  )
-
-  // Depending on the progress state of the approval operation, set the feedback
-  // color and message.
-  const onProgress = function (err, state) {
-    if (err) {
-      setFeedback('error', err.message)
-      return
-    }
-
-    const messages = {
-      info: t('approval-in-progress'),
-      success: t('approval-succeeded')
-    }
-    setFeedback(state, messages[state])
-  }
-
-  // Set the approval buttons behavior, linking to the contract calls and
-  // progress feedback.
-  const approveDisabled = !allowance
-  const approveButton = useFormButton(
-    approveDisabled,
-    () =>
-      isInfinite
-        ? tokenApprovals.approveInfinite(token.address, spender.address)
-        : tokenApprovals.approve(
-            token.address,
-            spender.address,
-            toUnit(allowance, token.decimals)
-          ),
-    onProgress
-  )
-
-  const allowInfinite = function () {
-    setIsInfinite(true)
+  const onAllowInfiniteClick = function () {
     setAllowance(infiniteSymbol)
   }
 
+  const handleSubmit = () =>
+    isInfinite
+      ? tokenApprovals.approveInfinite(token.address, spender.address)
+      : tokenApprovals.approve(
+          token.address,
+          spender.address,
+          toUnit(allowance, token.decimals)
+        )
+
+  const onProgress = function (state, message) {
+    const values = {
+      error: message || t('error-unknown'),
+      info: t('approval-in-progress'),
+      success: t('approval-succeeded')
+    }
+    setResult({ color: `text-${state}`, value: values[state] })
+  }
+
+  const { canSubmit, onSubmit } = useFormProgress(
+    !canApprove,
+    handleSubmit,
+    onProgress
+  )
+
   return (
     <UtilityForm
-      text={t('utilities-text.token-approvals')}
+      onSubmit={onSubmit}
+      subtitle={t('utilities-text.token-approvals')}
       title={t('token-approvals')}
     >
       <Input
@@ -181,37 +118,25 @@ const TokenApprovalsForm = function () {
         {...spenderInput}
       />
       <InputBalance
-        className="mb-4"
-        suffix={token && token.symbol}
+        disabled={!active}
+        onChange={onAllowanceChange}
+        placeholder="-"
+        suffix={token?.symbol}
         title={t('allowance')}
-        {...allowanceInput}
+        token={token && token.symbol}
+        value={allowance}
       />
-
-      <div className="flex justify-end">
-        <button
-          disabled={approveDisabled}
-          onClick={allowInfinite}
-          className={`${
-            !approveDisabled
-              ? 'text-grayscale-950 hover:text-grayscale-500 cursor-pointer'
-              : 'text-grayscale-500 cursor-not-allowed'
-          }`}
-        >
+      <div className="mr-2 mt-4 flex justify-end">
+        <TextButton disabled={!active} onClick={onAllowInfiniteClick}>
           {t('allow-infinite')}
-        </button>
+        </TextButton>
       </div>
-
-      <div className="mt-4">
-        <CallToAction>
-          <Button {...approveButton}>{t('approve-allowance')}</Button>
-        </CallToAction>
-      </div>
-
-      {feedback.message && (
-        <p className={`mt-6 text-center text-sm ${feedback.color}`}>
-          {feedback.message}
-        </p>
-      )}
+      <CallToAction>
+        <Button disabled={!canSubmit} type="submit">
+          {t('approve-allowance')}
+        </Button>
+      </CallToAction>
+      <TextLabel {...result} />
     </UtilityForm>
   )
 }
@@ -221,18 +146,18 @@ const TokenApprovals = function () {
   const tHelperText = useTranslations('helper-text.token-approvals')
 
   const helperText = {
-    title: tHelperText('title'),
-    text: tHelperText('text'),
     questions: [
       {
-        title: tHelperText('how-grant-question'),
-        answer: tHelperText('how-grant-answer')
+        answer: tHelperText('how-grant-answer'),
+        title: tHelperText('how-grant-question')
       },
       {
-        title: tHelperText('fee-question'),
-        answer: tHelperText('fee-answer')
+        answer: tHelperText('fee-answer'),
+        title: tHelperText('fee-question')
       }
-    ]
+    ],
+    text: tHelperText('text'),
+    title: tHelperText('title')
   }
 
   return (
@@ -248,4 +173,5 @@ const TokenApprovals = function () {
 }
 
 export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
+
 export default TokenApprovals

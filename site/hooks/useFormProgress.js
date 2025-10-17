@@ -1,20 +1,21 @@
 import { useWeb3React } from '@web3-react/core'
 import { useEffect, useState } from 'react'
 
-export const useFormButton = function (disabled, onClick, onProgress) {
+export function useFormProgress(disabled, handleSubmit, onProgress) {
   const { active } = useWeb3React()
 
   const [inProgress, setInProgress] = useState(false)
 
-  const handleClick = function () {
+  const onSubmit = function (event) {
+    event.preventDefault()
     setInProgress(true)
-    onProgress(null, 'info')
-    onClick()
+    onProgress('info')
+    handleSubmit()
       .then(function () {
-        onProgress(null, 'success')
+        onProgress('success')
       })
       .catch(function (err) {
-        onProgress(err.message)
+        onProgress('error', err.message)
       })
       .finally(function () {
         setInProgress(false)
@@ -32,7 +33,7 @@ export const useFormButton = function (disabled, onClick, onProgress) {
   )
 
   return {
-    disabled: disabled || inProgress,
-    onClick: handleClick
+    canSubmit: !(disabled || inProgress),
+    onSubmit
   }
 }
