@@ -14,6 +14,7 @@ import UtilityBox from '../../components/layout/UtilityBox'
 import SvgContainer from '../../components/svg/SvgContainer'
 import { TextLabel } from '../../components/TextLabel'
 import { useEphemeralState } from '../../hooks/useEphemeralState'
+import { useNumberFormat } from '../../hooks/useNumberFormat'
 import { Link } from '../../navigation'
 import { fromUnit } from '../../utils'
 
@@ -27,14 +28,14 @@ const getPreviousFromBlock = (pivotBlock, chunkIndex, minBlock) =>
   Math.max(minBlock, pivotBlock - BLOCK_NUMBER_WINDOW * chunkIndex)
 
 const useLastBlockNumber = function () {
-  const { active, library, chainId } = useWeb3React()
+  const { active, chainId, library } = useWeb3React()
   return useSWR(active ? [`lastBlockNumber-${chainId}`, chainId] : null, () =>
     library.eth.getBlockNumber()
   )
 }
 
 const parseLogs = logs =>
-  logs.map(({ address, blockNumber, data, transactionHash, topics }) => ({
+  logs.map(({ address, blockNumber, data, topics, transactionHash }) => ({
     address,
     allowance: data,
     blockNumber,
@@ -48,7 +49,7 @@ const SyncStatus = {
   Syncing: 1
 }
 
-const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
+const getNewestApprovals = function ({ library, logs, tokenApprovals }) {
   const allCombinations = new Set([
     ...tokenApprovals.map(({ address, spender }) => `${address}-${spender}`),
     ...logs.map(({ address, spender }) => `${address}-${spender}`)
@@ -81,11 +82,11 @@ const DEFAULT_SYNC_BLOCK_STATE = {
   fromBlock: MIN_BLOCK_TO_SYNC,
   hasSyncToMinBlock: false,
   toBlock: undefined,
-  tokenApprovals: []
+  tokenApprovals: /** @type {Array} */ ([])
 }
 
 function useTokenApprovals() {
-  const { active, library, account, chainId } = useWeb3React()
+  const { account, active, chainId, library } = useWeb3React()
   const [syncBlock, setSyncBlock] = useState(DEFAULT_SYNC_BLOCK_STATE)
 
   const [syncStatus, setSyncStatus] = useState(SyncStatus.Syncing)
@@ -110,7 +111,7 @@ function useTokenApprovals() {
         return
       }
 
-      const { toBlock, hasSyncToMinBlock, chunkIndex, tokenApprovals } =
+      const { chunkIndex, hasSyncToMinBlock, toBlock, tokenApprovals } =
         JSON.parse(storedItem)
 
       if (hasSyncToMinBlock) {
@@ -146,7 +147,7 @@ function useTokenApprovals() {
         return
       }
 
-      const { fromBlock, toBlock, chunkIndex, hasSyncToMinBlock } = syncBlock
+      const { chunkIndex, fromBlock, hasSyncToMinBlock, toBlock } = syncBlock
 
       const pivotBlock =
         hasSyncToMinBlock || !toBlock ? lastBlockNumber : toBlock
@@ -254,7 +255,7 @@ function useTokenApprovals() {
     [active, library, account, chainId, setSyncBlock]
   )
 
-  return { ...syncBlock, setSyncStatus, syncStatus }
+  return { ...syncBlock, syncStatus }
 }
 
 const useErc20Token = function (address) {
@@ -275,12 +276,11 @@ const useErc20Token = function (address) {
   })
 }
 
-const formatter = new Intl.NumberFormat('default', {
-  maximumFractionDigits: 9,
-  minimumFractionDigits: 6
-})
-
-const Status = ({ children, icon, message }) => (
+const Status = ({
+  children = /** @type {React.ReactNode | null} */ (null),
+  icon,
+  message
+}) => (
   <>
     <tr>
       <td className="pt-12 text-center" colSpan={5}>
@@ -310,8 +310,8 @@ function TableHeaders() {
   return (
     <tr className="bg-slate-50 text-slate-600 rounded-xl text-left">
       <th className="w-10 rounded-l-xl py-4 pl-4 font-medium">{t('token')}</th>
-      <th className="w-14 font-medium">{t('allowance')}</th>
       <th className="w-14 font-medium">{t('balance')}</th>
+      <th className="w-14 font-medium">{t('allowance')}</th>
       <th className="w-20 font-medium">{t('spender-address')}</th>
       <th className="w-10 rounded-r-xl text-center font-medium">
         {t('actions')}
@@ -322,7 +322,7 @@ function TableHeaders() {
 
 const Token = function ({ address }) {
   const { chainId } = useWeb3React()
-  const { data: token } = useErc20Token(address) // FIXME use erc20lib instead!
+  const { data: token } = useErc20Token(address)
   if (!token) {
     return <ExplorerLink address={address} chainId={chainId} />
   }
@@ -333,6 +333,7 @@ const Token = function ({ address }) {
 const Allowance = function ({ address, data }) {
   const { library } = useWeb3React()
   const t = useTranslations()
+  const format = useNumberFormat(9)
 
   const { data: token } = useErc20Token(address)
 
@@ -346,23 +347,25 @@ const Allowance = function ({ address, data }) {
   return (
     <span
       className="m-auto w-full overflow-hidden text-ellipsis whitespace-nowrap"
-      title={formatter.format(value)}
+      title={format(value)}
     >
-      {isUnlimited ? t('unlimited') : formatter.format(value)}
+      {isUnlimited ? t('unlimited') : format(value)}
     </span>
   )
 }
 
 const Balance = function ({ address }) {
   const { data: token } = useErc20Token(address)
+  const format = useNumberFormat(9)
+
   if (!token) {
     return <span className="m-auto" />
   }
-  const { decimals, balance } = token
+  const { balance, decimals } = token
   const color = balance === '0' ? 'text-gray-300' : ''
   return (
     <span className={color}>
-      {formatter.format(new Big(fromUnit(balance, decimals)).toNumber())}
+      {format(new Big(fromUnit(balance, decimals)).toNumber())}
     </span>
   )
 }
@@ -376,10 +379,10 @@ function TableRow({ address, allowance, isRevoking, key, onClick, spender }) {
         <Token address={address} />
       </td>
       <td>
-        <Allowance address={address} data={allowance} />
+        <Balance address={address} />
       </td>
       <td>
-        <Balance address={address} />
+        <Allowance address={address} data={allowance} />
       </td>
       <td>
         <Token address={spender} />
