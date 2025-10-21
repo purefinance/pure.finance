@@ -17,7 +17,7 @@ const ToolsLayout = ({
     <div
       className={`h-max bg-grayscale-50 min-h-screen w-full ${inter.className} flex`}
     >
-      <div className="flex flex-col justify-between lg:w-8/12 xl:w-7/12">
+      <div className="flex w-full flex-col justify-between lg:w-8/12 xl:w-9/12">
         <div>
           <Navbar
             breadcrumb={breadcrumb}
@@ -33,7 +33,7 @@ const ToolsLayout = ({
       </div>
       {helperText && (
         <HelperBox
-          className="hidden lg:block lg:w-4/12 xl:w-5/12"
+          className="hidden lg:block lg:w-4/12 xl:w-3/12"
           helperText={helperText}
         />
       )}

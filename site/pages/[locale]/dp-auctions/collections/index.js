@@ -8,7 +8,7 @@ import useSWR from 'swr'
 import { DPAuctionsContext } from '../../../../components/DPAuctionsContext'
 import Dropdown from '../../../../components/Dropdown'
 import DPAuctionsLayout from '../../../../components/layout/DPAuctionsLayout'
-import UtilityForm from '../../../../components/layout/UtilityForm'
+import UtilityBox from '../../../../components/layout/UtilityBox'
 import SvgContainer from '../../../../components/svg/SvgContainer'
 import TokenAmount from '../../../../components/TokenAmount'
 import { useUpdatingState } from '../../../../hooks/useUpdatingState'
@@ -208,7 +208,7 @@ export default function DPAuctions({
 
   return (
     <DPAuctionsLayout>
-      <UtilityForm className="md:w-200" title={t('dp-auctions')}>
+      <UtilityBox className="md:w-200" title={t('dp-auctions')}>
         <div className="mt-10 w-full">
           <DPAuctionsCollectionSelector
             collectionId={collectionId}
@@ -222,7 +222,7 @@ export default function DPAuctions({
             <DPAuctionsTable auctions={auctions} />
           )}
         </div>
-      </UtilityForm>
+      </UtilityBox>
     </DPAuctionsLayout>
   )
 }

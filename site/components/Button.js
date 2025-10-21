@@ -7,7 +7,7 @@ const Button = function ({
   width = 'w-full',
   ...props
 }) {
-  const boxStyle = `px-4 py-3 rounded-xl ${width} focus:outline-none`
+  const boxStyle = `px-4 py-3 rounded-xl ${width} max-w-md focus:outline-none`
   const textCase = className
     .split(' ')
     .filter(Boolean)

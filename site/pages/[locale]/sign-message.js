@@ -7,7 +7,7 @@ import CallToAction from '../../components/CallToAction'
 import { ExternalLink } from '../../components/ExternalLink'
 import { TextArea } from '../../components/Input'
 import ToolsLayout from '../../components/layout/ToolsLayout'
-import UtilityForm from '../../components/layout/UtilityForm'
+import UtilityBox from '../../components/layout/UtilityBox'
 import SvgContainer from '../../components/svg/SvgContainer'
 import { TextLabel } from '../../components/TextLabel'
 import { TextOutput } from '../../components/TextOutput'
@@ -64,11 +64,7 @@ function SignMessageForm() {
   }
 
   return (
-    <UtilityForm
-      onSubmit={handleSubmit}
-      subtitle={t('utilities-text.sign-message')}
-      title={t('sign-message')}
-    >
+    <form onSubmit={handleSubmit}>
       <TextArea
         onChange={onMessageChange}
         placeholder={t('message-placeholder')}
@@ -82,7 +78,7 @@ function SignMessageForm() {
       </CallToAction>
       <TextLabel color={'text-error'} value={errorMessage} />
       <SignatureVerificationLinks />
-    </UtilityForm>
+    </form>
   )
 }
 
@@ -108,7 +104,12 @@ function SignMessage() {
       title={t('sign-message')}
       walletConnection
     >
-      <SignMessageForm />
+      <UtilityBox
+        subtitle={t('utilities-text.sign-message')}
+        title={t('sign-message')}
+      >
+        <SignMessageForm />
+      </UtilityBox>
     </ToolsLayout>
   )
 }

@@ -10,7 +10,7 @@ import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
 import InputBalance from '../../components/InputBalance'
 import ToolsLayout from '../../components/layout/ToolsLayout'
-import UtilityForm from '../../components/layout/UtilityForm'
+import UtilityBox from '../../components/layout/UtilityBox'
 import { TextLabel } from '../../components/TextLabel'
 import { useEphemeralState } from '../../hooks/useEphemeralState'
 import { fromUnit } from '../../utils'
@@ -46,6 +46,11 @@ function MerkleClaimsForm() {
       const timeoutId = setTimeout(function () {
         merkle
           .getHolding(claimId)
+          // .catch(() => ({
+          //   amount: '123',
+          //   isClaimable: true,
+          //   token: { decimals: 18, symbol: 'VSP' }
+          // }))
           .then(function (h) {
             setHolding(h)
             if (!h.isClaimable) {
@@ -105,11 +110,7 @@ function MerkleClaimsForm() {
   }
 
   return (
-    <UtilityForm
-      onSubmit={handleSubmit}
-      subtitle={t('utilities-text.merkle-claims')}
-      title={t('merkle-claims')}
-    >
+    <form onSubmit={handleSubmit}>
       <Input
         caption={feedback.message}
         captionColor={feedback.color}
@@ -135,7 +136,7 @@ function MerkleClaimsForm() {
         </Button>
       </CallToAction>
       <TextLabel {...result} />
-    </UtilityForm>
+    </form>
   )
 }
 
@@ -165,7 +166,12 @@ function MerkleClaims() {
       title={t('merkle-claims')}
       walletConnection
     >
-      <MerkleClaimsForm />
+      <UtilityBox
+        subtitle={t('utilities-text.merkle-claims')}
+        title={t('merkle-claims')}
+      >
+        <MerkleClaimsForm />
+      </UtilityBox>
     </ToolsLayout>
   )
 }

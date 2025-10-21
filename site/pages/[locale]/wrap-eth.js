@@ -10,7 +10,7 @@ import CallToAction from '../../components/CallToAction'
 import PureContext from '../../components/context/Pure'
 import InputBalance from '../../components/InputBalance'
 import ToolsLayout from '../../components/layout/ToolsLayout'
-import UtilityForm from '../../components/layout/UtilityForm'
+import UtilityBox from '../../components/layout/UtilityBox'
 import SvgContainer from '../../components/svg/SvgContainer'
 import { TextLabel } from '../../components/TextLabel'
 import { useBalance } from '../../hooks/useBalance'
@@ -110,11 +110,7 @@ function WrapUnwrapEthForm() {
   }
 
   return (
-    <UtilityForm
-      onSubmit={handleSubmit}
-      subtitle={t('utilities-text.wrap-unwrap')}
-      title={t('wrap-unwrap-eth', { nativeTokenSymbol })}
-    >
+    <form onSubmit={handleSubmit}>
       <div className="flex w-full flex-col items-center justify-center gap-2">
         <InputBalance
           balance={fromBalance && fromUnit(fromBalance, 18, 6)}
@@ -157,7 +153,7 @@ function WrapUnwrapEthForm() {
         </Button>
       </CallToAction>
       <TextLabel {...result} />
-    </UtilityForm>
+    </form>
   )
 }
 
@@ -202,7 +198,12 @@ function WrapUnwrapEth() {
       title={t('wrap-unwrap-eth', { nativeTokenSymbol })}
       walletConnection
     >
-      <WrapUnwrapEthForm />
+      <UtilityBox
+        subtitle={t('utilities-text.wrap-unwrap')}
+        title={t('wrap-unwrap-eth', { nativeTokenSymbol })}
+      >
+        <WrapUnwrapEthForm />
+      </UtilityBox>
     </ToolsLayout>
   )
 }

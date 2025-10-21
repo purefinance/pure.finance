@@ -10,7 +10,7 @@ import PureContext from '../../components/context/Pure'
 import Input from '../../components/Input'
 import InputBalance from '../../components/InputBalance'
 import ToolsLayout from '../../components/layout/ToolsLayout'
-import UtilityForm from '../../components/layout/UtilityForm'
+import UtilityBox from '../../components/layout/UtilityBox'
 import { TextButton } from '../../components/TextButton'
 import { TextLabel } from '../../components/TextLabel'
 import { useEphemeralState } from '../../hooks/useEphemeralState'
@@ -102,11 +102,7 @@ const TokenApprovalsForm = function () {
   )
 
   return (
-    <UtilityForm
-      onSubmit={onSubmit}
-      subtitle={t('utilities-text.token-approvals')}
-      title={t('token-approvals')}
-    >
+    <form onSubmit={onSubmit}>
       <Input
         placeholder={t('token-address-placeholder')}
         title={t('token-address')}
@@ -137,7 +133,7 @@ const TokenApprovalsForm = function () {
         </Button>
       </CallToAction>
       <TextLabel {...result} />
-    </UtilityForm>
+    </form>
   )
 }
 
@@ -167,7 +163,12 @@ const TokenApprovals = function () {
       title={t('token-approvals')}
       walletConnection
     >
-      <TokenApprovalsForm />
+      <UtilityBox
+        subtitle={t('utilities-text.token-approvals')}
+        title={t('token-approvals')}
+      >
+        <TokenApprovalsForm />
+      </UtilityBox>
     </ToolsLayout>
   )
 }

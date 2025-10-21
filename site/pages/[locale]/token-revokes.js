@@ -421,11 +421,7 @@ const TokenRevokesTable = function () {
   }
 
   return (
-    <UtilityBox
-      className="md:max-w-none"
-      subtitle={t('utilities-text.token-revokes')}
-      title={t('list-and-revoke-token-approvals')}
-    >
+    <>
       <TextLabel {...result} />
       <table className="mt-4 w-full">
         <thead>
@@ -461,7 +457,7 @@ const TokenRevokesTable = function () {
           )}
         </tbody>
       </table>
-    </UtilityBox>
+    </>
   )
 }
 
@@ -495,7 +491,13 @@ function TokenRevokes() {
       title={t('list-and-revoke-token-approvals')}
       walletConnection
     >
-      <TokenRevokesTable />
+      <UtilityBox
+        className="md:max-w-none"
+        subtitle={t('utilities-text.token-revokes')}
+        title={t('list-and-revoke-token-approvals')}
+      >
+        <TokenRevokesTable />
+      </UtilityBox>
     </ToolsLayout>
   )
 }
