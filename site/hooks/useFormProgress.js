@@ -15,7 +15,7 @@ export function useFormProgress(disabled, handleSubmit, onProgress) {
         onProgress('success')
       })
       .catch(function (err) {
-        onProgress('error', err.message)
+        onProgress('error', err.message.split('\n')[0])
       })
       .finally(function () {
         setInProgress(false)
