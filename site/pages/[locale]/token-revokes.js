@@ -370,11 +370,11 @@ const Balance = function ({ address }) {
   )
 }
 
-function TableRow({ address, allowance, isRevoking, key, onClick, spender }) {
+function TableRow({ address, allowance, isRevoking, onClick, spender }) {
   const t = useTranslations()
 
   return (
-    <tr className="border-b" key={key}>
+    <tr className="border-b">
       <td className="pl-4">
         <Token address={address} />
       </td>
