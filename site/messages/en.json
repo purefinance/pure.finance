@@ -181,6 +181,7 @@
   "stop-auction": "Stop auction",
   "stopped": "Stopped",
   "stream-id": "Stream ID",
+  "switch-to-ethereum": "Switch to Ethereum",
   "syncing-your-approvals": "Looking for approvals. This might take a while...",
   "token": "Token",
   "token-address": "Token Address or Symbol",
@@ -201,6 +202,7 @@
   "update-funding-rate": "Update Funding Rate",
   "utilities-text": {
     "merkle-claims": "Claim tokens stored in MerkleBox contracts",
+    "payment-streams": "Create and manage continuous payment streams between wallets",
     "sign-message": "Sign messages to authenticate and verify actions with your wallet address",
     "token-approvals": "Adjust token approvals to control who can spend your tokens",
     "token-revokes": "View your current tokens allowances",

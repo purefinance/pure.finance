@@ -1,10 +1,11 @@
 import { createContext, useCallback, useEffect, useState } from 'react'
 
-// @ts-ignore ts(2554)
-const TransactionsContext = createContext()
+import { fromUnit } from '../../utils'
+
+const TransactionsContext = createContext(/** @type {object} */ ({}))
 
 export function TransactionsContextProvider({ children }) {
-  const [transactions, setTransactions] = useState([])
+  const [transactions, setTransactions] = useState(/** @type {object[]} */ ([]))
   const [currentTransactions, setCurrentTransactions] = useState([])
 
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -14,45 +15,107 @@ export function TransactionsContextProvider({ children }) {
     setOpenedOpId(opId)
     setModalIsOpen(true)
   }
-  const closeModal = () => setModalIsOpen(false)
+  const closeModal = function () {
+    setModalIsOpen(false)
+  }
 
   useEffect(
-    function () {
+    function updateTransactions() {
       if (!transactions.length) {
         return
       }
-      const groupedTransactions = transactions.reduce(
-        (result, transaction) => ({
-          ...result,
-          [transaction.opId]: result[transaction.opId]
-            ? { ...result[transaction.opId], ...transaction }
+
+      const updatedTransactionsById = transactions.reduce(
+        (byOpId, transaction) => ({
+          ...byOpId,
+          [transaction.opId]: byOpId[transaction.opId]
+            ? { ...byOpId[transaction.opId], ...transaction }
             : transaction
         }),
         {}
       )
-      setCurrentTransactions(Object.values(groupedTransactions))
+      setCurrentTransactions(Object.values(updatedTransactionsById))
     },
     [transactions]
   )
 
   useEffect(
-    function () {
+    function openModalWhenCurrentTransactionsPresent() {
       if (!currentTransactions.length) {
         return
       }
+
       openModal(currentTransactions[currentTransactions.length - 1])
     },
     [currentTransactions]
   )
 
-  const addTransactionStatus = useCallback(
-    function (newTransaction) {
-      setTransactions(previousTransactions => [
-        ...previousTransactions,
-        newTransaction
-      ])
+  const addTransactionStatus = useCallback(function (newTransaction) {
+    setTransactions(previousTransactions => [
+      ...previousTransactions,
+      newTransaction
+    ])
+  }, [])
+
+  const handleTransactionStatus = useCallback(
+    function ({
+      emitter,
+      onError = Function.prototype,
+      onResult,
+      operation,
+      received = /** @type {object[]} */ ([])
+    }) {
+      const opId = Math.floor(new Date().getTime() / 1000)
+      emitter
+        .on('transactions', function () {
+          addTransactionStatus({
+            expectedFee: fromUnit(transactions.expectedFee),
+            operation,
+            opId,
+            received,
+            suffixes: transactions.suffixes,
+            transactionStatus: 'created'
+          })
+          transactions.suffixes.forEach(function (suffix, i) {
+            emitter.on(`transactionHash-${suffix}`, function (transactionHash) {
+              addTransactionStatus({
+                opId,
+                transactionStatus: 'in-progress',
+                [`transactionHash-${i}`]: transactionHash,
+                [`transactionStatus-${i}`]: 'waiting-to-be-mined'
+              })
+            })
+            emitter.on(`receipt-${suffix}`, function ({ receipt }) {
+              addTransactionStatus({
+                currentTransaction: i + 1,
+                opId,
+                [`transactionHash-${i}`]: receipt.transactionHash,
+                [`transactionStatus-${i}`]: receipt.status
+                  ? 'confirmed'
+                  : 'canceled'
+              })
+            })
+          })
+        })
+        .on('result', function ({ fees, result, status }) {
+          const actuallyReceived = onResult({ result, status })
+          addTransactionStatus({
+            actualFee: fromUnit(fees),
+            opId,
+            received: actuallyReceived,
+            transactionStatus: status ? 'confirmed' : 'canceled'
+          })
+        })
+        .on('error', function (err) {
+          onError(err)
+          addTransactionStatus({
+            message: err.message,
+            opId,
+            transactionStatus: 'error'
+          })
+        })
     },
-    [transactions]
+    [addTransactionStatus, transactions]
   )
 
   return (
@@ -61,6 +124,7 @@ export function TransactionsContextProvider({ children }) {
         addTransactionStatus,
         closeModal,
         currentTransactions,
+        handleTransactionStatus,
         modalIsOpen,
         openedOpId
       }}

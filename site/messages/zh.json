@@ -181,6 +181,7 @@
   "stop-auction": "停止拍卖",
   "stopped": "停止",
   "stream-id": "Stream ID",
+  "switch-to-ethereum": "切换到以太坊",
   "syncing-your-approvals": "寻求批准。这可能需要一段时间...",
   "token": "代币",
   "token-address": "代币地址",
@@ -201,6 +202,7 @@
   "update-funding-rate": "Update Funding Rate",
   "utilities-text": {
     "merkle-claims": "领取存储在 MerkleBox 合约中的代币",
+    "payment-streams": "Create and manage continuous payment streams between wallets",
     "sign-message": "使用您的钱包地址签署消息以进行身份​​验证和验证操作",
     "token-approvals": "调整代币批准以控制谁可以使用你的代币",
     "token-revokes": "查看您当前的代币限额",

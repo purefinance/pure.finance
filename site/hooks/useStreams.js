@@ -3,7 +3,7 @@ import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
 
-import { PaymentStreamsLibContext } from '../components/payment-streams/PaymentStreamsLib'
+import { PaymentStreamsLibContext } from '../components/context/PaymentStreamsLib'
 import { getSavedStreamsInfo, saveStreamsInfo } from '../utils/streams'
 
 const ETH_BLOCK_TIME = 13 // Average block time in Ethereum

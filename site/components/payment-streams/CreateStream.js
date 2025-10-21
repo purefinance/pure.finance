@@ -15,9 +15,8 @@ import { useTokenInput } from '../../hooks/useTokenInput'
 import { useRouter } from '../../navigation'
 import { fromUnit, toUnit } from '../../utils'
 import * as timeUtils from '../../utils/time'
+import { PaymentStreamsLibContext } from '../context/PaymentStreamsLib'
 import TransactionsContext from '../context/Transactions'
-
-import { PaymentStreamsLibContext } from './PaymentStreamsLib'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 

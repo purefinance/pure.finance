@@ -1,9 +1,9 @@
 import PaymentStreamsLayout from '../../../components/layout/PaymentStreamsLayout'
-import StreamsTable from '../../../components/payment-streams/StreamsTable'
+import StreamTables from '../../../components/payment-streams/StreamTables'
 
 const PaymentStreams = () => (
   <PaymentStreamsLayout>
-    <StreamsTable />
+    <StreamTables />
   </PaymentStreamsLayout>
 )
 
