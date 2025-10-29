@@ -2,18 +2,21 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import createErc20 from 'erc-20-lib'
 import { useTranslations } from 'next-intl'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 import Button from '../../components/Button'
+import CallToAction from '../../components/CallToAction'
 import PureContext from '../../components/context/Pure'
 import { ExplorerLink } from '../../components/ExplorerLink'
-import TableBox from '../../components/layout/TableBox'
 import ToolsLayout from '../../components/layout/ToolsLayout'
-import { fromUnit } from '../../utils'
+import UtilityBox from '../../components/layout/UtilityBox'
 import SvgContainer from '../../components/svg/SvgContainer'
-import Wallet from '../../components/Wallet'
+import { TextLabel } from '../../components/TextLabel'
+import { useEphemeralState } from '../../hooks/useEphemeralState'
+import { useNumberFormat } from '../../hooks/useNumberFormat'
 import { Link } from '../../navigation'
+import { fromUnit } from '../../utils'
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
 const APPROVAL_TOPIC =
@@ -25,14 +28,14 @@ const getPreviousFromBlock = (pivotBlock, chunkIndex, minBlock) =>
   Math.max(minBlock, pivotBlock - BLOCK_NUMBER_WINDOW * chunkIndex)
 
 const useLastBlockNumber = function () {
-  const { active, library, chainId } = useWeb3React()
+  const { active, chainId, library } = useWeb3React()
   return useSWR(active ? [`lastBlockNumber-${chainId}`, chainId] : null, () =>
     library.eth.getBlockNumber()
   )
 }
 
 const parseLogs = logs =>
-  logs.map(({ address, blockNumber, data, transactionHash, topics }) => ({
+  logs.map(({ address, blockNumber, data, topics, transactionHash }) => ({
     address,
     allowance: data,
     blockNumber,
@@ -46,7 +49,7 @@ const SyncStatus = {
   Syncing: 1
 }
 
-const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
+const getNewestApprovals = function ({ library, logs, tokenApprovals }) {
   const allCombinations = new Set([
     ...tokenApprovals.map(({ address, spender }) => `${address}-${spender}`),
     ...logs.map(({ address, spender }) => `${address}-${spender}`)
@@ -79,11 +82,11 @@ const DEFAULT_SYNC_BLOCK_STATE = {
   fromBlock: MIN_BLOCK_TO_SYNC,
   hasSyncToMinBlock: false,
   toBlock: undefined,
-  tokenApprovals: []
+  tokenApprovals: /** @type {Array} */ ([])
 }
 
 function useTokenApprovals() {
-  const { active, library, account, chainId } = useWeb3React()
+  const { account, active, chainId, library } = useWeb3React()
   const [syncBlock, setSyncBlock] = useState(DEFAULT_SYNC_BLOCK_STATE)
 
   const [syncStatus, setSyncStatus] = useState(SyncStatus.Syncing)
@@ -108,7 +111,7 @@ function useTokenApprovals() {
         return
       }
 
-      const { toBlock, hasSyncToMinBlock, chunkIndex, tokenApprovals } =
+      const { chunkIndex, hasSyncToMinBlock, toBlock, tokenApprovals } =
         JSON.parse(storedItem)
 
       if (hasSyncToMinBlock) {
@@ -144,7 +147,7 @@ function useTokenApprovals() {
         return
       }
 
-      const { fromBlock, toBlock, chunkIndex, hasSyncToMinBlock } = syncBlock
+      const { chunkIndex, fromBlock, hasSyncToMinBlock, toBlock } = syncBlock
 
       const pivotBlock =
         hasSyncToMinBlock || !toBlock ? lastBlockNumber : toBlock
@@ -252,7 +255,7 @@ function useTokenApprovals() {
     [active, library, account, chainId, setSyncBlock]
   )
 
-  return { ...syncBlock, setSyncStatus, syncStatus }
+  return { ...syncBlock, syncStatus }
 }
 
 const useErc20Token = function (address) {
@@ -273,45 +276,47 @@ const useErc20Token = function (address) {
   })
 }
 
-const formatter = new Intl.NumberFormat('default', {
-  maximumFractionDigits: 9,
-  minimumFractionDigits: 6
-})
+const Status = ({
+  children = /** @type {React.ReactNode | null} */ (null),
+  icon,
+  message
+}) => (
+  <>
+    <tr>
+      <td className="pt-12 text-center" colSpan={5}>
+        <div className="bg-grayscale-50 border-grayscale-300 m-auto flex h-8 w-8 items-center justify-center rounded-full border">
+          <SvgContainer className="w-5" name={icon} />
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td className="pt-6 text-center" colSpan={5}>
+        <h3 className="text-grayscale-500">{message}</h3>
+      </td>
+    </tr>
+    {children && (
+      <tr>
+        <td colSpan={5}>
+          <div className="flex items-center justify-center">{children}</div>
+        </td>
+      </tr>
+    )}
+  </>
+)
 
-const Allowance = function ({ address, data }) {
-  const { library } = useWeb3React()
+function TableHeaders() {
   const t = useTranslations()
 
-  const { data: token } = useErc20Token(address)
-
-  if (!token) {
-    return <span className="m-auto" />
-  }
-  const { decimals, totalSupply } = token
-  const allowanceInWei = library.utils.hexToNumberString(data)
-  const value = new Big(fromUnit(allowanceInWei, decimals)).toNumber()
-  const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
-    <span
-      className="m-auto w-full overflow-hidden text-ellipsis whitespace-nowrap"
-      title={formatter.format(value)}
-    >
-      {isUnlimited ? t('unlimited') : formatter.format(value)}
-    </span>
-  )
-}
-
-const Balance = function ({ address }) {
-  const { data: token } = useErc20Token(address)
-  if (!token) {
-    return <span className="m-auto" />
-  }
-  const { decimals, balance } = token
-  const color = balance === '0' ? 'text-gray-300' : ''
-  return (
-    <span className={color}>
-      {formatter.format(new Big(fromUnit(balance, decimals)).toNumber())}
-    </span>
+    <tr className="bg-slate-50 text-slate-600 rounded-xl text-left">
+      <th className="w-10 rounded-l-xl py-4 pl-4 font-medium">{t('token')}</th>
+      <th className="w-14 font-medium">{t('balance')}</th>
+      <th className="w-14 font-medium">{t('allowance')}</th>
+      <th className="w-20 font-medium">{t('spender-address')}</th>
+      <th className="w-10 rounded-r-xl text-center font-medium">
+        {t('actions')}
+      </th>
+    </tr>
   )
 }
 
@@ -325,67 +330,162 @@ const Token = function ({ address }) {
   return <ExplorerLink address={address} chainId={chainId} text={symbol} />
 }
 
-const Status = function ({ icon, message, children }) {
+const Allowance = function ({ address, data }) {
+  const { library } = useWeb3React()
+  const t = useTranslations()
+  const format = useNumberFormat(9)
+
+  const { data: token } = useErc20Token(address)
+
+  if (!token) {
+    return <span className="m-auto" />
+  }
+  const { decimals, totalSupply } = token
+  const allowanceInWei = library.utils.hexToNumberString(data)
+  const value = new Big(fromUnit(allowanceInWei, decimals)).toNumber()
+  const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
-    <>
-      <tr>
-        <td colSpan={5} className="pb-6 pt-12 text-center">
-          <div className="bg-grayscale-50 border-grayscale-300 m-auto flex h-8 w-8 items-center justify-center rounded-full border">
-            <SvgContainer className="w-5 cursor-pointer" name={icon} />
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td colSpan={5} className="text-center">
-          <h3 className="text-grayscale-500">{message}</h3>
-        </td>
-      </tr>
-      <tr>
-        <td colSpan={5} className="pb-12 pt-4">
-          <div className="flex items-center justify-center">{children}</div>
-        </td>
-      </tr>
-    </>
+    <span
+      className="m-auto w-full overflow-hidden text-ellipsis whitespace-nowrap"
+      title={format(value)}
+    >
+      {isUnlimited ? t('unlimited') : format(value)}
+    </span>
   )
 }
 
-const TokenRevokes = function () {
+const Balance = function ({ address }) {
+  const { data: token } = useErc20Token(address)
+  const format = useNumberFormat(9)
+
+  if (!token) {
+    return <span className="m-auto" />
+  }
+  const { balance, decimals } = token
+  const color = balance === '0' ? 'text-gray-300' : ''
+  return (
+    <span className={color}>
+      {format(new Big(fromUnit(balance, decimals)).toNumber())}
+    </span>
+  )
+}
+
+function TableRow({ address, allowance, isRevoking, onClick, spender }) {
+  const t = useTranslations()
+
+  return (
+    <tr className="border-b">
+      <td className="pl-4">
+        <Token address={address} />
+      </td>
+      <td>
+        <Balance address={address} />
+      </td>
+      <td>
+        <Allowance address={address} data={allowance} />
+      </td>
+      <td>
+        <Token address={spender} />
+      </td>
+      <td className="py-2">
+        <Button disabled={isRevoking} onClick={onClick}>
+          {t('revoke')}
+        </Button>
+      </td>
+    </tr>
+  )
+}
+
+const TokenRevokesTable = function () {
   const { active } = useWeb3React()
   const { erc20 } = useContext(PureContext)
+  const { syncStatus, tokenApprovals } = useTokenApprovals()
   const t = useTranslations()
-  const tHelperText = useTranslations('helper-text.token-revokes')
-  const [isRevoking, setIsRevoking] = useState(false)
 
-  const { tokenApprovals, syncStatus, setSyncStatus } = useTokenApprovals()
-  const helperText = {
-    title: tHelperText('title'),
-    text: tHelperText('text'),
-    questions: [
-      {
-        title: tHelperText('why-review-question'),
-        answer: tHelperText('why-review-answer')
-      },
-      {
-        title: tHelperText('how-revoke-question'),
-        answer: tHelperText('how-revoke-answer')
-      },
-      {
-        title: tHelperText('fee-question'),
-        answer: tHelperText('fee-answer')
-      }
-    ]
-  }
+  const [isRevoking, setRevokingKey] = useState(false)
+  const [result, setResult] = useEphemeralState({ value: '' })
 
   const handleRevoke = function (address, spender) {
-    if (!active) {
-      return
-    }
-    setIsRevoking(true)
-    const erc20Service = erc20(address)
-    erc20Service
+    setRevokingKey(true)
+    erc20(address)
       .revoke(spender)
-      .then(() => setIsRevoking(false))
-      .catch(() => setSyncStatus(SyncStatus.Error))
+      .then(function () {
+        setResult({ color: 'text-success', value: t('operation-successful') })
+      })
+      .catch(function (err) {
+        setResult({ color: 'text-error', value: err.message.split('\n')[0] })
+      })
+      .finally(function () {
+        setRevokingKey(false)
+      })
+  }
+
+  return (
+    <UtilityBox
+      className="md:max-w-none"
+      subtitle={t('utilities-text.token-revokes')}
+      title={t('list-and-revoke-token-approvals')}
+    >
+      <TextLabel {...result} />
+      <table className="mt-4 w-full">
+        <thead>
+          <TableHeaders />
+        </thead>
+        <tbody>
+          {!active ? (
+            <Status icon="exclamation" message={t('connect-to-sync')}>
+              <CallToAction />
+            </Status>
+          ) : syncStatus === SyncStatus.Syncing ? (
+            <Status icon="loading" message={t('syncing-your-approvals')} />
+          ) : syncStatus === SyncStatus.Error ? (
+            <Status icon="error" message={t('generic-error')} />
+          ) : syncStatus === SyncStatus.Finished &&
+            tokenApprovals.length === 0 ? (
+            <Status icon="exclamation" message={t('no-approvals')}>
+              <Link className="mt-4 underline" href="/token-approvals">
+                {t('token-approvals')}
+              </Link>
+            </Status>
+          ) : (
+            tokenApprovals.map(({ address, allowance, spender }) => (
+              <TableRow
+                address={address}
+                allowance={allowance}
+                isRevoking={isRevoking}
+                key={`${address}:${spender}`}
+                onClick={() => handleRevoke(address, spender)}
+                spender={spender}
+              />
+            ))
+          )}
+        </tbody>
+      </table>
+    </UtilityBox>
+  )
+}
+
+function TokenRevokes() {
+  const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.token-revokes')
+
+  const helperText = {
+    questions: [
+      {
+        answer: tHelperText('why-review-answer'),
+        title: tHelperText('why-review-question')
+      },
+      {
+        answer: tHelperText('how-revoke-answer'),
+        title: tHelperText('how-revoke-question')
+      },
+      {
+        answer: tHelperText('fee-answer'),
+        title: tHelperText('fee-question')
+      }
+    ],
+    text: tHelperText('text'),
+    title: tHelperText('title')
   }
 
   return (
@@ -395,84 +495,11 @@ const TokenRevokes = function () {
       title={t('list-and-revoke-token-approvals')}
       walletConnection
     >
-      <TableBox
-        text={t('utilities-text.token-revokes')}
-        title={t('list-and-revoke-token-approvals')}
-        className="shadow-lg"
-      >
-        <div className="w-100 md:w-150 overflow-auto lg:w-full">
-          <table className="w-150">
-            <thead>
-              <tr className="bg-slate-50 text-slate-600 border-slate-200 rounded-xl border text-left text-sm">
-                <th className="w-10 px-2 py-4 font-medium">{t('token')}</th>
-                <th className="w-14 font-medium">{t('allowance')}</th>
-                <th className="w-14 font-medium">{t('balance')}</th>
-                <th className="w-24 font-medium">{t('spender-address')}</th>
-                <th className="w-10 font-medium">{t('actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tokenApprovals.map(
-                ({ address, allowance, transactionHash, spender }) => (
-                  <tr className="border-b" key={transactionHash}>
-                    <td className="px-2 py-4">
-                      <Token address={address} />
-                    </td>
-                    <td>
-                      <Allowance address={address} data={allowance} />
-                    </td>
-                    <td>
-                      <Balance address={address} />
-                    </td>
-                    <td>
-                      <Token address={spender} />
-                    </td>
-                    <td className="px-2 py-4">
-                      <Button
-                        disabled={!active}
-                        onClick={() => handleRevoke(address, spender)}
-                      >
-                        {t('revoke')}
-                      </Button>
-                    </td>
-                  </tr>
-                )
-              )}
-
-              {!active && (
-                <Status icon="exclamation" message={t('connect-to-sync')}>
-                  <Wallet />
-                </Status>
-              )}
-
-              {active && syncStatus === SyncStatus.Syncing && (
-                <Status icon="loading" message={t('syncing-your-approvals')} />
-              )}
-
-              {active && isRevoking && (
-                <Status icon="exclamation" message={t('revoking-approval')} />
-              )}
-
-              {syncStatus === SyncStatus.Error && (
-                <Status icon="error" message={t('generic-error')} />
-              )}
-
-              {active &&
-                tokenApprovals.length === 0 &&
-                syncStatus === SyncStatus.Finished && (
-                  <Status icon="exclamation" message={t('no-approvals')}>
-                    <Link className="underline" href="/token-approvals">
-                      {t('token-approvals')}
-                    </Link>
-                  </Status>
-                )}
-            </tbody>
-          </table>
-        </div>
-      </TableBox>
+      <TokenRevokesTable />
     </ToolsLayout>
   )
 }
 
 export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
+
 export default TokenRevokes
