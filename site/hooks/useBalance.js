@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import PureContext from '../components/context/Pure'
 
-export const useBalance = function ({ symbol }) {
+export const useBalance = function (symbol) {
   const { active, account: userAccount, library } = useWeb3React()
   const { erc20 } = useContext(PureContext)
 

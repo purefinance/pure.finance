@@ -1,18 +1,30 @@
 import { Link } from '../navigation'
 
 import PureLogo from './svg/Pure'
+import Breadcrumb from './layout/Breadcrumb'
+import SvgContainer from './svg/SvgContainer'
 import Wallet from './Wallet'
 
-const Navbar = ({ walletConnection }) => (
-  <div className="flex flex-wrap items-center w-full md:h-16 xl:px-0">
-    <div className="hidden w-1/3 md:block" />
-    <div className="flex justify-center w-full md:w-1/3">
-      <Link href="/">
-        <PureLogo />
-      </Link>
+const Navbar = ({ title, walletConnection, breadcrumb }) => (
+  <div className="flex flex-col">
+    <div className="flex items-center justify-between p-8">
+      <div className="flex items-center gap-2">
+        <Link href="/">
+          <div className="w-20">
+            <PureLogo />
+          </div>
+        </Link>
+        <div className="w-20">
+          <SvgContainer name="tools" />
+        </div>
+        <div className="hidden md:block">
+          {breadcrumb && <Breadcrumb title={title} />}
+        </div>
+      </div>
+      <div>{walletConnection && <Wallet />}</div>
     </div>
-    <div className="flex justify-center mt-4 w-full md:justify-end md:mt-0 md:w-1/3">
-      {walletConnection && <Wallet />}
+    <div className="md:hidden">
+      {breadcrumb && <Breadcrumb title={title} />}
     </div>
   </div>
 )

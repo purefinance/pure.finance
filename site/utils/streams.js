@@ -1,22 +1,25 @@
-const BIRTH_BLOCK = 13495981
+import utilsConfig from './utilsConfig.json'
 
-const getKey = address => `payment-streams-events-start-block-${address}`
+const getKey = (address, chainId) =>
+  `pf-payment-streams-events-start-block-${address}-${chainId}`
 
-export const getSavedStreamsInfo = function (account) {
+export const getSavedStreamsInfo = function (account, chainId) {
   let parsed
   try {
-    parsed = JSON.parse(window.localStorage.getItem(getKey(account)) ?? '{}')
+    parsed = JSON.parse(
+      window.localStorage.getItem(getKey(account, chainId)) ?? '{}'
+    )
   } catch {
     parsed = {}
   }
   const {
     savedStreams = { incoming: [], outgoing: [] },
-    startBlock = BIRTH_BLOCK
+    startBlock = utilsConfig[chainId].paymentStreams.birthblock
   } = parsed
   return { savedStreams, startBlock }
 }
 
-export const saveStreamsInfo = function (account, toSave) {
+export const saveStreamsInfo = function (account, chainId, toSave) {
   const { savedStreams, ...rest } = toSave
   // remove duplicates if any, as there might be when fetching more than once the same block
   // for example in local forks without auto-mining.
@@ -27,7 +30,7 @@ export const saveStreamsInfo = function (account, toSave) {
   const uniqueIncomingIds = getUniques(savedStreams.incoming)
   const uniqueOutgoingIds = getUniques(savedStreams.outgoing)
   window.localStorage.setItem(
-    getKey(account),
+    getKey(account, chainId),
     JSON.stringify({
       savedStreams: {
         incoming: mapIdToStream(uniqueIncomingIds, savedStreams.incoming),
@@ -38,12 +41,12 @@ export const saveStreamsInfo = function (account, toSave) {
   )
 }
 
-export const updateStreamInfo = ({ account, streamsView, lib, id }) =>
+export const updateStreamInfo = ({ account, chainId, id, lib, streamsView }) =>
   lib.getStream(id).then(function (stream) {
-    const { savedStreams, startBlock } = getSavedStreamsInfo(account)
+    const { savedStreams, startBlock } = getSavedStreamsInfo(account, chainId)
     const indexToModify = savedStreams[streamsView].findIndex(s => s.id === id)
     savedStreams[streamsView][indexToModify] = {
       ...stream
     }
-    saveStreamsInfo(account, { savedStreams, startBlock })
+    saveStreamsInfo(account, chainId, { savedStreams, startBlock })
   })

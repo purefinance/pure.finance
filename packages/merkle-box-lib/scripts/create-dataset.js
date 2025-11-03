@@ -1,8 +1,10 @@
 /**
  * Usage:
  *
- *   node scripts/create-dataset.js ./recipients.json > dataset.json
+ *   node scripts/create-dataset.js recipients.json > dataset.json
  */
+
+/* eslint-disable no-console */
 
 'use strict'
 

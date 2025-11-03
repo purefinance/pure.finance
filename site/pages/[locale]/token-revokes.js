@@ -2,13 +2,20 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import createErc20 from 'erc-20-lib'
 import { useTranslations } from 'next-intl'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 import Button from '../../components/Button'
+import CallToAction from '../../components/CallToAction'
 import PureContext from '../../components/context/Pure'
-import { EtherscanLink } from '../../components/EtherscanLink'
-import Layout from '../../components/Layout'
+import { ExplorerLink } from '../../components/ExplorerLink'
+import ToolsLayout from '../../components/layout/ToolsLayout'
+import UtilityBox from '../../components/layout/UtilityBox'
+import SvgContainer from '../../components/svg/SvgContainer'
+import { TextLabel } from '../../components/TextLabel'
+import { useEphemeralState } from '../../hooks/useEphemeralState'
+import { useNumberFormat } from '../../hooks/useNumberFormat'
+import { Link } from '../../navigation'
 import { fromUnit } from '../../utils'
 
 // Comes from doing web3.utils.sha3('Approval(address,address,uint256)')
@@ -21,14 +28,14 @@ const getPreviousFromBlock = (pivotBlock, chunkIndex, minBlock) =>
   Math.max(minBlock, pivotBlock - BLOCK_NUMBER_WINDOW * chunkIndex)
 
 const useLastBlockNumber = function () {
-  const { active, library, chainId } = useWeb3React()
+  const { active, chainId, library } = useWeb3React()
   return useSWR(active ? [`lastBlockNumber-${chainId}`, chainId] : null, () =>
     library.eth.getBlockNumber()
   )
 }
 
 const parseLogs = logs =>
-  logs.map(({ address, blockNumber, data, transactionHash, topics }) => ({
+  logs.map(({ address, blockNumber, data, topics, transactionHash }) => ({
     address,
     allowance: data,
     blockNumber,
@@ -42,7 +49,7 @@ const SyncStatus = {
   Syncing: 1
 }
 
-const getNewestApprovals = function ({ logs, tokenApprovals, library }) {
+const getNewestApprovals = function ({ library, logs, tokenApprovals }) {
   const allCombinations = new Set([
     ...tokenApprovals.map(({ address, spender }) => `${address}-${spender}`),
     ...logs.map(({ address, spender }) => `${address}-${spender}`)
@@ -75,11 +82,11 @@ const DEFAULT_SYNC_BLOCK_STATE = {
   fromBlock: MIN_BLOCK_TO_SYNC,
   hasSyncToMinBlock: false,
   toBlock: undefined,
-  tokenApprovals: []
+  tokenApprovals: /** @type {Array} */ ([])
 }
 
 function useTokenApprovals() {
-  const { active, library, account, chainId } = useWeb3React()
+  const { account, active, chainId, library } = useWeb3React()
   const [syncBlock, setSyncBlock] = useState(DEFAULT_SYNC_BLOCK_STATE)
 
   const [syncStatus, setSyncStatus] = useState(SyncStatus.Syncing)
@@ -104,7 +111,7 @@ function useTokenApprovals() {
         return
       }
 
-      const { toBlock, hasSyncToMinBlock, chunkIndex, tokenApprovals } =
+      const { chunkIndex, hasSyncToMinBlock, toBlock, tokenApprovals } =
         JSON.parse(storedItem)
 
       if (hasSyncToMinBlock) {
@@ -140,7 +147,7 @@ function useTokenApprovals() {
         return
       }
 
-      const { fromBlock, toBlock, chunkIndex, hasSyncToMinBlock } = syncBlock
+      const { chunkIndex, fromBlock, hasSyncToMinBlock, toBlock } = syncBlock
 
       const pivotBlock =
         hasSyncToMinBlock || !toBlock ? lastBlockNumber : toBlock
@@ -170,8 +177,7 @@ function useTokenApprovals() {
             setSyncStatus(SyncStatus.Finished)
           }
 
-          // @ts-ignore
-          setSyncBlock(prev => {
+          setSyncBlock(function (prev) {
             const newTokenApprovals = getNewestApprovals({
               library,
               logs: parseLogs(logs),
@@ -249,7 +255,7 @@ function useTokenApprovals() {
     [active, library, account, chainId, setSyncBlock]
   )
 
-  return { ...syncBlock, setSyncStatus, syncStatus }
+  return { ...syncBlock, syncStatus }
 }
 
 const useErc20Token = function (address) {
@@ -270,14 +276,64 @@ const useErc20Token = function (address) {
   })
 }
 
-const formatter = new Intl.NumberFormat('default', {
-  maximumFractionDigits: 9,
-  minimumFractionDigits: 6
-})
+const Status = ({
+  children = /** @type {React.ReactNode | null} */ (null),
+  icon,
+  message
+}) => (
+  <>
+    <tr>
+      <td className="pt-12 text-center" colSpan={5}>
+        <div className="bg-grayscale-50 border-grayscale-300 m-auto flex h-8 w-8 items-center justify-center rounded-full border">
+          <SvgContainer className="w-5" name={icon} />
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td className="pt-6 text-center" colSpan={5}>
+        <h3 className="text-grayscale-500">{message}</h3>
+      </td>
+    </tr>
+    {children && (
+      <tr>
+        <td colSpan={5}>
+          <div className="flex items-center justify-center">{children}</div>
+        </td>
+      </tr>
+    )}
+  </>
+)
+
+function TableHeaders() {
+  const t = useTranslations()
+
+  return (
+    <tr className="bg-slate-50 text-slate-600 rounded-xl text-left">
+      <th className="w-10 rounded-l-xl py-4 pl-4 font-medium">{t('token')}</th>
+      <th className="w-14 font-medium">{t('balance')}</th>
+      <th className="w-14 font-medium">{t('allowance')}</th>
+      <th className="w-20 font-medium">{t('spender-address')}</th>
+      <th className="w-10 rounded-r-xl text-center font-medium">
+        {t('actions')}
+      </th>
+    </tr>
+  )
+}
+
+const Token = function ({ address }) {
+  const { chainId } = useWeb3React()
+  const { data: token } = useErc20Token(address)
+  if (!token) {
+    return <ExplorerLink address={address} chainId={chainId} />
+  }
+  const { symbol } = token
+  return <ExplorerLink address={address} chainId={chainId} text={symbol} />
+}
 
 const Allowance = function ({ address, data }) {
   const { library } = useWeb3React()
   const t = useTranslations()
+  const format = useNumberFormat(9)
 
   const { data: token } = useErc20Token(address)
 
@@ -290,129 +346,160 @@ const Allowance = function ({ address, data }) {
   const isUnlimited = new Big(allowanceInWei).gt(totalSupply)
   return (
     <span
-      className="m-auto w-full whitespace-nowrap overflow-hidden overflow-ellipsis"
-      title={formatter.format(value)}
+      className="m-auto w-full overflow-hidden text-ellipsis whitespace-nowrap"
+      title={format(value)}
     >
-      {isUnlimited ? t('unlimited') : formatter.format(value)}
+      {isUnlimited ? t('unlimited') : format(value)}
     </span>
   )
 }
 
 const Balance = function ({ address }) {
   const { data: token } = useErc20Token(address)
+  const format = useNumberFormat(9)
+
   if (!token) {
     return <span className="m-auto" />
   }
-  const { decimals, balance } = token
+  const { balance, decimals } = token
   const color = balance === '0' ? 'text-gray-300' : ''
   return (
     <span className={color}>
-      {formatter.format(new Big(fromUnit(balance, decimals)).toNumber())}
+      {format(new Big(fromUnit(balance, decimals)).toNumber())}
     </span>
   )
 }
 
-const Token = function ({ address }) {
-  const { data: token } = useErc20Token(address)
-  if (!token) {
-    return <EtherscanLink address={address} />
-  }
-  const { symbol } = token
-  return <EtherscanLink address={address} text={symbol} />
+function TableRow({ address, allowance, isRevoking, onClick, spender }) {
+  const t = useTranslations()
+
+  return (
+    <tr className="border-b">
+      <td className="pl-4">
+        <Token address={address} />
+      </td>
+      <td>
+        <Balance address={address} />
+      </td>
+      <td>
+        <Allowance address={address} data={allowance} />
+      </td>
+      <td>
+        <Token address={spender} />
+      </td>
+      <td className="py-2">
+        <Button disabled={isRevoking} onClick={onClick}>
+          {t('revoke')}
+        </Button>
+      </td>
+    </tr>
+  )
 }
 
-const TokenRevokes = function () {
+const TokenRevokesTable = function () {
   const { active } = useWeb3React()
   const { erc20 } = useContext(PureContext)
+  const { syncStatus, tokenApprovals } = useTokenApprovals()
   const t = useTranslations()
-  const [isRevoking, setIsRevoking] = useState(false)
 
-  const { tokenApprovals, syncStatus, setSyncStatus } = useTokenApprovals()
+  const [isRevoking, setRevokingKey] = useState(false)
+  const [result, setResult] = useEphemeralState({ value: '' })
 
   const handleRevoke = function (address, spender) {
-    if (!active) {
-      return
-    }
-    setIsRevoking(true)
-    const erc20Service = erc20(address)
-    erc20Service
+    setRevokingKey(true)
+    erc20(address)
       .revoke(spender)
-      .then(() => setIsRevoking(false))
-      .catch(() => setSyncStatus(SyncStatus.Error))
+      .then(function () {
+        setResult({ color: 'text-success', value: t('operation-successful') })
+      })
+      .catch(function (err) {
+        setResult({ color: 'text-error', value: err.message.split('\n')[0] })
+      })
+      .finally(function () {
+        setRevokingKey(false)
+      })
   }
 
   return (
-    <Layout title={t('list-and-revoke-token-approvals')} walletConnection>
-      {tokenApprovals.length > 0 && (
-        <section className="flex flex-col overflow-x-auto">
-          <div className="grid-cols-approval-sm md:grid-cols-approval grid gap-x-12 gap-y-5 place-content-center my-6">
-            <span className="m-auto text-gray-600 font-bold">{t('token')}</span>
-            <span className="hidden m-auto text-gray-600 font-bold md:block">
-              {t('spender-address')}
-            </span>
-            <span className="m-auto text-gray-600 font-bold">
-              {t('allowance')} / {t('balance')}
-            </span>
-            <span className="m-auto text-gray-600 font-bold">
-              {t('actions')}
-            </span>
-            {tokenApprovals.map(
-              ({ address, allowance, transactionHash, spender }) => (
-                <React.Fragment key={transactionHash}>
-                  <Token address={address} />
-                  <div className="hidden my-auto md:block">
-                    <Token address={spender} />
-                  </div>
-                  <div className="my-auto">
-                    <Allowance address={address} data={allowance} />
-                    <span> / </span>
-                    <Balance address={address} />
-                  </div>
-                  <Button
-                    className="hidden md:block"
-                    disabled={!active}
-                    onClick={() => handleRevoke(address, spender)}
-                    width="w-28"
-                  >
-                    {t('revoke')}
-                  </Button>
-                  <Button
-                    className="flex justify-center mx-auto md:hidden"
-                    disabled={!active}
-                    onClick={() => handleRevoke(address, spender)}
-                    width="w-10"
-                  >
-                    <svg
-                      className="md:hidden"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      width="18"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
-                        fill="white"
-                      />
-                    </svg>
-                  </Button>
-                </React.Fragment>
-              )
-            )}
-          </div>
-        </section>
-      )}
-      {!active && <h3>{t('connect-to-sync')}</h3>}
-      {active && syncStatus === SyncStatus.Syncing && (
-        <h3>{t('syncing-your-approvals')}</h3>
-      )}
-      {active && isRevoking && <h3>{t('revoking-approval')}</h3>}
-      {syncStatus === SyncStatus.Error && <h3>{t('generic-error')}</h3>}
-      {tokenApprovals.length === 0 && syncStatus === SyncStatus.Finished && (
-        <p>{t('no-approvals')}</p>
-      )}
-    </Layout>
+    <UtilityBox
+      className="md:max-w-none"
+      subtitle={t('utilities-text.token-revokes')}
+      title={t('list-and-revoke-token-approvals')}
+    >
+      <TextLabel {...result} />
+      <table className="mt-4 w-full">
+        <thead>
+          <TableHeaders />
+        </thead>
+        <tbody>
+          {!active ? (
+            <Status icon="exclamation" message={t('connect-to-sync')}>
+              <CallToAction />
+            </Status>
+          ) : syncStatus === SyncStatus.Syncing ? (
+            <Status icon="loading" message={t('syncing-your-approvals')} />
+          ) : syncStatus === SyncStatus.Error ? (
+            <Status icon="error" message={t('generic-error')} />
+          ) : syncStatus === SyncStatus.Finished &&
+            tokenApprovals.length === 0 ? (
+            <Status icon="exclamation" message={t('no-approvals')}>
+              <Link className="mt-4 underline" href="/token-approvals">
+                {t('token-approvals')}
+              </Link>
+            </Status>
+          ) : (
+            tokenApprovals.map(({ address, allowance, spender }) => (
+              <TableRow
+                address={address}
+                allowance={allowance}
+                isRevoking={isRevoking}
+                key={`${address}:${spender}`}
+                onClick={() => handleRevoke(address, spender)}
+                spender={spender}
+              />
+            ))
+          )}
+        </tbody>
+      </table>
+    </UtilityBox>
+  )
+}
+
+function TokenRevokes() {
+  const t = useTranslations()
+  const tHelperText = useTranslations('helper-text.token-revokes')
+
+  const helperText = {
+    questions: [
+      {
+        answer: tHelperText('why-review-answer'),
+        title: tHelperText('why-review-question')
+      },
+      {
+        answer: tHelperText('how-revoke-answer'),
+        title: tHelperText('how-revoke-question')
+      },
+      {
+        answer: tHelperText('fee-answer'),
+        title: tHelperText('fee-question')
+      }
+    ],
+    text: tHelperText('text'),
+    title: tHelperText('title')
+  }
+
+  return (
+    <ToolsLayout
+      breadcrumb
+      helperText={helperText}
+      title={t('list-and-revoke-token-approvals')}
+      walletConnection
+    >
+      <TokenRevokesTable />
+    </ToolsLayout>
   )
 }
 
 export { getStaticProps, getStaticPaths } from '../../utils/staticProps'
+
 export default TokenRevokes

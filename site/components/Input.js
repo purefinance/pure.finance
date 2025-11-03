@@ -1,34 +1,81 @@
-const InputTitle = ({ title }) => (
-  <p className="mb-1.5 text-center text-gray-600 font-bold">{title}</p>
+import React from 'react'
+
+import SvgContainer from './svg/SvgContainer'
+
+const commonInputStyles = 'text-base bg-white placeholder-slate-400'
+
+export const InputTitle = ({ children }) => (
+  <label className="text-md text-slate-500 mb-2.5 block">{children}</label>
 )
 
 const SimpleInput = props => (
-  <input {...props} className="align-middle w-full h-10 text-center border-2" />
+  <input
+    {...props}
+    className={`${commonInputStyles} focus:outline-none w-full text-base`}
+  />
 )
 
 const SuffixedInput = ({ suffix, ...props }) => (
-  <div className="flex align-middle w-full h-10 text-center border-2">
+  <div className={`${commonInputStyles} flex w-full`}>
     <input
       {...props}
-      className="flex-1 pl-16 text-center tabular-nums border-r-2"
+      className="placeholder-capitalize focus:outline-none flex-1 bg-transparent tabular-nums"
     />
-    <div className="m-auto w-16 text-center">{suffix}</div>
+    <div className="m-auto w-16">{suffix}</div>
   </div>
 )
 
-const Caption = ({ caption, captionColor }) =>
-  caption && (
-    <p className={`text-center text-sm mt-2 ${captionColor}`}>{caption}</p>
-  )
+const Caption = ({ caption, captionColor }) => (
+  <div className="mt-2 flex items-center px-4">
+    <CaptionIcon captionColor={captionColor} />
+    <p className={`text-sm ${captionColor}`}>{caption}</p>
+  </div>
+)
 
-const Input = ({ title, suffix, caption, captionColor, ...props }) => (
-  <div className="w-full">
-    {title && <InputTitle title={title} />}
-    {suffix ? (
-      <SuffixedInput suffix={suffix} {...props} />
-    ) : (
-      <SimpleInput {...props} />
-    )}
+function CaptionIcon({ captionColor }) {
+  const name = captionColor?.includes('red')
+    ? 'error'
+    : captionColor?.includes('green')
+      ? 'check'
+      : ''
+
+  return name && <SvgContainer className={`mr-2 h-4 w-4`} name={name} />
+}
+
+const Input = ({
+  className = '',
+  title,
+  suffix,
+  caption,
+  captionColor,
+  ...props
+}) => (
+  <div className={`mb-6 w-full ${className}`}>
+    <div className={`flex w-full rounded-xl border px-4 py-3`}>
+      {suffix ? (
+        <SuffixedInput suffix={suffix} {...props} placeholder={title} />
+      ) : (
+        <SimpleInput {...props} placeholder={title} />
+      )}
+    </div>
+    {<Caption caption={caption || '-'} captionColor={captionColor} />}
+  </div>
+)
+
+export const TextArea = ({
+  className = '',
+  title,
+  suffix,
+  caption,
+  captionColor,
+  ...props
+}) => (
+  <div className={`mb-6 w-full ${className}`}>
+    {title && <InputTitle>{title}</InputTitle>}
+    <textarea
+      className={`${commonInputStyles} focus:outline-none w-full rounded-xl border px-4 py-3`}
+      {...props}
+    />
     {caption && <Caption caption={caption} captionColor={captionColor} />}
   </div>
 )

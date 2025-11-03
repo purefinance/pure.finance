@@ -11,18 +11,18 @@ const WalletConnectionModal = function ({
   const t = useTranslations()
   return (
     <Modal
-      className="bg-white rounded-md"
+      className="rounded-xl bg-white"
       modalIsOpen={modalIsOpen}
       onRequestClose={onRequestClose}
     >
-      <h1 className="pb-5 pt-10 px-10 text-center text-xl font-bold">
+      <h1 className="px-10 pb-5 pt-10 text-center text-xl font-bold">
         {t('connect-wallet')}
       </h1>
       <div className="flex flex-wrap justify-center pb-10 lg:px-20">
         {wallets.map(w => (
           <div className="p-4" key={w.name}>
             <button
-              className="flex items-center justify-center px-4 py-2 w-60 font-semibold border rounded focus:outline-none focus:ring"
+              className="focus:outline-none flex w-60 items-center justify-center rounded-xl border px-4 py-2 font-semibold focus:ring"
               onClick={() => w.handleConnection()}
             >
               <SvgContainer

@@ -4,22 +4,24 @@ import { useTranslations } from 'next-intl'
 import { findToken } from 'pf-payment-streams/src/token-list'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'
+import fetchJson from 'tiny-fetch-json'
 import { isAddress } from 'web3-utils'
 
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import EndTime from '../../components/payment-streams/EndTime'
-import PaymentStreamsLibContext from '../../components/payment-streams/PaymentStreamsLib'
 import { useStreams } from '../../hooks/useStreams'
 import { useTokenInput } from '../../hooks/useTokenInput'
-import { Link, useRouter } from '../../navigation'
+import { useRouter } from '../../navigation'
 import { fromUnit, toUnit } from '../../utils'
-import fetchJson from '../../utils/fetch-json'
 import * as timeUtils from '../../utils/time'
 import TransactionsContext from '../context/Transactions'
 
+import { PaymentStreamsLibContext } from './PaymentStreamsLib'
+
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
+// To create a payment stream, the payment token has to have a ChainLink feed!
 const useSupportedTokens = function () {
   const { data, error } = useSWR('supported-tokens', () =>
     fetchJson('https://cl-docs-addresses.web.app/addresses.json').then(
@@ -37,7 +39,6 @@ const useSupportedTokens = function () {
   }
 }
 
-// eslint-disable-next-line complexity
 const CreateStream = function () {
   const { active, account } = useWeb3React()
   const t = useTranslations('payment-streams-util')
@@ -57,9 +58,9 @@ const CreateStream = function () {
 
   // tokens are in the list in the form of "<token> / [USD|ETH]"" pairs. For example: "UNI / USD"
   // addresses are not available
-  const isTokenSupported = function (value) {
+  const isTokenSupported = function (address) {
     // vesper is registered as "Vesper Finance TVL" - see https://docs.chain.link/docs/ethereum-addresses/#Ethereum%20Mainnet
-    const symbol = findToken(value, 1)?.symbol.toLowerCase()
+    const symbol = findToken(address, 1)?.symbol.toLowerCase()
     if (!symbol) {
       return false
     }
@@ -158,7 +159,7 @@ const CreateStream = function () {
 
   return (
     <form
-      className="flex flex-col items-center mx-auto w-full max-w-lg"
+      className="mx-auto flex w-full max-w-lg flex-col items-center"
       onSubmit={submit}
     >
       <Input
@@ -187,11 +188,17 @@ const CreateStream = function () {
         onYearsChange={setYears}
         years={years}
       />
-      <div className="flex">
-        <Link href="/payment-streams">
-          <Button className="w-19 m-1">{tCommon('cancel')}</Button>
-        </Link>
-        <Button className="w-19 m-1" disabled={!canSubmit}>
+      <div className="flex w-full space-x-4">
+        <Button
+          className="w-1/2"
+          onClick={function () {
+            router.push('/payment-streams')
+          }}
+          type="button"
+        >
+          {tCommon('cancel')}
+        </Button>
+        <Button className="w-1/2" disabled={!canSubmit}>
           {t('create')}
         </Button>
       </div>

@@ -1,35 +1,22 @@
+import { useWeb3React } from '@web3-react/core'
 import { useTranslations } from 'next-intl'
 
 import { useNumberFormat } from '../hooks/useNumberFormat'
 
-import { EtherscanLink } from './EtherscanLink'
+import { ExplorerLink } from './ExplorerLink'
 import JustifiedBetweenRow from './JustifiedBetweenRow'
 import Modal from './Modal'
 import SvgContainer from './svg/SvgContainer'
 
-const TransactionModalRow = ({ text, value, tipLink = '' }) => (
+const TransactionModalRow = ({ text, value }) => (
   <JustifiedBetweenRow
-    keyComponent={
-      tipLink ? (
-        <a
-          className={'text-gray-350 text-sm flex justify-between'}
-          href={tipLink}
-          rel="noreferrer"
-          target={'_blank'}
-        >
-          {text}
-          <SvgContainer className="ml-1" name="questionmark" />
-        </a>
-      ) : (
-        <p className={'text-gray-350 text-sm'}>{text}</p>
-      )
-    }
+    keyComponent={<p className={'text-gray-350 text-sm'}>{text}</p>}
     valueComponent={<p className="text-sm font-semibold">{value}</p>}
   />
 )
 
-// eslint-disable-next-line complexity
 const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
+  const { chainId } = useWeb3React()
   const t = useTranslations()
   const formatNumber = useNumberFormat()
 
@@ -40,7 +27,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
 
   return (
     <Modal
-      className="relative flex flex-col w-full max-w-screen-sm h-screen bg-white border-0 outline-none focus:outline-none shadow-lg md:h-auto md:rounded-lg"
+      className="outline-none focus:outline-none relative flex h-screen w-full max-w-screen-sm flex-col border-0 bg-white shadow-lg md:h-auto md:rounded-lg"
       modalIsOpen={modalIsOpen}
       onRequestClose={closeModal}
     >
@@ -55,7 +42,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
         <div className="mt-4">
           {/* Values sent and received */}
           {transaction.sent && (
-            <div className="flex items-center justify-between pb-2 text-lg font-bold border-b border-gray-300">
+            <div className="flex items-center justify-between border-b border-gray-300 pb-2 text-lg font-bold">
               <div className="w-2/5 text-left">
                 {`${formatNumber(transaction.sent)} ${transaction.sentSymbol}`}
               </div>
@@ -72,7 +59,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
           {!transaction.sent &&
             (transaction.received || []).map(({ symbol, value }) => (
               <div
-                className="flex items-center justify-between pb-2 text-lg font-bold border-b border-gray-300"
+                className="flex items-center justify-between border-b border-gray-300 pb-2 text-lg font-bold"
                 key={symbol}
               >
                 <div className="w-2/5 text-left">{symbol}</div>
@@ -106,7 +93,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
 
           {/* Transactions list and status: name, number, status, hash */}
           {transaction.suffixes.map((suffix, idx) => (
-            <div className="py-4 border-t border-gray-300" key={suffix}>
+            <div className="border-t border-gray-300 py-4" key={suffix}>
               <TransactionModalRow
                 text={`${t('transaction')}: ${t(suffix)}`}
                 value={`${idx + 1}/${transaction.suffixes.length}`}
@@ -123,7 +110,10 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                 <TransactionModalRow
                   text={t('transaction-hash')}
                   value={
-                    <EtherscanLink tx={transaction[`transactionHash-${idx}`]} />
+                    <ExplorerLink
+                      chainId={chainId}
+                      tx={transaction[`transactionHash-${idx}`]}
+                    />
                   }
                 />
               )}
@@ -131,14 +121,14 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
           ))}
 
           {/* Status icon and error message */}
-          <div className="pt-4 border-t border-gray-300">
+          <div className="border-t border-gray-300 pt-4">
             <SvgContainer
               className="m-auto"
               name={isConfirmed ? 'checkmark' : isError ? 'cross' : 'loading'}
             />
             {transaction.message && (
               <p className="mt-1 text-center">
-                <span className="text-red-600 text-sm font-semibold">
+                <span className="text-sm font-semibold text-red-600">
                   {transaction.message}
                 </span>
               </p>

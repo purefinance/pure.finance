@@ -1,0 +1,35 @@
+{
+  "1": {
+    "dpAuctions": {
+      "address": "0x164D41ceB60489D2e054394Fc05ED1894Db3898a",
+      "uniswapV2": true
+    },
+    "merkleClaim": {
+      "address": "0xe67516417a934b27cf0c14868f8165b1bc94bf73"
+    },
+    "paymentStreams": {
+      "address": "0xf47853220BF59C682CCBd28e7cFF4D4E603a4Ca6",
+      "birthblock": "13495981",
+      "chainLink": true
+    }
+  },
+  "43111": {
+    "merkleClaim": {
+      "address": "0x112de51b708c77C628532120Ffe2c0200f067399"
+    }
+  },
+  "743111": {
+    "dpAuctions": {
+      "address": "0xD8039420f1A61D0930127B89ab7Be23a7f21cd77",
+      "uniswapV2": false
+    },
+    "merkleClaim": {
+      "address": "0xc2dA346E2f655B1013cB0f405Ca1b99553F7a580"
+    },
+    "paymentStreams": {
+      "address": "0xc5F62E5a1bF204ba216a877b11E596FcA09760D4",
+      "birthblock": 221903,
+      "chainLink": false
+    }
+  }
+}
